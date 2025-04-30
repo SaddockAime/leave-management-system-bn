@@ -44,53 +44,6 @@ router.post(
     }
 );
 
-// Request password reset
-router.post(
-    '/forgot-password',
-    [body('email').isEmail().normalizeEmail()],
-    validateRequest,
-    async (req: Request, res: Response) => {
-        try {
-            const result = await authService.requestPasswordReset(req.body.email);
-            res.json(result);
-        } catch (error: any) {
-            res.status(400).json({ error: error.message });
-        }
-    }
-);
-
-// Reset password
-router.post(
-    '/reset-password',
-    [
-        body('token').notEmpty(),
-        body('newPassword').isLength({ min: 6 })
-    ],
-    validateRequest,
-    async (req: Request, res: Response) => {
-        try {
-            const result = await authService.resetPassword(req.body.token, req.body.newPassword);
-            res.json(result);
-        } catch (error: any) {
-            res.status(400).json({ error: error.message });
-        }
-    }
-);
-
-// Verify email
-router.get('/verify-email', async (req: Request, res: Response) => {
-    try {
-        const { token } = req.query;
-        if (!token) {
-            throw new Error('Verification token is required');
-        }
-        const result = await authService.verifyEmail(token as string);
-        res.json(result);
-    } catch (error: any) {
-        res.status(400).json({ error: error.message });
-    }
-});
-
 // Validate token
 router.post('/validate-token', async (req: Request, res: Response) => {
     try {
@@ -99,10 +52,14 @@ router.post('/validate-token', async (req: Request, res: Response) => {
             throw new Error('No token provided');
         }
         const result = await authService.validateToken(token);
-        res.json(result);
+        if (result.valid) {
+            res.json(result);
+        } else {
+            res.status(401).json({ error: 'Invalid token' });
+        }
     } catch (error: any) {
         res.status(401).json({ error: error.message });
     }
 });
 
-export default router; 
+export default router;

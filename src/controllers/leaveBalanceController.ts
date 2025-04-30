@@ -53,14 +53,14 @@ export class LeaveBalanceController {
         return;
       }
 
-      // Check permissions (this is simplified, you'll need proper role checks)
-      const isManager = targetEmployee.managerId === requester.id;
-      const isAdmin = true; // Replace with actual admin check
+      // // Check permissions (this is simplified, you'll need proper role checks)
+      // const isManager = targetEmployee.managerId === requester.id;
+      // const isAdmin = true; // Replace with actual admin check
       
-      if (!isManager && !isAdmin && requester.id !== targetEmployee.id) {
-        res.status(403).json({ message: 'You do not have permission to view these leave balances' });
-        return;
-      }
+      // if (!isManager && !isAdmin && requester.id !== targetEmployee.id) {
+      //   res.status(403).json({ message: 'You do not have permission to view these leave balances' });
+      //   return;
+      // }
 
       const leaveBalanceRepository = getRepository(LeaveBalance);
       const currentYear = new Date().getFullYear();
@@ -96,14 +96,6 @@ export class LeaveBalanceController {
       
       if (!requester) {
         res.status(404).json({ message: 'Requester not found' });
-        return;
-      }
-
-      // Check permissions (simplified)
-      const isAdmin = true; // Replace with actual admin check
-      
-      if (!isAdmin) {
-        res.status(403).json({ message: 'You do not have permission to adjust leave balances' });
         return;
       }
 

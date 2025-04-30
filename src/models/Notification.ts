@@ -10,7 +10,7 @@ import {
   } from 'typeorm';
   import { Employee } from './Employee';
   
-  export type NotificationType = 'LEAVE_SUBMITTED' | 'LEAVE_APPROVED' | 'LEAVE_REJECTED' | 'LEAVE_REMINDER' | 'APPROVAL_PENDING';
+  export type NotificationType = 'LEAVE_SUBMITTED' | 'LEAVE_APPROVED' | 'LEAVE_REJECTED' | 'LEAVE_REMINDER' | 'APPROVAL_PENDING'| 'LEAVE_CANCELLED';
   
   @Entity('notifications')
   export class Notification {
@@ -38,7 +38,7 @@ import {
   
     @Column({
       type: 'enum',
-      enum: ['LEAVE_SUBMITTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_REMINDER', 'APPROVAL_PENDING']
+      enum: ['LEAVE_SUBMITTED', 'LEAVE_APPROVED', 'LEAVE_REJECTED', 'LEAVE_REMINDER', 'APPROVAL_PENDING', 'LEAVE_CANCELLED']
     })
     type!: NotificationType;
   

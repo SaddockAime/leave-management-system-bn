@@ -1,6 +1,8 @@
 // src/config/database.ts
 
 import { createConnection, Connection } from 'typeorm';
+import dotenv from 'dotenv';
+dotenv.config();
 import { 
   Employee, 
   Department, 
@@ -21,7 +23,7 @@ export const initializeDatabase = async (): Promise<Connection> => {
       host: process.env.DB_HOST || 'localhost',
       port: parseInt(process.env.DB_PORT || '5432'),
       username: process.env.DB_USERNAME || 'postgres',
-      password: process.env.DB_PASSWORD || '',
+      password: process.env.DB_PASSWORD || 'Saddock_2000',
       database: process.env.DB_NAME || 'leave_management',
       entities: [
         Employee,

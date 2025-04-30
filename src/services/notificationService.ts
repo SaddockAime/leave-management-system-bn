@@ -1,104 +1,228 @@
 // filepath: src/services/notificationService.ts
 import { getRepository } from 'typeorm';
-import { Notification, Employee } from '../models';
+import { Notification, Employee, LeaveRequest } from '../models';
 import nodemailer from 'nodemailer';
+import { getSocketService } from '../config/socketio';
+import dotenv from 'dotenv';
+dotenv.config();
+
+// Define valid notification types based on your model
+type NotificationType = 'LEAVE_SUBMITTED' | 'LEAVE_APPROVED' | 'LEAVE_REJECTED' | 'LEAVE_REMINDER' | 'APPROVAL_PENDING' | 'LEAVE_CANCELLED';
 
 export class NotificationService {
   private transporter: nodemailer.Transporter;
 
   constructor() {
-    // Configure email transport (this is a simplified example)
+    // Configure email transport
     this.transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST || 'smtp.example.com',
-      port: parseInt(process.env.EMAIL_PORT || '587'),
+      host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+      port: parseInt(process.env.EMAIL_PORT || '465'),
       secure: process.env.EMAIL_SECURE === 'true',
       auth: {
-        user: process.env.EMAIL_USER || 'user',
-        pass: process.env.EMAIL_PASSWORD || 'password'
+        user: process.env.EMAIL_USER || 'aimegetz@gmail.com',
+        pass: process.env.EMAIL_PASSWORD || 'xvxh xgey wksf cmkx'
       }
     });
   }
 
-  async sendLeaveRequestNotification(leaveRequestId: string, employeeId: string, managerId: string): Promise<void> {
+  // Notify about a new leave request (to admins and managers)
+  async sendLeaveRequestCreatedNotification(leaveRequestId: string): Promise<void> {
     try {
-      // Create in-app notification
-      const notificationRepository = getRepository(Notification);
-      const employeeRepository = getRepository(Employee);
+      const leaveRequestRepository = getRepository(LeaveRequest);
+      const leaveRequest = await leaveRequestRepository.findOne({
+        where: { id: leaveRequestId },
+        relations: ['employee', 'leaveType']
+      });
       
-      const [employee, manager] = await Promise.all([
-        employeeRepository.findOne({ where: { id: employeeId } }),
-        employeeRepository.findOne({ where: { id: managerId } })
-      ]);
-
-      if (!employee || !manager) {
-        throw new Error('Employee or manager not found');
+      if (!leaveRequest || !leaveRequest.employee) {
+        throw new Error('Leave request or employee not found');
       }
-
-      // Create notification for manager
-      await notificationRepository.save({
-        recipientId: managerId,
-        title: 'New Leave Request',
-        message: `${employee.firstName} ${employee.lastName} has requested leave.`,
-        relatedEntityId: leaveRequestId,
-        entityType: 'LEAVE_REQUEST',
-        type: 'LEAVE_SUBMITTED',
-        read: false
+      
+      const employee = leaveRequest.employee;
+      
+      // Get managers (assuming position field indicates manager role)
+      const employeeRepository = getRepository(Employee);
+      const managersAndAdmins = await employeeRepository.find({
+        where: [
+          { position: 'MANAGER' },
+          { position: 'ADMIN' }
+        ]
       });
-
-      // Send email to manager
-      await this.transporter.sendMail({
-        from: process.env.EMAIL_FROM || 'leaves@company.com',
-        to: manager.email,
-        subject: 'New Leave Request',
-        text: `${employee.firstName} ${employee.lastName} has submitted a leave request that requires your approval.`,
-        html: `<p>${employee.firstName} ${employee.lastName} has submitted a leave request that requires your approval.</p>
-               <p>Please log in to the Leave Management System to review this request.</p>`
-      });
+      
+      // Create notifications in database for each manager and admin
+      const notificationRepository = getRepository(Notification);
+      
+      for (const recipient of managersAndAdmins) {
+        if (recipient.id !== employee.id) { // Don't notify the requester
+          // Create notification entity first
+          const notification = new Notification();
+          notification.recipient = recipient; // Set the whole recipient entity
+          notification.title = 'New Leave Request';
+          notification.message = `${employee.firstName} ${employee.lastName} has requested leave.`;
+          notification.relatedEntityId = leaveRequestId;
+          notification.entityType = 'LEAVE_REQUEST';
+          notification.type = 'LEAVE_SUBMITTED';
+          notification.read = false;
+          
+          await notificationRepository.save(notification);
+          
+          // Send email notification
+          if (recipient.email) {
+            try {
+              await this.transporter.sendMail({
+                from: process.env.EMAIL_FROM || 'leaves@company.com',
+                to: recipient.email,
+                subject: 'New Leave Request',
+                text: `${employee.firstName} ${employee.lastName} has submitted a leave request that requires review.`,
+                html: `<p>${employee.firstName} ${employee.lastName} has submitted a leave request that requires review.</p>
+                      <p>Please log in to the Leave Management System to review this request.</p>`
+              });
+            } catch (emailError) {
+              console.error('Failed to send email notification:', emailError);
+            }
+          }
+        }
+      }
+      
+      // Send real-time notification via Socket.IO
+      try {
+        const socketService = getSocketService();
+        await socketService.notifyAboutLeaveRequest(leaveRequestId, 'created');
+      } catch (socketError) {
+        console.error('Failed to send socket notification:', socketError);
+      }
     } catch (error) {
-      console.error('Failed to send notification:', error);
+      console.error('Failed to send leave request notification:', error);
     }
   }
 
-  async sendLeaveApprovalNotification(leaveRequestId: string, employeeId: string, approved: boolean): Promise<void> {
+  // Notify employee about leave request status update
+  async sendLeaveStatusUpdateNotification(leaveRequestId: string, approved: boolean): Promise<void> {
     try {
-      const notificationRepository = getRepository(Notification);
-      const employeeRepository = getRepository(Employee);
+      const leaveRequestRepository = getRepository(LeaveRequest);
+      const leaveRequest = await leaveRequestRepository.findOne({
+        where: { id: leaveRequestId },
+        relations: ['employee', 'leaveType']
+      });
       
-      const employee = await employeeRepository.findOne({ where: { id: employeeId } });
-
-      if (!employee) {
-        throw new Error('Employee not found');
+      if (!leaveRequest || !leaveRequest.employee) {
+        throw new Error('Leave request or employee not found');
       }
-
+      
+      const employee = leaveRequest.employee;
       const status = approved ? 'approved' : 'rejected';
-
-      // Create notification for employee
-      await notificationRepository.save({
-        recipientId: employeeId,
-        title: `Leave Request ${approved ? 'Approved' : 'Rejected'}`,
-        message: `Your leave request has been ${status}.`,
-        relatedEntityId: leaveRequestId,
-        entityType: 'LEAVE_REQUEST',
-        type: approved ? 'LEAVE_APPROVED' : 'LEAVE_REJECTED',
-        read: false
-      });
-
+      
+      // Create notification in database
+      const notificationRepository = getRepository(Notification);
+      const notificationType: NotificationType = approved ? 'LEAVE_APPROVED' : 'LEAVE_REJECTED';
+      
+      const notification = new Notification();
+      notification.recipient = employee; // Set the whole recipient entity
+      notification.title = `Leave Request ${approved ? 'Approved' : 'Rejected'}`;
+      notification.message = `Your leave request has been ${status}.`;
+      notification.relatedEntityId = leaveRequestId;
+      notification.entityType = 'LEAVE_REQUEST';
+      notification.type = notificationType;
+      notification.read = false;
+      
+      await notificationRepository.save(notification);
+      
       // Send email to employee
-      await this.transporter.sendMail({
-        from: process.env.EMAIL_FROM || 'leaves@company.com',
-        to: employee.email,
-        subject: `Leave Request ${approved ? 'Approved' : 'Rejected'}`,
-        text: `Your leave request has been ${status}.`,
-        html: `<p>Your leave request has been ${status}.</p>
-               <p>Please log in to the Leave Management System for more details.</p>`
-      });
+      if (employee.email) {
+        try {
+          await this.transporter.sendMail({
+            from: process.env.EMAIL_FROM || 'leaves@company.com',
+            to: employee.email,
+            subject: `Leave Request ${approved ? 'Approved' : 'Rejected'}`,
+            text: `Your leave request has been ${status}.`,
+            html: `<p>Your leave request has been ${status}.</p>
+                  <p>Please log in to the Leave Management System for more details.</p>`
+          });
+        } catch (emailError) {
+          console.error('Failed to send email notification:', emailError);
+        }
+      }
+      
+      // Send real-time notification via Socket.IO
+      try {
+        const socketService = getSocketService();
+        await socketService.notifyAboutLeaveRequest(leaveRequestId, approved ? 'approved' : 'rejected');
+      } catch (socketError) {
+        console.error('Failed to send socket notification:', socketError);
+      }
     } catch (error) {
-      console.error('Failed to send notification:', error);
+      console.error('Failed to send leave status update notification:', error);
     }
   }
 
-  async sendUpcomingLeaveReminder(): Promise<void> {
-    // This could be run by a scheduled job to remind employees of upcoming leave
-    // Implementation would be similar to the methods above
+  // Notify managers and admins about leave request cancellation
+  async sendLeaveCancellationNotification(leaveRequestId: string): Promise<void> {
+    try {
+      const leaveRequestRepository = getRepository(LeaveRequest);
+      const leaveRequest = await leaveRequestRepository.findOne({
+        where: { id: leaveRequestId },
+        relations: ['employee', 'leaveType']
+      });
+      
+      if (!leaveRequest || !leaveRequest.employee) {
+        throw new Error('Leave request or employee not found');
+      }
+      
+      const employee = leaveRequest.employee;
+      
+      // Get managers and admins
+      const employeeRepository = getRepository(Employee);
+      const managersAndAdmins = await employeeRepository.find({
+        where: [
+          { position: 'MANAGER' },
+          { position: 'ADMIN' }
+        ]
+      });
+      
+      // Create notifications in database for each manager and admin
+      const notificationRepository = getRepository(Notification);
+      
+      for (const recipient of managersAndAdmins) {
+        if (recipient.id !== employee.id) { // Don't notify the requester
+          // Create a new notification with a valid type
+          const notification = new Notification();
+          notification.recipient = recipient; // Set the whole recipient entity
+          notification.title = 'Leave Request Cancelled';
+          notification.message = `${employee.firstName} ${employee.lastName} has cancelled their leave request.`;
+          notification.relatedEntityId = leaveRequestId;
+          notification.entityType = 'LEAVE_REQUEST';
+          notification.type = 'LEAVE_CANCELLED';
+          notification.read = false;
+          
+          await notificationRepository.save(notification);
+          
+          // Send email notification
+          if (recipient.email) {
+            try {
+              await this.transporter.sendMail({
+                from: process.env.EMAIL_FROM || 'leaves@company.com',
+                to: recipient.email,
+                subject: 'Leave Request Cancelled',
+                text: `${employee.firstName} ${employee.lastName} has cancelled their leave request.`,
+                html: `<p>${employee.firstName} ${employee.lastName} has cancelled their leave request.</p>
+                      <p>Please log in to the Leave Management System for more details.</p>`
+              });
+            } catch (emailError) {
+              console.error('Failed to send email notification:', emailError);
+            }
+          }
+        }
+      }
+      
+      // Send real-time notification via Socket.IO
+      try {
+        const socketService = getSocketService();
+        await socketService.notifyAboutLeaveRequest(leaveRequestId, 'canceled');
+      } catch (socketError) {
+        console.error('Failed to send socket notification:', socketError);
+      }
+    } catch (error) {
+      console.error('Failed to send leave cancellation notification:', error);
+    }
   }
 }

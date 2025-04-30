@@ -24,6 +24,9 @@ import {
   
     @Column({ nullable: true })
     description!: string;
+
+    @Column({ default: true })
+    active!: boolean;
   
     @CreateDateColumn({ name: 'created_at' })
     createdAt!: Date;

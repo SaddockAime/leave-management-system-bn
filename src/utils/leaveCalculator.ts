@@ -1,42 +1,51 @@
-// src/utils/leaveCalculator.ts
-
 export class LeaveCalculator {
-    // Calculate business days between two dates (excluding weekends and holidays)
-    calculateBusinessDays(startDate: Date, endDate: Date, holidays: Date[]): number {
-      let count = 0;
-      const currentDate = new Date(startDate);
+  /**
+   * Calculate business days between two dates, excluding weekends and holidays
+   */
+  calculateBusinessDays(startDate: Date, endDate: Date, holidays: Date[] = []): number {
+    // Convert holiday strings to Date objects if needed
+    const holidayDates = holidays.map(h => h instanceof Date ? h : new Date(h));
+    
+    // Handle dates in the same day
+    if (startDate.getTime() === endDate.getTime()) {
+      const dayOfWeek = startDate.getDay();
+      // If it's weekend, return 0
+      if (dayOfWeek === 0 || dayOfWeek === 6) return 0;
+      // If it's a holiday, return 0
+      if (this.isHoliday(startDate, holidayDates)) return 0;
+      return 1;
+    }
+    
+    let count = 0;
+    const currentDate = new Date(startDate);
+    
+    // Loop through each day
+    while (currentDate <= endDate) {
+      const dayOfWeek = currentDate.getDay();
       
-      while (currentDate <= endDate) {
-        const dayOfWeek = currentDate.getDay();
-        
-        // Skip weekends
-        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-          // Check if it's not a holiday
-          const isHoliday = holidays.some(holiday => 
-            holiday.getDate() === currentDate.getDate() &&
-            holiday.getMonth() === currentDate.getMonth() &&
-            holiday.getFullYear() === currentDate.getFullYear()
-          );
-          
-          if (!isHoliday) {
-            count++;
-          }
+      // Skip weekends (0 = Sunday, 6 = Saturday)
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        // Check if it's not a holiday
+        if (!this.isHoliday(currentDate, holidayDates)) {
+          count++;
         }
-        
-        // Move to next day
-        currentDate.setDate(currentDate.getDate() + 1);
       }
       
-      return count;
+      // Move to the next day
+      currentDate.setDate(currentDate.getDate() + 1);
     }
-  
-    // Check if employee has sufficient balance
-    // async checkSufficientBalance(
-    //   employeeId: string,
-    //   leaveTypeId: string,
-    //   days: number
-    // ): Promise<boolean> {
-    //   // Get employee's current balance
-    //   // Return true if balance >= days
-    // }
+    
+    return count;
   }
+  
+  /**
+   * Check if a date is a holiday
+   */
+  private isHoliday(date: Date, holidays: Date[]): boolean {
+    return holidays.some(holiday => 
+      date.getFullYear() === holiday.getFullYear() &&
+      date.getMonth() === holiday.getMonth() &&
+      date.getDate() === holiday.getDate()
+    );
+  }
+}

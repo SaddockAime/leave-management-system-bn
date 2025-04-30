@@ -4,10 +4,12 @@
   "description": "Leave Management System",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/server.js",
-    "dev": "ts-node src/server.ts",
+    "start": "ts-node src/server.ts",
+    "dev": "nodemon --exec ts-node src/server.ts",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed:departments": "ts-node src/scripts/seed-departments.ts",
+    "seed:holidays": "ts-node src/scripts/seed-holidays.ts"
   },
   "repository": {
     "type": "git",
@@ -26,6 +28,9 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.15.3",
     "@types/nodemailer": "^6.4.17",
+    "@types/swagger-ui-express": "^4.1.8",
+    "@types/yamljs": "^0.2.34",
+    "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
@@ -46,6 +51,9 @@
     "pg": "^8.15.6",
     "prisma": "^6.6.0",
     "reflect-metadata": "^0.2.2",
-    "typeorm": "^0.3.22"
+    "socket.io": "^4.8.1",
+    "swagger-ui-express": "^5.0.1",
+    "typeorm": "^0.3.22",
+    "yamljs": "^0.3.0"
   }
 }

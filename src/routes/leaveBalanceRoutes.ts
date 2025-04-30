@@ -1,17 +1,29 @@
-// filepath: src/routes/leaveBalanceRoutes.ts
 import { Router } from 'express';
 import { body } from 'express-validator';
 import { validateRequest } from '../middleware/validateRequest';
-import { authenticateToken } from '../middleware/authMiddleware';
+import { authenticateToken, authorize } from '../middleware/authMiddleware';
 import { LeaveBalanceController } from '../controllers/leaveBalanceController';
 
 const router = Router();
 const leaveBalanceController = new LeaveBalanceController();
 
-router.get('/my-balances', authenticateToken, leaveBalanceController.getMyLeaveBalances);
-router.get('/employee/:employeeId', authenticateToken, leaveBalanceController.getEmployeeLeaveBalances);
+// All users can see their own leave balances
+router.get('/my-balances', 
+  authenticateToken, 
+  leaveBalanceController.getMyLeaveBalances
+);
+
+// Only managers and admins can view employee leave balances
+router.get('/employee/:employeeId', 
+  authenticateToken, 
+  authorize(['ROLE_MANAGER', 'ROLE_ADMIN']), 
+  leaveBalanceController.getEmployeeLeaveBalances
+);
+
+// Only admins can adjust leave balances
 router.post('/adjust',
   authenticateToken,
+  authorize(['ROLE_ADMIN']),
   [
     body('employeeId').notEmpty(),
     body('leaveTypeId').notEmpty(),
