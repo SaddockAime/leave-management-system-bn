@@ -3,6 +3,8 @@ import http from 'http';
 import jwt from 'jsonwebtoken';
 import { Employee, LeaveRequest } from '../models';
 import { getRepository } from 'typeorm';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export class SocketService {
   private io: Server;
@@ -11,7 +13,7 @@ export class SocketService {
   constructor(server: http.Server) {
     this.io = new Server(server, {
       cors: {
-        origin: process.env.CLIENT_URL || 'http://localhost:3000',
+        origin: process.env.CLIENT_URL || 'http://localhost:4000',
         methods: ['GET', 'POST'],
         credentials: true
       }

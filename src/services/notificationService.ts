@@ -70,7 +70,7 @@ export class NotificationService {
           if (recipient.email) {
             try {
               await this.transporter.sendMail({
-                from: process.env.EMAIL_FROM || 'leaves@company.com',
+                from: process.env.EMAIL_FROM || 'aimegetz@gmail.com',
                 to: recipient.email,
                 subject: 'New Leave Request',
                 text: `${employee.firstName} ${employee.lastName} has submitted a leave request that requires review.`,
@@ -131,7 +131,7 @@ export class NotificationService {
       if (employee.email) {
         try {
           await this.transporter.sendMail({
-            from: process.env.EMAIL_FROM || 'leaves@company.com',
+            from: process.env.EMAIL_FROM || 'aimegetz@gmail.com',
             to: employee.email,
             subject: `Leave Request ${approved ? 'Approved' : 'Rejected'}`,
             text: `Your leave request has been ${status}.`,
@@ -200,7 +200,7 @@ export class NotificationService {
           if (recipient.email) {
             try {
               await this.transporter.sendMail({
-                from: process.env.EMAIL_FROM || 'leaves@company.com',
+                from: process.env.EMAIL_FROM || 'aimegetz@gmail.com',
                 to: recipient.email,
                 subject: 'Leave Request Cancelled',
                 text: `${employee.firstName} ${employee.lastName} has cancelled their leave request.`,
