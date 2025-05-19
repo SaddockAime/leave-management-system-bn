@@ -14,6 +14,7 @@ import reportRoutes from './routes/reportRoutes';
 import { errorHandler } from './middleware/errorHandler';
 import employeeRoutes from './routes/employeeRoutes';
 import departmentRoutes from './routes/departmentRoutes';
+import notificationRoutes from './routes/notificationRoutes';
 
 // Initialize database
 initializeDatabase().catch(err => {
@@ -44,6 +45,7 @@ app.use('/api/leave-balances', leaveBalanceRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/departments', departmentRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Error handling
 app.use(errorHandler);
