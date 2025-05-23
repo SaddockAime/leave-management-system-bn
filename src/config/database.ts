@@ -20,11 +20,11 @@ export const initializeDatabase = async (): Promise<Connection> => {
   try {
     const connection = await createConnection({
       type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT || '5432'),
-      username: process.env.DB_USERNAME || 'postgres',
-      password: process.env.DB_PASSWORD || 'Saddock_2000',
-      database: process.env.DB_NAME || 'leave_management',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       entities: [
         Employee,
         Department,
