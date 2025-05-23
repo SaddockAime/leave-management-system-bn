@@ -20,11 +20,7 @@ export const initializeDatabase = async (): Promise<Connection> => {
   try {
     const connection = await createConnection({
       type: 'postgres',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
+      url: process.env.DATABASE_URL,
       entities: [
         Employee,
         Department,
@@ -37,6 +33,9 @@ export const initializeDatabase = async (): Promise<Connection> => {
         AuditLog,
         Setting,
       ],
+      ssl: {
+        rejectUnauthorized: false 
+      },
       synchronize: process.env.NODE_ENV !== 'production', // Be careful with this in production
       logging: process.env.NODE_ENV !== 'production',
     });
