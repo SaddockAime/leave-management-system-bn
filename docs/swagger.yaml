@@ -6,8 +6,8 @@ info:
 servers:
   - url: http://localhost:3000
     description: Local development server
-  - url: http://localhost:8081
-    description: Alternative local development server
+  - url: https://leave-management-system-bn.onrender.com
+    description: Production server
 
 components:
   securitySchemes:
