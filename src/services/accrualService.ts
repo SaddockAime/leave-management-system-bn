@@ -1,155 +1,206 @@
 // filepath: src/services/accrualService.ts
+import { LeaveService } from './leaveService';
 import { getRepository } from 'typeorm';
-import { LeaveBalance, LeaveType, Employee } from '../models';
+import { LeaveBalance, Employee, LeaveType } from '../models';
+import { LessThanOrEqual } from 'typeorm';
 
 export class AccrualService {
-  async calculateMonthlyAccrual(
-    employee: Employee,
-    leaveType: LeaveType,
-    month: number,
-    year: number
-  ): Promise<number> {
-    // PTO accrues at 1.66 days per month
-    if (leaveType.name === 'PTO') {
-      return 1.66;
-    }
-    
-    // Other leave types might have different accrual rates
-    return leaveType.accrualRate || 0;
-  }
+  private leaveService = new LeaveService();
 
-  async runMonthlyAccrual(month: number, year: number): Promise<void> {
+  /**
+   * Process monthly leave accrual for all employees
+   */
+  async processMonthlyAccrual(year: number, month: number): Promise<void> {
     try {
+      const leaveBalanceRepository = getRepository(LeaveBalance);
       const employeeRepository = getRepository(Employee);
       const leaveTypeRepository = getRepository(LeaveType);
-      const leaveBalanceRepository = getRepository(LeaveBalance);
 
-      // Get all active employees
       const employees = await employeeRepository.find();
-      
-      // Get all leave types
       const leaveTypes = await leaveTypeRepository.find({ where: { active: true } });
-      
-      // Process each employee
+
       for (const employee of employees) {
-        // Process each leave type that accrues
         for (const leaveType of leaveTypes) {
-          if (leaveType.accrualRate > 0) {
-            // Calculate accrual for this month
-            const accrual = await this.calculateMonthlyAccrual(
-              employee, 
-              leaveType, 
-              month, 
-              year
-            );
-            
-            // Find or create employee's leave balance for this type and year
-            let balance = await leaveBalanceRepository.findOne({
-              where: {
-                employeeId: employee.id,
-                leaveTypeId: leaveType.id,
-                year
-              }
+          let balance = await leaveBalanceRepository.findOne({
+            where: {
+              employeeId: employee.id,
+              leaveTypeId: leaveType.id,
+              year,
+            },
+          });
+
+          if (!balance) {
+            // Create new balance if it doesn't exist
+            balance = leaveBalanceRepository.create({
+              employeeId: employee.id,
+              leaveTypeId: leaveType.id,
+              year,
+              allocated: 0,
+              used: 0,
+              pending: 0,
+              carryOver: 0,
+              adjustment: 0,
             });
-            
-            if (!balance) {
-              balance = leaveBalanceRepository.create({
-                employeeId: employee.id,
-                leaveTypeId: leaveType.id,
-                year,
-                allocated: 0,
-                used: 0,
-                pending: 0,
-                carryOver: 0
-              });
-            }
-            
-            // Update the allocation
-            balance.allocated += accrual;
-            
-            // Save the updated balance
+          }
+
+          // Calculate monthly accrual
+          const hireDate = new Date(employee.hireDate);
+          const startMonth = hireDate.getFullYear() === year ? hireDate.getMonth() : 0;
+
+          // Only accrue if the month is after or equal to hire month
+          if (month >= startMonth) {
+            const monthlyAccrual = Number(leaveType.accrualRate);
+
+            // Add monthly accrual to allocated balance
+            balance.allocated = Number(balance.allocated) + monthlyAccrual;
+
             await leaveBalanceRepository.save(balance);
           }
         }
       }
-      
-      console.log(`Monthly accrual completed for ${month}/${year}`);
     } catch (error) {
-      console.error('Error running monthly accrual:', error);
+      console.error('Error processing monthly accrual:', error);
       throw error;
     }
   }
 
-  async processYearEndCarryover(year: number): Promise<void> {
+  /**
+   * Process year-end leave balance carry-over
+   */
+  async processYearEndCarryOver(fromYear: number, toYear: number): Promise<void> {
     try {
+      await this.leaveService.processYearEndCarryOver(fromYear, toYear);
+    } catch (error) {
+      console.error('Error processing year-end carry-over:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Initialize leave balances for a new year
+   */
+  async initializeYearBalances(year: number): Promise<void> {
+    try {
+      await this.leaveService.calculateLeaveBalances(year);
+    } catch (error) {
+      console.error('Error initializing year balances:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Process probation period completion for employees
+   */
+  async processProbationCompletion(): Promise<void> {
+    try {
+      const employeeRepository = getRepository(Employee);
       const leaveBalanceRepository = getRepository(LeaveBalance);
       const leaveTypeRepository = getRepository(LeaveType);
-      
-      // Get all leave balances for the current year
-      const balances = await leaveBalanceRepository.find({
-        where: { year },
-        relations: ['leaveType']
+
+      // Get employees who completed probation in the last month
+      const lastMonth = new Date();
+      lastMonth.setMonth(lastMonth.getMonth() - 1);
+
+      const employees = await employeeRepository.find({
+        where: {
+          status: 'ACTIVE',
+          hireDate: LessThanOrEqual(lastMonth),
+        },
       });
-      
-      const nextYear = year + 1;
-      
-      // Process each balance
-      for (const balance of balances) {
-        // Calculate remaining balance
-        const remainingBalance = 
-          balance.allocated + 
-          balance.carryOver + 
-          balance.adjustment - 
-          balance.used - 
-          balance.pending;
-        
-        if (remainingBalance <= 0) {
-          continue;
-        }
-        
-        // Get or create next year's balance
-        let nextYearBalance = await leaveBalanceRepository.findOne({
-          where: {
-            employeeId: balance.employeeId,
-            leaveTypeId: balance.leaveTypeId,
-            year: nextYear
+
+      for (const employee of employees) {
+        // Check if probation period is completed (typically 3-6 months)
+        const hireDate = new Date(employee.hireDate);
+        const monthsSinceHire =
+          (new Date().getFullYear() - hireDate.getFullYear()) * 12 +
+          (new Date().getMonth() - hireDate.getMonth());
+
+        // Assuming 6-month probation period
+        if (monthsSinceHire >= 6) {
+          // Get active leave types
+          const leaveTypes = await leaveTypeRepository.find({ where: { active: true } });
+
+          for (const leaveType of leaveTypes) {
+            // Check if leave balance exists for current year
+            let balance = await leaveBalanceRepository.findOne({
+              where: {
+                employeeId: employee.id,
+                leaveTypeId: leaveType.id,
+                year: new Date().getFullYear(),
+              },
+            });
+
+            if (!balance) {
+              // Create new balance with full annual allocation
+              const annualAllocation = Number(leaveType.accrualRate) * 12;
+
+              balance = leaveBalanceRepository.create({
+                employeeId: employee.id,
+                leaveTypeId: leaveType.id,
+                year: new Date().getFullYear(),
+                allocated: annualAllocation,
+                used: 0,
+                pending: 0,
+                carryOver: 0,
+                adjustment: 0,
+              });
+
+              await leaveBalanceRepository.save(balance);
+            }
           }
-        });
-        
-        if (!nextYearBalance) {
-          nextYearBalance = leaveBalanceRepository.create({
-            employeeId: balance.employeeId,
-            leaveTypeId: balance.leaveTypeId,
-            year: nextYear,
-            allocated: 0,
-            used: 0,
-            pending: 0,
-            carryOver: 0
-          });
         }
-        
-        // Handle carryover based on leave type
-        if (balance.leaveType.name === 'PTO') {
-          // PTO: Max 5 days carryover
-          const carryOver = Math.min(remainingBalance, 5);
-          nextYearBalance.carryOver = carryOver;
-          
-          // Set expiry date for carried over balance
-          if (carryOver > 0) {
-            nextYearBalance.expiryDate = new Date(nextYear, 0, 31); // Jan 31st of next year
-          }
-        } else {
-          // Other leave types may have different carryover rules
-          // Implement as needed
-        }
-        
-        // Save next year's balance
-        await leaveBalanceRepository.save(nextYearBalance);
       }
-      
-      console.log(`Year-end carryover process completed for ${year}`);
     } catch (error) {
-      console.error('Error processing year-end carryover:', error);
+      console.error('Error processing probation completion:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get accrual summary for reporting
+   */
+  async getAccrualSummary(year: number, month?: number): Promise<any> {
+    try {
+      const leaveBalanceRepository = getRepository(LeaveBalance);
+      const employeeRepository = getRepository(Employee);
+      const leaveTypeRepository = getRepository(LeaveType);
+
+      const queryBuilder = leaveBalanceRepository
+        .createQueryBuilder('lb')
+        .select('e.firstName', 'firstName')
+        .addSelect('e.lastName', 'lastName')
+        .addSelect('lt.name', 'leaveType')
+        .addSelect('lb.allocated', 'allocated')
+        .addSelect('lb.used', 'used')
+        .addSelect('lb.pending', 'pending')
+        .addSelect('lb.carryOver', 'carryOver')
+        .addSelect('lb.adjustment', 'adjustment')
+        .innerJoin('lb.employee', 'e')
+        .innerJoin('lb.leaveType', 'lt')
+        .where('lb.year = :year', { year });
+
+      if (month !== undefined) {
+        // Filter by month if specified
+        // This would require additional logic to track monthly accrual
+      }
+
+      const balances = await queryBuilder.getRawMany();
+
+      return {
+        year,
+        month,
+        summary: balances.map((balance) => ({
+          ...balance,
+          available:
+            Number(balance.allocated) +
+            Number(balance.carryOver) +
+            Number(balance.adjustment) -
+            Number(balance.used) -
+            Number(balance.pending),
+        })),
+      };
+    } catch (error) {
+      console.error('Error getting accrual summary:', error);
       throw error;
     }
   }

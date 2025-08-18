@@ -4,11 +4,7 @@ import { AuthService } from '../services/authService';
 const authService = new AuthService();
 
 // Role-based authentication middleware
-export const authenticateToken = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -42,24 +38,19 @@ export const authorize = (allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = (req as any).user;
-      
+
       if (!user) {
         res.status(401).json({ message: 'User not authenticated' });
         return;
       }
-      
-      const userRoles: string[] = user.roles || [];
-      
-      // Check if the user has any of the allowed roles
-      const hasRole = allowedRoles.some(role => userRoles.includes(role));
-      
-      if (!hasRole) {
-        res.status(403).json({ 
-          message: 'Access denied: You do not have the required permissions' 
+
+      if (!user || !user.role || !allowedRoles.includes(user.role)) {
+        res.status(403).json({
+          message: 'Access denied: You do not have the required permissions',
         });
         return;
       }
-      
+
       next();
     } catch (error) {
       res.status(500).json({ message: 'Internal server error' });

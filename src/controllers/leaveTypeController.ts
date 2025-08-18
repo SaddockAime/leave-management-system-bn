@@ -8,7 +8,7 @@ export class LeaveTypeController {
     try {
       const leaveTypeRepository = getRepository(LeaveType);
       const leaveTypes = await leaveTypeRepository.find({ where: { active: true } });
-      res.json(leaveTypes);
+      res.status(200).json(leaveTypes);
     } catch (error) {
       res.status(500).json({ message: 'Failed to retrieve leave types', error });
     }
@@ -19,13 +19,13 @@ export class LeaveTypeController {
       const { id } = req.params;
       const leaveTypeRepository = getRepository(LeaveType);
       const leaveType = await leaveTypeRepository.findOne({ where: { id } });
-      
+
       if (!leaveType) {
         res.status(404).json({ message: 'Leave type not found' });
         return;
       }
-      
-      res.json(leaveType);
+
+      res.status(200).json(leaveType);
     } catch (error) {
       res.status(500).json({ message: 'Failed to retrieve leave type', error });
     }
@@ -46,16 +46,16 @@ export class LeaveTypeController {
     try {
       const { id } = req.params;
       const leaveTypeRepository = getRepository(LeaveType);
-      
+
       const leaveType = await leaveTypeRepository.findOne({ where: { id } });
       if (!leaveType) {
         res.status(404).json({ message: 'Leave type not found' });
         return;
       }
-      
+
       leaveTypeRepository.merge(leaveType, req.body);
       const result = await leaveTypeRepository.save(leaveType);
-      res.json(result);
+      res.status(200).json(result);
     } catch (error) {
       res.status(500).json({ message: 'Failed to update leave type', error });
     }
@@ -65,14 +65,14 @@ export class LeaveTypeController {
     try {
       const { id } = req.params;
       const leaveTypeRepository = getRepository(LeaveType);
-      
+
       const result = await leaveTypeRepository.update(id, { active: false });
       if (result.affected === 0) {
         res.status(404).json({ message: 'Leave type not found' });
         return;
       }
-      
-      res.json({ message: 'Leave type deactivated successfully' });
+
+      res.status(200).json({ message: 'Leave type deactivated successfully' });
     } catch (error) {
       res.status(500).json({ message: 'Failed to delete leave type', error });
     }

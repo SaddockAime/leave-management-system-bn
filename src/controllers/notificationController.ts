@@ -1,219 +1,165 @@
 import { Request, Response } from 'express';
-import { getRepository } from 'typeorm';
-import { Notification, Employee } from '../models';
+import { NotificationService } from '../services/notificationService';
 
 export class NotificationController {
+  private notificationService = new NotificationService();
   /**
-   * Get all notifications for the current user
+   * Get user notifications
    */
-  static async getUserNotifications(req: Request, res: Response): Promise<void> {
+  async getUserNotifications(req: Request, res: Response): Promise<void> {
     try {
-      const user = (req as any).user;
-      
-      if (!user || !user.id) {
-        res.status(401).json({ message: 'Unauthorized' });
-        return;
-      }
-      
-      // First, find the employee record for this user
-      const employeeRepository = getRepository(Employee);
-      const employee = await employeeRepository.findOne({ where: { authUserId: user.id } });
-      
-      if (!employee) {
-        res.status(404).json({ message: 'Employee profile not found' });
-        return;
-      }
-      
-      // Get notifications for this employee
-      const notificationRepository = getRepository(Notification);
-      const notifications = await notificationRepository.find({
-        where: { recipient: { id: employee.id } },
-        relations: ['recipient'],
-        order: { createdAt: 'DESC' }
-      });
-      
-      res.status(200).json(notifications);
-    } catch (error) {
-      console.error('Error getting user notifications:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  }
-  
-  /**
-   * Get unread notification count for the current user
-   */
-  static async getUnreadCount(req: Request, res: Response): Promise<void> {
-    try {
-      const user = (req as any).user;
-      
-      if (!user || !user.id) {
-        res.status(401).json({ message: 'Unauthorized' });
-        return;
-      }
-      
-      // First, find the employee record for this user
-      const employeeRepository = getRepository(Employee);
-      const employee = await employeeRepository.findOne({ where: { authUserId: user.id } });
-      
-      if (!employee) {
-        res.status(404).json({ message: 'Employee profile not found' });
-        return;
-      }
-      
-      // Count unread notifications
-      const notificationRepository = getRepository(Notification);
-      const unreadCount = await notificationRepository.count({
-        where: { 
-          recipient: { id: employee.id },
-          read: false
-        }
-      });
-      
-      res.status(200).json({ count: unreadCount });
-    } catch (error) {
-      console.error('Error getting unread notification count:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  }
-  
-  /**
-   * Mark a notification as read
-   */
-  static async markAsRead(req: Request, res: Response): Promise<void> {
-    try {
-      const notificationId = req.params.id;
-      const user = (req as any).user;
-      
-      if (!user || !user.id) {
-        res.status(401).json({ message: 'Unauthorized' });
-        return;
-      }
-      
-      // First, find the employee record for this user
-      const employeeRepository = getRepository(Employee);
-      const employee = await employeeRepository.findOne({ where: { authUserId: user.id } });
-      
-      if (!employee) {
-        res.status(404).json({ message: 'Employee profile not found' });
-        return;
-      }
-      
-      // Find the notification
-      const notificationRepository = getRepository(Notification);
-      const notification = await notificationRepository.findOne({
-        where: { 
-          id: notificationId,
-          recipient: { id: employee.id }
+      const userId = (req as any).user.id;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 20;
+      const unreadOnly = req.query.unreadOnly === 'true';
+
+      const result = await this.notificationService.getUserNotifications(
+        userId,
+        page,
+        limit,
+        unreadOnly,
+      );
+
+      res.json({
+        success: true,
+        data: result.notifications,
+        pagination: {
+          page,
+          limit,
+          total: result.total,
+          totalPages: result.totalPages,
         },
-        relations: ['recipient']
+        message: 'Notifications retrieved successfully',
       });
-      
-      if (!notification) {
-        res.status(404).json({ message: 'Notification not found or you do not have permission to access it' });
-        return;
-      }
-      
-      // Update notification to mark as read
-      notification.read = true;
-      await notificationRepository.save(notification);
-      
-      res.status(200).json({ message: 'Notification marked as read', notification });
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
-      res.status(500).json({ message: 'Internal server error' });
+    } catch (error: any) {
+
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve notifications',
+        error: error.message,
+      });
     }
   }
-  
+
   /**
-   * Mark all notifications as read for the current user
+   * Mark notification as read
    */
-  static async markAllAsRead(req: Request, res: Response): Promise<void> {
+  async markNotificationAsRead(req: Request, res: Response): Promise<void> {
     try {
-      const user = (req as any).user;
-      
-      if (!user || !user.id) {
-        res.status(401).json({ message: 'Unauthorized' });
-        return;
-      }
-      
-      // First, find the employee record for this user
-      const employeeRepository = getRepository(Employee);
-      const employee = await employeeRepository.findOne({ where: { authUserId: user.id } });
-      
-      if (!employee) {
-        res.status(404).json({ message: 'Employee profile not found' });
-        return;
-      }
-      
-      // Get all unread notifications for this user
-      const notificationRepository = getRepository(Notification);
-      const notifications = await notificationRepository.find({
-        where: {
-          recipient: { id: employee.id },
-          read: false
-        }
+      const { id } = req.params;
+      const userId = (req as any).user.id;
+
+      await this.notificationService.markNotificationAsRead(id, userId);
+
+      res.json({
+        success: true,
+        message: 'Notification marked as read',
       });
-      
-      // Update all to read
-      for (const notification of notifications) {
-        notification.read = true;
-      }
-      
-      await notificationRepository.save(notifications);
-      
-      res.status(200).json({ 
+    } catch (error: any) {
+
+      res.status(500).json({
+        success: false,
+        message: 'Failed to mark notification as read',
+        error: error.message,
+      });
+    }
+  }
+
+  /**
+   * Mark all notifications as read
+   */
+  async markAllNotificationsAsRead(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = (req as any).user.id;
+
+      await this.notificationService.markAllNotificationsAsRead(userId);
+
+      res.json({
+        success: true,
         message: 'All notifications marked as read',
-        count: notifications.length
       });
-    } catch (error) {
-      console.error('Error marking all notifications as read:', error);
-      res.status(500).json({ message: 'Internal server error' });
+    } catch (error: any) {
+
+      res.status(500).json({
+        success: false,
+        message: 'Failed to mark all notifications as read',
+        error: error.message,
+      });
     }
   }
-  
+
   /**
-   * Delete a notification
+   * Delete notification
    */
-  static async deleteNotification(req: Request, res: Response): Promise<void> {
+  async deleteNotification(req: Request, res: Response): Promise<void> {
     try {
-      const notificationId = req.params.id;
-      const user = (req as any).user;
-      
-      if (!user || !user.id) {
-        res.status(401).json({ message: 'Unauthorized' });
-        return;
-      }
-      
-      // First, find the employee record for this user
-      const employeeRepository = getRepository(Employee);
-      const employee = await employeeRepository.findOne({ where: { authUserId: user.id } });
-      
-      if (!employee) {
-        res.status(404).json({ message: 'Employee profile not found' });
-        return;
-      }
-      
-      // Find the notification
-      const notificationRepository = getRepository(Notification);
-      const notification = await notificationRepository.findOne({
-        where: { 
-          id: notificationId,
-          recipient: { id: employee.id }
-        }
+      const { id } = req.params;
+      const userId = (req as any).user.id;
+
+      await this.notificationService.deleteNotification(id, userId);
+
+      res.json({
+        success: true,
+        message: 'Notification deleted successfully',
       });
-      
-      if (!notification) {
-        res.status(404).json({ message: 'Notification not found or you do not have permission to delete it' });
-        return;
-      }
-      
-      // Delete the notification
-      await notificationRepository.remove(notification);
-      
-      res.status(200).json({ message: 'Notification deleted successfully' });
-    } catch (error) {
-      console.error('Error deleting notification:', error);
-      res.status(500).json({ message: 'Internal server error' });
+    } catch (error: any) {
+
+      res.status(500).json({
+        success: false,
+        message: 'Failed to delete notification',
+        error: error.message,
+      });
+    }
+  }
+
+  /**
+   * Get notification preferences
+   */
+  async getNotificationPreferences(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = (req as any).user.id;
+      const preferences = await this.notificationService.getNotificationPreferences(userId);
+
+      res.json({
+        success: true,
+        data: preferences,
+        message: 'Notification preferences retrieved successfully',
+      });
+    } catch (error: any) {
+
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve notification preferences',
+        error: error.message,
+      });
+    }
+  }
+
+  /**
+   * Update notification preferences
+   */
+  async updateNotificationPreferences(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = (req as any).user.id;
+      const preferences = req.body;
+
+      const updatedPreferences = await this.notificationService.updateNotificationPreferences(
+        userId,
+        preferences,
+      );
+
+      res.json({
+        success: true,
+        data: updatedPreferences,
+        message: 'Notification preferences updated successfully',
+      });
+    } catch (error: any) {
+
+      res.status(500).json({
+        success: false,
+        message: 'Failed to update notification preferences',
+        error: error.message,
+      });
     }
   }
 }

@@ -5,86 +5,254 @@ import { LeaveRequest, Employee, LeaveType, LeaveBalance, Holiday } from '../mod
 import { LeaveCalculator } from '../utils/leaveCalculator';
 import { LeaveBalanceInitializer } from '../utils/leaveBalanceInitializer';
 import { NotificationService } from '../services/notificationService';
+import { ManagerService } from '../services/managerService';
+import { LeaveService } from '../services/leaveService';
+import { AuditService } from '../services/auditService';
 
 export class LeaveRequestController {
   private leaveCalculator = new LeaveCalculator();
+  private leaveService = new LeaveService();
+  private managerService = new ManagerService();
+  private auditService = new AuditService();
+  private notificationService = new NotificationService();
 
   async getMyLeaves(req: Request, res: Response): Promise<void> {
     try {
       const userId = (req as any).user.id;
-      const employeeRepository = getRepository(Employee);
-      const employee = await employeeRepository.findOne({ where: { authUserId: userId } });
       
+      // Get query parameters for filtering and pagination
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 20;
+      const status = req.query.status as string;
+      const leaveTypeId = req.query.leaveTypeId as string;
+      const year = req.query.year ? parseInt(req.query.year as string) : null;
+      
+      const employeeRepository = getRepository(Employee);
+      const employee = await employeeRepository.findOne({
+        where: { user: { id: userId } },
+        relations: ['user'],
+      });
+
       if (!employee) {
         res.status(404).json({ message: 'Employee not found' });
         return;
       }
 
       const leaveRequestRepository = getRepository(LeaveRequest);
-      const leaves = await leaveRequestRepository.find({
-        where: { employeeId: employee.id },
-        relations: ['leaveType'],
-        order: { createdAt: 'DESC' }
+      let query = leaveRequestRepository
+        .createQueryBuilder('lr')
+        .leftJoinAndSelect('lr.leaveType', 'lt')
+        .leftJoinAndSelect('lr.employee', 'emp')
+        .leftJoinAndSelect('emp.department', 'dept')
+        .leftJoinAndSelect('emp.user', 'user')
+        .where('lr.employeeId = :employeeId', { employeeId: employee.id });
+
+      // Apply filters
+      if (status) {
+        query = query.andWhere('lr.status = :status', { status });
+      }
+
+      if (leaveTypeId) {
+        query = query.andWhere('lr.leaveTypeId = :leaveTypeId', { leaveTypeId });
+      }
+
+      if (year) {
+        const startOfYear = new Date(year, 0, 1);
+        const endOfYear = new Date(year, 11, 31);
+        query = query.andWhere('lr.startDate >= :startOfYear', { startOfYear })
+                    .andWhere('lr.startDate <= :endOfYear', { endOfYear });
+      }
+
+      // Get total count for pagination
+      const total = await query.getCount();
+
+      // Apply pagination
+      const offset = (page - 1) * limit;
+      query = query.skip(offset).take(limit);
+
+      // Order by creation date
+      query = query.orderBy('lr.createdAt', 'DESC');
+
+      const leaves = await query.getMany();
+      const totalPages = Math.ceil(total / limit);
+
+      res.status(200).json({
+        success: true,
+        data: leaves,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+        },
       });
-      
-      res.json(leaves);
     } catch (error) {
       res.status(500).json({ message: 'Failed to retrieve leave requests', error });
     }
   }
 
   // Add to the LeaveRequestController
-async getAllLeaves(req: Request, res: Response): Promise<void> {
-  try {
-    const leaveRequestRepository = getRepository(LeaveRequest);
-    const leaves = await leaveRequestRepository.find({
-      relations: ['leaveType', 'employee', 'employee.department'],
-      order: { startDate: 'DESC' }
-    });
-    
-    res.json(leaves);
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to retrieve leave requests', error });
-  }
-}
+  async getAllLeaves(req: Request, res: Response): Promise<void> {
+    try {
+      const leaveRequestRepository = getRepository(LeaveRequest);
 
-async getLeavesByDepartment(req: Request, res: Response): Promise<void> {
-  try {
-    const { departmentId } = req.params;
-    
-    const leaveRequestRepository = getRepository(LeaveRequest);
-    const leaves = await leaveRequestRepository
-      .createQueryBuilder('lr')
-      .innerJoin('lr.employee', 'e')
-      .where('e.departmentId = :deptId', { deptId: departmentId })
-      .leftJoinAndSelect('lr.leaveType', 'lt')
-      .leftJoinAndSelect('lr.employee', 'emp')
-      .orderBy('lr.startDate', 'ASC')
-      .getMany();
-    
-    res.json(leaves);
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to retrieve department leave requests', error });
+      // Get query parameters for filtering and pagination
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 20;
+      const status = req.query.status as string;
+      const leaveTypeId = req.query.leaveTypeId as string;
+      const departmentId = req.query.departmentId as string;
+      const startDate = req.query.startDate as string;
+      const endDate = req.query.endDate as string;
+      const employeeId = req.query.employeeId as string;
+
+      let query = leaveRequestRepository
+        .createQueryBuilder('lr')
+        .leftJoinAndSelect('lr.leaveType', 'lt')
+        .leftJoinAndSelect('lr.employee', 'emp')
+        .leftJoinAndSelect('emp.department', 'dept')
+        .leftJoinAndSelect('emp.user', 'user');
+
+      // Apply filters
+      if (status) {
+        query = query.andWhere('lr.status = :status', { status });
+      }
+
+      if (leaveTypeId) {
+        query = query.andWhere('lr.leaveTypeId = :leaveTypeId', { leaveTypeId });
+      }
+
+      if (departmentId) {
+        query = query.andWhere('emp.departmentId = :departmentId', { departmentId });
+      }
+
+      if (employeeId) {
+        query = query.andWhere('lr.employeeId = :employeeId', { employeeId });
+      }
+
+      if (startDate) {
+        query = query.andWhere('lr.startDate >= :startDate', { startDate: new Date(startDate) });
+      }
+
+      if (endDate) {
+        query = query.andWhere('lr.endDate <= :endDate', { endDate: new Date(endDate) });
+      }
+
+      // Get total count for pagination
+      const total = await query.getCount();
+
+      // Apply pagination
+      const offset = (page - 1) * limit;
+      query = query.skip(offset).take(limit);
+
+      // Order by start date
+      query = query.orderBy('lr.startDate', 'DESC');
+
+      const leaves = await query.getMany();
+      const totalPages = Math.ceil(total / limit);
+
+      res.status(200).json({
+        success: true,
+        data: leaves,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+        },
+      });
+    } catch (error) {
+
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve leave requests',
+        error: error.message,
+      });
+    }
   }
-}
+
+  async getLeavesByDepartment(req: Request, res: Response): Promise<void> {
+    try {
+      const { departmentId } = req.params;
+      const userId = (req as any).user.id;
+
+      // Check if user has access to this department
+      const employeeRepository = getRepository(Employee);
+      const currentEmployee = await employeeRepository.findOne({
+        where: { user: { id: userId } },
+        relations: ['user'],
+      });
+
+      if (!currentEmployee) {
+        res.status(404).json({ message: 'Employee not found' });
+        return;
+      }
+
+      // Check permissions: must be admin, HR, or manager of the department
+      const hasAccess =
+        currentEmployee.position === 'ADMIN' ||
+        currentEmployee.position === 'HR_MANAGER' ||
+        (currentEmployee.position === 'MANAGER' && currentEmployee.departmentId === departmentId);
+
+      if (!hasAccess) {
+        res.status(403).json({ message: 'Access denied: insufficient permissions' });
+        return;
+      }
+
+      const leaveRequestRepository = getRepository(LeaveRequest);
+      const leaves = await leaveRequestRepository
+        .createQueryBuilder('lr')
+        .innerJoin('lr.employee', 'e')
+        .where('e.departmentId = :deptId', { deptId: departmentId })
+        .leftJoinAndSelect('lr.leaveType', 'lt')
+        .leftJoinAndSelect('lr.employee', 'emp')
+        .orderBy('lr.startDate', 'ASC')
+        .getMany();
+
+      res.status(200).json(leaves);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to retrieve department leave requests', error });
+    }
+  }
 
   async getTeamLeaves(req: Request, res: Response): Promise<void> {
     try {
       const userId = (req as any).user.id;
       const employeeRepository = getRepository(Employee);
-      const employee = await employeeRepository.findOne({ where: { authUserId: userId } });
+      const employee = await employeeRepository.findOne({
+        where: { user: { id: userId } },
+        relations: ['user'],
+      });
 
       if (!employee) {
         res.status(404).json({ message: 'Employee not found' });
         return;
       }
 
-      // If manager, get team's leaves
+      // Check if user is a manager
+      if (
+        employee.position !== 'MANAGER' &&
+        employee.position !== 'DEPARTMENT_MANAGER' &&
+        employee.position !== 'ADMIN'
+      ) {
+        res.status(403).json({ message: 'Access denied: only managers can view team leaves' });
+        return;
+      }
+
+      // Get team members using manager service
+      const teamMembers = await this.managerService.getTeamMembers(employee.id, true);
+      const teamMemberIds = teamMembers.map((member) => member.id);
+
+      if (teamMemberIds.length === 0) {
+        res.status(200).json([]);
+        return;
+      }
+
+      // Get team's leaves
       const leaveRequestRepository = getRepository(LeaveRequest);
       const leaves = await leaveRequestRepository
         .createQueryBuilder('lr')
-        .innerJoin('lr.employee', 'e')
-        .where('e.departmentId = :deptId', { deptId: employee.departmentId })
+        .where('lr.employeeId IN (:...teamIds)', { teamIds: teamMemberIds })
         .andWhere('lr.status = :status', { status: 'APPROVED' })
         .andWhere('lr.endDate >= :today', { today: new Date() })
         .leftJoinAndSelect('lr.leaveType', 'lt')
@@ -92,7 +260,7 @@ async getLeavesByDepartment(req: Request, res: Response): Promise<void> {
         .orderBy('lr.startDate', 'ASC')
         .getMany();
 
-      res.json(leaves);
+      res.status(200).json(leaves);
     } catch (error) {
       res.status(500).json({ message: 'Failed to retrieve team leave requests', error });
     }
@@ -101,10 +269,12 @@ async getLeavesByDepartment(req: Request, res: Response): Promise<void> {
   async getLeaveRequestById(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
+      const userId = (req as any).user.id;
+
       const leaveRequestRepository = getRepository(LeaveRequest);
-      const leaveRequest = await leaveRequestRepository.findOne({ 
+      const leaveRequest = await leaveRequestRepository.findOne({
         where: { id },
-        relations: ['leaveType', 'employee', 'documents']
+        relations: ['leaveType', 'employee', 'documents'],
       });
 
       if (!leaveRequest) {
@@ -112,7 +282,31 @@ async getLeavesByDepartment(req: Request, res: Response): Promise<void> {
         return;
       }
 
-      res.json(leaveRequest);
+      // Check if user has access to this leave request
+      const employeeRepository = getRepository(Employee);
+      const currentEmployee = await employeeRepository.findOne({
+        where: { user: { id: userId } },
+        relations: ['user'],
+      });
+
+      if (!currentEmployee) {
+        res.status(404).json({ message: 'Employee not found' });
+        return;
+      }
+
+      // Allow access if: owner, manager, admin, or HR
+      const hasAccess =
+        leaveRequest.employeeId === currentEmployee.id ||
+        currentEmployee.position === 'ADMIN' ||
+        currentEmployee.position === 'HR_MANAGER' ||
+        (await this.managerService.canManage(currentEmployee.id, leaveRequest.employeeId));
+
+      if (!hasAccess) {
+        res.status(403).json({ message: 'Access denied: insufficient permissions' });
+        return;
+      }
+
+      res.status(200).json(leaveRequest);
     } catch (error) {
       res.status(500).json({ message: 'Failed to retrieve leave request', error });
     }
@@ -122,15 +316,18 @@ async getLeavesByDepartment(req: Request, res: Response): Promise<void> {
     try {
       const userId = (req as any).user.id;
       const employeeRepository = getRepository(Employee);
-      const employee = await employeeRepository.findOne({ where: { authUserId: userId } });
-  
+      const employee = await employeeRepository.findOne({
+        where: { user: { id: userId } },
+        relations: ['user'],
+      });
+
       if (!employee) {
         res.status(404).json({ message: 'Employee not found' });
         return;
       }
-  
+
       const { leaveTypeId, startDate, endDate, reason } = req.body;
-      
+
       // Validate leave type exists
       const leaveTypeRepository = getRepository(LeaveType);
       const leaveType = await leaveTypeRepository.findOne({ where: { id: leaveTypeId } });
@@ -138,44 +335,65 @@ async getLeavesByDepartment(req: Request, res: Response): Promise<void> {
         res.status(404).json({ message: 'Leave type not found' });
         return;
       }
-      
+
+      // Use the leave service for comprehensive validation
+      const validation = await this.leaveService.validateLeaveRequest(
+        employee.id,
+        leaveTypeId,
+        new Date(startDate),
+        new Date(endDate),
+      );
+
+      if (!validation.valid) {
+        res.status(400).json({
+          message: 'Leave request validation failed',
+          errors: validation.errors,
+        });
+        return;
+      }
+
       // Calculate business days
       const holidayRepository = getRepository(Holiday);
       const holidays = await holidayRepository.find();
-      const holidayDates = holidays.map(h => h.date);
-      
-      // Create a new instance of LeaveCalculator here to avoid 'this' context issues
-      const leaveCalculator = new LeaveCalculator();
-      const days = leaveCalculator.calculateBusinessDays(
-        new Date(startDate), 
+      const holidayDates = holidays.map((h) => h.date);
+
+      const days = this.leaveCalculator.calculateBusinessDays(
+        new Date(startDate),
         new Date(endDate),
-        holidayDates
+        holidayDates,
       );
-  
+
       // Ensure a minimal number of days
       if (days <= 0) {
         res.status(400).json({ message: 'Leave request must include at least one business day' });
         return;
       }
-  
+
       // Get or initialize leave balance
       const currentYear = new Date().getFullYear();
       const balance = await LeaveBalanceInitializer.ensureLeaveBalance(
-        employee.id, 
-        leaveTypeId, 
-        currentYear
+        employee.id,
+        leaveTypeId,
+        currentYear,
       );
-  
+
       // Check if employee has enough balance
-      if ((balance.allocated - balance.used - balance.pending) < days) {
-        res.status(400).json({ 
+      const availableBalance =
+        Number(balance.allocated) +
+        Number(balance.carryOver) +
+        Number(balance.adjustment || 0) -
+        Number(balance.used) -
+        Number(balance.pending);
+
+      if (availableBalance < days) {
+        res.status(400).json({
           message: 'Insufficient leave balance',
-          available: balance.allocated - balance.used - balance.pending,
-          requested: days
+          available: availableBalance,
+          requested: days,
         });
         return;
       }
-  
+
       // Create leave request
       const leaveRequestRepository = getRepository(LeaveRequest);
       const newRequest = leaveRequestRepository.create({
@@ -185,22 +403,21 @@ async getLeavesByDepartment(req: Request, res: Response): Promise<void> {
         endDate: new Date(endDate),
         days,
         reason,
-        status: 'PENDING'
+        status: 'PENDING',
       });
-  
+
       const savedRequest = await leaveRequestRepository.save(newRequest);
-  
+
       // Update pending balance
-      balance.pending += days;
+      balance.pending = Number(balance.pending) + days;
       await getRepository(LeaveBalance).save(balance);
 
-      // In createLeaveRequest method - after successfully creating and saving the request:
-const notificationService = new NotificationService();
-await notificationService.sendLeaveRequestCreatedNotification(savedRequest.id);
-  
+      // Send notification
+      await this.notificationService.sendLeaveRequestCreatedNotification(savedRequest.id);
+
       res.status(201).json(savedRequest);
     } catch (error: any) {
-      console.error('Error creating leave request:', error);
+
       res.status(500).json({ message: 'Failed to create leave request', error: error.message });
     }
   }
@@ -210,69 +427,87 @@ await notificationService.sendLeaveRequestCreatedNotification(savedRequest.id);
       const { id } = req.params;
       const { comments } = req.body;
       const userId = (req as any).user.id;
-      
+
       const employeeRepository = getRepository(Employee);
-      const approver = await employeeRepository.findOne({ where: { authUserId: userId } });
-      
+      const approver = await employeeRepository.findOne({
+        where: { user: { id: userId } },
+        relations: ['user'],
+      });
+
       if (!approver) {
         res.status(404).json({ message: 'Approver not found' });
         return;
       }
-  
+
       const leaveRequestRepository = getRepository(LeaveRequest);
-      const leaveRequest = await leaveRequestRepository.findOne({ 
+      const leaveRequest = await leaveRequestRepository.findOne({
         where: { id },
-        relations: ['employee']
+        relations: ['employee'],
       });
-  
+
       if (!leaveRequest) {
         res.status(404).json({ message: 'Leave request not found' });
         return;
       }
-  
+
       if (leaveRequest.status !== 'PENDING') {
         res.status(400).json({ message: `Leave request is already ${leaveRequest.status}` });
         return;
       }
-  
+
+      // Check if approver has permission to approve this request
+      const canApprove =
+        approver.position === 'ADMIN' ||
+        approver.position === 'HR_MANAGER' ||
+        (await this.managerService.canManage(approver.id, leaveRequest.employeeId));
+
+      if (!canApprove) {
+        res
+          .status(403)
+          .json({ message: 'Access denied: insufficient permissions to approve this request' });
+        return;
+      }
+
       // Update the leave request
       leaveRequest.status = 'APPROVED';
       leaveRequest.approvedById = approver.id;
       leaveRequest.approvalDate = new Date();
       leaveRequest.comments = comments;
-      
+
       await leaveRequestRepository.save(leaveRequest);
-  
-      // Update leave balances
+
+      // Update leave balances with proper numeric handling
       const leaveBalanceRepository = getRepository(LeaveBalance);
       const currentYear = new Date().getFullYear();
       const balance = await leaveBalanceRepository.findOne({
         where: {
           employeeId: leaveRequest.employeeId,
           leaveTypeId: leaveRequest.leaveTypeId,
-          year: currentYear
-        }
+          year: currentYear,
+        },
       });
-  
+
       if (balance) {
         // Convert to numbers and then back to ensure proper numeric format
         const used = Number(balance.used) + Number(leaveRequest.days);
         const pending = Number(balance.pending) - Number(leaveRequest.days);
-        
+
         // Update with properly formatted numeric values
         balance.used = used;
         balance.pending = pending;
-        
+
         await leaveBalanceRepository.save(balance);
       }
 
-      // In approveLeaveRequest method - after successfully approving the request:
-const notificationService = new NotificationService();
-await notificationService.sendLeaveStatusUpdateNotification(leaveRequest.id, true);
-  
-      res.json({ message: 'Leave request approved successfully' });
+      // Send notification
+      await this.notificationService.sendLeaveStatusUpdateNotification(leaveRequest.id, true);
+
+      // Log audit event for leave approval
+      await this.auditService.logLeaveApproval(leaveRequest.id, approver.id, 'APPROVED', comments);
+
+      res.status(200).json({ message: 'Leave request approved successfully' });
     } catch (error) {
-      console.error('Error approving leave request:', error);
+
       res.status(500).json({ message: 'Failed to approve leave request', error });
     }
   }
@@ -282,127 +517,163 @@ await notificationService.sendLeaveStatusUpdateNotification(leaveRequest.id, tru
       const { id } = req.params;
       const { comments } = req.body;
       const userId = (req as any).user.id;
-      
+
       const employeeRepository = getRepository(Employee);
-      const approver = await employeeRepository.findOne({ where: { authUserId: userId } });
-      
+      const approver = await employeeRepository.findOne({
+        where: { user: { id: userId } },
+        relations: ['user'],
+      });
+
       if (!approver) {
         res.status(404).json({ message: 'Approver not found' });
         return;
       }
-  
+
       const leaveRequestRepository = getRepository(LeaveRequest);
-      const leaveRequest = await leaveRequestRepository.findOne({ 
-        where: { id }
+      const leaveRequest = await leaveRequestRepository.findOne({
+        where: { id },
       });
-  
+
       if (!leaveRequest) {
         res.status(404).json({ message: 'Leave request not found' });
         return;
       }
-  
+
       if (leaveRequest.status !== 'PENDING') {
         res.status(400).json({ message: `Leave request is already ${leaveRequest.status}` });
         return;
       }
-  
+
+      // Check if approver has permission to reject this request
+      const canReject =
+        approver.position === 'ADMIN' ||
+        approver.position === 'HR_MANAGER' ||
+        (await this.managerService.canManage(approver.id, leaveRequest.employeeId));
+
+      if (!canReject) {
+        res
+          .status(403)
+          .json({ message: 'Access denied: insufficient permissions to reject this request' });
+        return;
+      }
+
       // Update the leave request
       leaveRequest.status = 'REJECTED';
       leaveRequest.approvedById = approver.id;
       leaveRequest.approvalDate = new Date();
       leaveRequest.comments = comments;
-      
+
       await leaveRequestRepository.save(leaveRequest);
-  
-      // Update pending balance
+
+      // Update pending balance with proper numeric handling
       const leaveBalanceRepository = getRepository(LeaveBalance);
       const currentYear = new Date().getFullYear();
       const balance = await leaveBalanceRepository.findOne({
         where: {
           employeeId: leaveRequest.employeeId,
           leaveTypeId: leaveRequest.leaveTypeId,
-          year: currentYear
-        }
+          year: currentYear,
+        },
       });
-  
+
       if (balance) {
         // Convert to number and then back to ensure proper numeric format
         const pending = Number(balance.pending) - Number(leaveRequest.days);
         balance.pending = pending;
-        
+
         await leaveBalanceRepository.save(balance);
       }
 
-      // In rejectLeaveRequest method - after successfully rejecting the request:
-const notificationService = new NotificationService();
-await notificationService.sendLeaveStatusUpdateNotification(leaveRequest.id, false);
-  
-      res.json({ message: 'Leave request rejected successfully' });
+      // Send notification
+      await this.notificationService.sendLeaveStatusUpdateNotification(leaveRequest.id, false);
+
+      // Log audit event for leave rejection
+      await this.auditService.logLeaveApproval(leaveRequest.id, approver.id, 'REJECTED', comments);
+
+      res.status(200).json({ message: 'Leave request rejected successfully' });
     } catch (error) {
-      console.error('Error rejecting leave request:', error);
+
       res.status(500).json({ message: 'Failed to reject leave request', error });
     }
   }
-  
+
   async cancelLeaveRequest(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
       const userId = (req as any).user.id;
-      
+
       const employeeRepository = getRepository(Employee);
-      const employee = await employeeRepository.findOne({ where: { authUserId: userId } });
-      
+      const employee = await employeeRepository.findOne({
+        where: { user: { id: userId } },
+        relations: ['user'],
+      });
+
       if (!employee) {
         res.status(404).json({ message: 'Employee not found' });
         return;
       }
-  
+
       const leaveRequestRepository = getRepository(LeaveRequest);
-      const leaveRequest = await leaveRequestRepository.findOne({ 
-        where: { id, employeeId: employee.id }
+      const leaveRequest = await leaveRequestRepository.findOne({
+        where: { id, employeeId: employee.id },
       });
-  
+
       if (!leaveRequest) {
-        res.status(404).json({ message: 'Leave request not found or you do not have permission to cancel it' });
+        res
+          .status(404)
+          .json({ message: 'Leave request not found or you do not have permission to cancel it' });
         return;
       }
-  
+
       if (leaveRequest.status !== 'PENDING') {
         res.status(400).json({ message: `Cannot cancel a ${leaveRequest.status} leave request` });
         return;
       }
-  
+
       // Update the leave request
       leaveRequest.status = 'CANCELLED';
       await leaveRequestRepository.save(leaveRequest);
-  
-      // Update pending balance
+
+      // Update pending balance with proper numeric handling
       const leaveBalanceRepository = getRepository(LeaveBalance);
       const currentYear = new Date().getFullYear();
       const balance = await leaveBalanceRepository.findOne({
         where: {
           employeeId: leaveRequest.employeeId,
           leaveTypeId: leaveRequest.leaveTypeId,
-          year: currentYear
-        }
+          year: currentYear,
+        },
       });
-  
+
       if (balance) {
         // Convert to number and then back to ensure proper numeric format
         const pending = Number(balance.pending) - Number(leaveRequest.days);
         balance.pending = pending;
-        
+
         await leaveBalanceRepository.save(balance);
       }
 
-      // In cancelLeaveRequest method - after successfully cancelling the request:
-const notificationService = new NotificationService();
-await notificationService.sendLeaveCancellationNotification(leaveRequest.id);
-  
-      res.json({ message: 'Leave request cancelled successfully' });
+      // Send notification
+      await this.notificationService.sendLeaveCancellationNotification(leaveRequest.id);
+
+      res.status(200).json({ message: 'Leave request cancelled successfully' });
     } catch (error) {
-      console.error('Error cancelling leave request:', error);
+
       res.status(500).json({ message: 'Failed to cancel leave request', error });
+    }
+  }
+
+  /**
+   * Update leave request
+   */
+  async updateLeaveRequest(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+      // TODO: Implement update leave request functionality
+      res.status(200).json({ message: 'Leave request updated successfully' });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
   }
 }

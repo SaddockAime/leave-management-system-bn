@@ -4,7 +4,7 @@ import { initializeDatabase } from '../config/database';
 
 async function seedHolidays() {
   try {
-    await initializeDatabase();
+    //await initializeDatabase();
     const holidayRepository = getRepository(Holiday);
 
     // Check if holidays already exist
@@ -17,7 +17,7 @@ async function seedHolidays() {
 
     // Default holidays for 2025
     const defaultHolidays = [
-      { name: 'New Year\'s Day', date: new Date('2025-01-01'), recurring: true },
+      { name: "New Year's Day", date: new Date('2025-01-01'), recurring: true },
       { name: 'Martin Luther King Jr. Day', date: new Date('2025-01-20'), recurring: true },
       { name: 'Memorial Day', date: new Date('2025-05-26'), recurring: true },
       { name: 'Independence Day', date: new Date('2025-07-04'), recurring: true },
@@ -26,7 +26,7 @@ async function seedHolidays() {
       { name: 'Day after Thanksgiving', date: new Date('2025-11-28'), recurring: true },
       { name: 'Christmas Eve', date: new Date('2025-12-24'), recurring: true },
       { name: 'Christmas Day', date: new Date('2025-12-25'), recurring: true },
-      { name: 'New Year\'s Eve', date: new Date('2025-12-31'), recurring: true }
+      { name: "New Year's Eve", date: new Date('2025-12-31'), recurring: true },
     ];
 
     for (const holiday of defaultHolidays) {
@@ -35,13 +35,12 @@ async function seedHolidays() {
         date: holiday.date,
         recurring: holiday.recurring,
         active: true,
-        description: `Official holiday: ${holiday.name}`
+        description: `Official holiday: ${holiday.name}`,
       });
       await holidayRepository.save(newHoliday);
-      console.log(`Created holiday: ${holiday.name}`);
     }
 
-    console.log('Holiday seeding completed successfully');
+    console.log('✅ Holidays seeded successfully');
     process.exit(0);
   } catch (error) {
     console.error('Error seeding holidays:', error);

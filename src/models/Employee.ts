@@ -1,38 +1,37 @@
 // src/models/Employee.ts
 
-import { 
-  Entity, 
-  Column, 
-  PrimaryGeneratedColumn, 
-  ManyToOne, 
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
   OneToMany,
-  JoinColumn, 
-  CreateDateColumn, 
-  UpdateDateColumn
+  OneToOne,
+  JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Department } from './Department';
 import { LeaveRequest } from './LeaveRequest';
 import { LeaveBalance } from './LeaveBalance';
+import { Salary } from './Salary';
+import { Bonus } from './Bonus';
+import { EmployeeBenefit } from './EmployeeBenefit';
+import { Onboarding } from './Onboarding';
+import { User } from './User';
 
 @Entity('employees')
 export class Employee {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ name: 'auth_user_id', unique: true })
-  authUserId!: string; // This will store the ID from your Java auth service
+  // One-to-One relationship with User (employees get their data from users)
+  @OneToOne(() => User, { eager: true })
+  @JoinColumn({ name: 'user_id' })
+  user!: User;
 
-  @Column()
-  firstName!: string;
-
-  @Column()
-  lastName!: string;
-
-  @Column()
-  email!: string;
-
-  @Column({ nullable: true })
-  profilePicture!: string;
+  @Column({ default: 'ACTIVE' })
+  status!: string;
 
   @Column()
   position!: string;
@@ -40,28 +39,43 @@ export class Employee {
   @Column({ name: 'hire_date' })
   hireDate!: Date;
 
-  @Column({ nullable: true })
-  managerId!: string;
+  // Manager relationship - need both column and relationship
+  @Column({ name: 'manager_id', nullable: true })
+  managerId!: string | null;
 
-  @ManyToOne(() => Employee, employee => employee.directReports)
+  @ManyToOne(() => Employee, (employee) => employee.directReports)
   @JoinColumn({ name: 'manager_id' })
   manager!: Employee;
 
-  @OneToMany(() => Employee, employee => employee.manager)
+  @OneToMany(() => Employee, (employee) => employee.manager)
   directReports!: Employee[];
 
-  @Column()
+  // Department relationship - need both column and relationship
+  @Column({ name: 'department_id' })
   departmentId!: string;
 
-  @ManyToOne(() => Department, department => department.employees)
+  @ManyToOne(() => Department, (department) => department.employees)
   @JoinColumn({ name: 'department_id' })
   department!: Department;
 
-  @OneToMany(() => LeaveRequest, leaveRequest => leaveRequest.employee)
+  // One-to-Many relationships
+  @OneToMany(() => LeaveRequest, (leaveRequest) => leaveRequest.employee)
   leaveRequests!: LeaveRequest[];
 
-  @OneToMany(() => LeaveBalance, leaveBalance => leaveBalance.employee)
+  @OneToMany(() => LeaveBalance, (leaveBalance) => leaveBalance.employee)
   leaveBalances!: LeaveBalance[];
+
+  @OneToMany(() => Salary, (salary) => salary.employee)
+  salaries!: Salary[];
+
+  @OneToMany(() => Bonus, (bonus) => bonus.employee)
+  bonuses!: Bonus[];
+
+  @OneToMany(() => EmployeeBenefit, (employeeBenefit) => employeeBenefit.employee)
+  employeeBenefits!: EmployeeBenefit[];
+
+  @OneToMany(() => Onboarding, (onboarding) => onboarding.employee)
+  onboardings!: Onboarding[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;

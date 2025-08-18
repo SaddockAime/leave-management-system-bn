@@ -1,55 +1,53 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
-import { validateRequest } from '../middleware/validateRequest';
-import { authenticateToken, authorize } from '../middleware/authMiddleware';
 import { DepartmentController } from '../controllers/departmentController';
+import { authenticateToken, authorize } from '../middleware/authMiddleware';
+import { validateRequest } from '../middleware/joiValidation';
+import {
+  createDepartmentValidation,
+  updateDepartmentValidation,
+  getDepartmentByIdValidation,
+  deleteDepartmentValidation,
+} from '../validations/departmentValidations';
 
 const router = Router();
 const departmentController = new DepartmentController();
 
-// Get all departments - accessible by all authenticated users
-router.get('/', 
-  authenticateToken, 
-  departmentController.getAllDepartments
-);
+// Get all departments
+router.get('/', authenticateToken, departmentController.getAllDepartments);
 
 // Get department by ID
-router.get('/:id', 
-  authenticateToken, 
-  departmentController.getDepartmentById
+router.get(
+  '/:id',
+  authenticateToken,
+  validateRequest(getDepartmentByIdValidation),
+  departmentController.getDepartmentById,
 );
 
-// Create department - admin only
-router.post('/',
+// Create department (HR/Admin only)
+router.post(
+  '/',
   authenticateToken,
-  authorize(['ROLE_ADMIN']),
-  [
-    body('name').notEmpty().withMessage('Department name is required'),
-    body('description').optional(),
-    body('managerId').optional()
-  ],
-  validateRequest,
-  departmentController.createDepartment
+  authorize(['HR_MANAGER', 'ADMIN']),
+  validateRequest(createDepartmentValidation),
+  departmentController.createDepartment,
 );
 
-// Update department - admin only
-router.put('/:id',
+// Update department (HR/Admin only)
+router.put(
+  '/:id',
   authenticateToken,
-  authorize(['ROLE_ADMIN']),
-  [
-    body('name').optional().notEmpty().withMessage('Department name cannot be empty'),
-    body('description').optional(),
-    body('managerId').optional()
-  ],
-  validateRequest,
-  departmentController.updateDepartment
+  authorize(['HR_MANAGER', 'ADMIN']),
+  validateRequest(updateDepartmentValidation),
+  departmentController.updateDepartment,
 );
 
-// Delete department - admin only
-router.delete('/:id',
+// Delete department (HR/Admin only)
+router.delete(
+  '/:id',
   authenticateToken,
-  authorize(['ROLE_ADMIN']),
-  departmentController.deleteDepartment
+  authorize(['HR_MANAGER', 'ADMIN']),
+  validateRequest(deleteDepartmentValidation),
+  departmentController.deleteDepartment,
 );
 
 export default router;

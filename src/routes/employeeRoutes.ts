@@ -1,71 +1,60 @@
 import { Router } from 'express';
-import { authenticateToken, authorize } from '../middleware/authMiddleware';
 import { EmployeeController } from '../controllers/employeeController';
-import { body } from 'express-validator';
-import { validateRequest } from '../middleware/validateRequest';
+import { authenticateToken, authorize } from '../middleware/authMiddleware';
+import { validateRequest } from '../middleware/joiValidation';
+import {
+  createEmployeeProfileValidation,
+  updateEmployeeValidation,
+  getEmployeeByIdValidation,
+  getAllEmployeesValidation,
+} from '../validations/employeeValidations';
 
 const router = Router();
 const employeeController = new EmployeeController();
 
-// Self-onboarding - create own profile
-router.post('/onboard',
+// Create employee profile (HR/Admin only)
+router.post(
+  '/',
   authenticateToken,
-  [
-    body('position').notEmpty().withMessage('Position is required'),
-    body('departmentId').notEmpty().withMessage('Department is required'),
-    body('hireDate').optional().isDate().withMessage('Hire date must be a valid date')
-  ],
-  validateRequest,
-  employeeController.createSelfProfile
+  authorize(['HR_MANAGER', 'ADMIN']),
+  validateRequest(createEmployeeProfileValidation),
+  (req, res) => employeeController.createEmployeeProfile(req, res),
 );
 
-// Only admin can create employee profiles for others
-router.post('/',
+// Get all employees (HR/Admin only - full access)
+router.get(
+  '/',
   authenticateToken,
-  authorize(['ROLE_ADMIN']),
-  [
-    body('authUserId').notEmpty().withMessage('Auth user ID is required'),
-    body('firstName').notEmpty().withMessage('First name is required'),
-    body('lastName').notEmpty().withMessage('Last name is required'),
-    body('email').isEmail().withMessage('Valid email is required'),
-    body('position').notEmpty().withMessage('Position is required'),
-    body('departmentId').notEmpty().withMessage('Department is required'),
-    body('hireDate').optional().isDate().withMessage('Hire date must be a valid date'),
-    body('managerId').optional()
-  ],
-  validateRequest,
-  employeeController.createEmployeeProfile
+  authorize(['HR_MANAGER', 'ADMIN']),
+  validateRequest(getAllEmployeesValidation),
+  (req, res) => employeeController.getAllEmployees(req, res),
 );
 
-// Get all employees - accessible by managers and admins
-router.get('/',
+// Get my department employees (Manager only - restricted access)
+router.get(
+  '/my-department',
   authenticateToken,
-  authorize(['ROLE_MANAGER', 'ROLE_ADMIN']),
-  employeeController.getAllEmployees
+  authorize(['MANAGER']),
+  validateRequest(getAllEmployeesValidation),
+  (req, res) => employeeController.getMyDepartmentEmployees(req, res),
 );
 
-// Get employee by ID - managers can view their team, admins can view all
-router.get('/:id',
+// Get employee by ID
+router.get(
+  '/:id',
   authenticateToken,
-  employeeController.getEmployeeById
+  authorize(['HR_MANAGER', 'ADMIN', 'MANAGER', 'EMPLOYEE']),
+  validateRequest(getEmployeeByIdValidation),
+  (req, res) => employeeController.getEmployeeById(req, res),
 );
 
-// Update employee - only admins can update employee profiles
-router.put('/:id',
+// Update employee
+router.put(
+  '/:id',
   authenticateToken,
-  authorize(['ROLE_ADMIN']),
-  [
-    body('firstName').optional().notEmpty().withMessage('First name cannot be empty'),
-    body('lastName').optional().notEmpty().withMessage('Last name cannot be empty'),
-    body('email').optional().isEmail().withMessage('Valid email is required'),
-    body('position').optional().notEmpty().withMessage('Position cannot be empty'),
-    body('departmentId').optional().notEmpty().withMessage('Department ID cannot be empty'),
-    body('hireDate').optional().isDate().withMessage('Hire date must be a valid date'),
-    body('managerId').optional(),
-    body('profilePicture').optional()
-  ],
-  validateRequest,
-  employeeController.updateEmployee
+  authorize(['HR_MANAGER', 'ADMIN']),
+  validateRequest(updateEmployeeValidation),
+  (req, res) => employeeController.updateEmployee(req, res),
 );
 
 export default router;

@@ -1,94 +1,104 @@
 import { Router } from 'express';
-import { body, param } from 'express-validator';  // Add param import
-import { validateRequest } from '../middleware/validateRequest';
-import { authenticateToken, authorize } from '../middleware/authMiddleware';
 import { LeaveRequestController } from '../controllers/leaveRequestController';
+import { authenticateToken, authorize } from '../middleware/authMiddleware';
+import { validateRequest } from '../middleware/joiValidation';
+import {
+  createLeaveRequestValidation,
+  updateLeaveRequestValidation,
+  approveLeaveRequestValidation,
+  rejectLeaveRequestValidation,
+  cancelLeaveRequestValidation,
+  getLeaveRequestByIdValidation,
+  getLeavesByDepartmentValidation,
+  getAllLeavesValidation,
+  getMyLeavesValidation,
+} from '../validations/leaveValidations';
 
 const router = Router();
 const leaveRequestController = new LeaveRequestController();
 
-// All staff can view their leaves
-router.get('/my-leaves', 
+// Get my leave requests
+router.get(
+  '/my-leaves', 
   authenticateToken, 
-  leaveRequestController.getMyLeaves
+  validateRequest(getMyLeavesValidation),
+  (req, res) => leaveRequestController.getMyLeaves(req, res)
 );
 
-// Only admins can view all leaves across the organization
-router.get('/admin/all-leaves', 
-  authenticateToken, 
-  authorize(['ROLE_ADMIN']), 
-  leaveRequestController.getAllLeaves
-);
-
-// Only managers and admins can view team leaves
-router.get('/team-leaves', 
-  authenticateToken, 
-  authorize(['ROLE_MANAGER', 'ROLE_ADMIN']), 
-  leaveRequestController.getTeamLeaves
-);
-
-// Only admins and managers can view leaves for a specific department
-router.get('/department/:departmentId', 
-  authenticateToken, 
-  authorize(['ROLE_ADMIN', 'ROLE_MANAGER']),
-  param('departmentId').isUUID().withMessage('Valid department ID is required'),  // Add validation
-  validateRequest,
-  leaveRequestController.getLeavesByDepartment
-);
-
-// Any authenticated user can view a specific leave request (access control is handled in controller)
-router.get('/:id', 
+// Get all leave requests (HR/Admin/Manager only)
+router.get(
+  '/',
   authenticateToken,
-  param('id').isUUID().withMessage('Valid leave request ID is required'),  // Add validation
-  validateRequest,
-  leaveRequestController.getLeaveRequestById
+  authorize(['HR_MANAGER', 'ADMIN', 'MANAGER']),
+  validateRequest(getAllLeavesValidation),
+  (req, res) => leaveRequestController.getAllLeaves(req, res),
 );
 
-// All staff can create leave requests
-router.post('/',
+// Get leaves by department (HR/Admin/Manager of that department only)
+router.get(
+  '/department/:departmentId',
   authenticateToken,
-  [
-    body('leaveTypeId').isUUID().withMessage('Valid leave type ID is required'),  // Improve validation
-    body('startDate').isDate().withMessage('Start date must be a valid date'),
-    body('endDate').isDate().withMessage('End date must be a valid date')
-      .custom((endDate, { req }) => {
-        if (new Date(endDate) < new Date(req.body.startDate)) {
-          throw new Error('End date must be after start date');
-        }
-        return true;
-      }),
-    body('reason').optional().trim().notEmpty().withMessage('Reason cannot be empty if provided')
-  ],
-  validateRequest,
-  leaveRequestController.createLeaveRequest
+  authorize(['HR_MANAGER', 'ADMIN', 'MANAGER']),
+  validateRequest(getLeavesByDepartmentValidation),
+  (req, res) => leaveRequestController.getLeavesByDepartment(req, res),
 );
 
-// Only managers and admins can approve leave requests
-router.put('/:id/approve', 
-  authenticateToken, 
-  authorize(['ROLE_MANAGER', 'ROLE_ADMIN']),
-  param('id').isUUID().withMessage('Valid leave request ID is required'),  // Add validation
-  body('comments').optional().trim(),
-  validateRequest,
-  leaveRequestController.approveLeaveRequest
-);
-
-// Only managers and admins can reject leave requests
-router.put('/:id/reject', 
-  authenticateToken, 
-  authorize(['ROLE_MANAGER', 'ROLE_ADMIN']),
-  param('id').isUUID().withMessage('Valid leave request ID is required'),  // Add validation
-  body('comments').notEmpty().withMessage('Rejection reason is required'),  // Require comments for rejection
-  validateRequest,
-  leaveRequestController.rejectLeaveRequest
-);
-
-// Any user can cancel their own leave request (verification done in controller)
-router.put('/:id/cancel', 
+// Get team leaves (Manager only)
+router.get(
+  '/team',
   authenticateToken,
-  param('id').isUUID().withMessage('Valid leave request ID is required'),  // Add validation
-  validateRequest,
-  leaveRequestController.cancelLeaveRequest
+  authorize(['MANAGER', 'ADMIN']),
+  (req, res) => leaveRequestController.getTeamLeaves(req, res),
+);
+
+// Get leave request by ID
+router.get(
+  '/:id',
+  authenticateToken,
+  validateRequest(getLeaveRequestByIdValidation),
+  (req, res) => leaveRequestController.getLeaveRequestById(req, res),
+);
+
+// Create leave request
+router.post(
+  '/',
+  authenticateToken,
+  validateRequest(createLeaveRequestValidation),
+  (req, res) => leaveRequestController.createLeaveRequest(req, res),
+);
+
+// Update leave request
+router.put(
+  '/:id',
+  authenticateToken,
+  validateRequest(updateLeaveRequestValidation),
+  (req, res) => leaveRequestController.updateLeaveRequest(req, res),
+);
+
+// Approve leave request (Manager/HR/Admin only)
+router.post(
+  '/:id/approve',
+  authenticateToken,
+  authorize(['MANAGER', 'HR_MANAGER', 'ADMIN']),
+  validateRequest(approveLeaveRequestValidation),
+  (req, res) => leaveRequestController.approveLeaveRequest(req, res),
+);
+
+// Reject leave request (Manager/HR/Admin only)
+router.post(
+  '/:id/reject',
+  authenticateToken,
+  authorize(['MANAGER', 'HR_MANAGER', 'ADMIN']),
+  validateRequest(rejectLeaveRequestValidation),
+  (req, res) => leaveRequestController.rejectLeaveRequest(req, res),
+);
+
+// Cancel leave request
+router.post(
+  '/:id/cancel',
+  authenticateToken,
+  validateRequest(cancelLeaveRequestValidation),
+  (req, res) => leaveRequestController.cancelLeaveRequest(req, res),
 );
 
 export default router;

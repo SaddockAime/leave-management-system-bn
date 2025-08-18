@@ -5,12 +5,12 @@ const router = Router();
 
 // Protected route example
 const handler: RequestHandler = (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Access granted to protected resource',
-    user: (req as any).user 
+    user: (req as any).user,
   });
 };
 
 router.get('/protected-resource', authenticateToken, handler);
 
-export default router; 
+export default router;

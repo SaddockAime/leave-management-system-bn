@@ -10,9 +10,9 @@ export class ReportController {
       const currentYear = year ? Number(year) : new Date().getFullYear();
       const currentMonth = month ? Number(month) : null;
 
-      let dateFilter: any = { 
+      let dateFilter: any = {
         startDate: new Date(`${currentYear}-01-01`),
-        endDate: new Date(`${currentYear}-12-31`)
+        endDate: new Date(`${currentYear}-12-31`),
       };
 
       if (currentMonth) {
@@ -34,7 +34,7 @@ export class ReportController {
         .groupBy('d.name')
         .getRawMany();
 
-      res.json(result);
+      res.status(200).json(result);
     } catch (error) {
       res.status(500).json({ message: 'Failed to generate report', error });
     }
@@ -64,9 +64,9 @@ export class ReportController {
         .where('e.id = :employeeId', { employeeId })
         .getRawOne();
 
-      res.json({
+      res.status(200).json({
         employee: employeeData,
-        leaveData: result
+        leaveData: result,
       });
     } catch (error) {
       res.status(500).json({ message: 'Failed to generate report', error });
@@ -89,7 +89,7 @@ export class ReportController {
         .groupBy('lt.name')
         .getRawMany();
 
-      res.json(result);
+      res.status(200).json(result);
     } catch (error) {
       res.status(500).json({ message: 'Failed to generate report', error });
     }
@@ -118,10 +118,10 @@ export class ReportController {
         .innerJoin('lr.leaveType', 'lt')
         .innerJoin('e.department', 'd')
         .where('lr.status = :status', { status: 'APPROVED' })
-        .andWhere(
-          '(lr.startDate <= :endDate AND lr.endDate >= :startDate)',
-          { startDate, endDate }
-        );
+        .andWhere('(lr.startDate <= :endDate AND lr.endDate >= :startDate)', {
+          startDate,
+          endDate,
+        });
 
       if (departmentId) {
         query = query.andWhere('e.departmentId = :departmentId', { departmentId });
@@ -129,7 +129,7 @@ export class ReportController {
 
       const result = await query.getRawMany();
 
-      res.json(result);
+      res.status(200).json(result);
     } catch (error) {
       res.status(500).json({ message: 'Failed to generate calendar data', error });
     }
@@ -138,13 +138,16 @@ export class ReportController {
   async exportToCsv(req: Request, res: Response): Promise<void> {
     try {
       const { reportType, departmentId, year, month } = req.query;
-      
+
       // Implementation depends on the CSV library you choose
       // This is a placeholder that should be replaced with actual CSV generation logic
-      
+
       res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', `attachment; filename="report-${reportType}-${year}-${month}.csv"`);
-      
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="report-${reportType}-${year}-${month}.csv"`,
+      );
+
       // Generate and send CSV data
       res.send('CSV data would be here');
     } catch (error) {
@@ -155,13 +158,19 @@ export class ReportController {
   async exportToExcel(req: Request, res: Response): Promise<void> {
     try {
       const { reportType, departmentId, year, month } = req.query;
-      
+
       // Implementation depends on the Excel library you choose
       // This is a placeholder that should be replaced with actual Excel generation logic
-      
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.setHeader('Content-Disposition', `attachment; filename="report-${reportType}-${year}-${month}.xlsx"`);
-      
+
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="report-${reportType}-${year}-${month}.xlsx"`,
+      );
+
       // Generate and send Excel data
       res.send('Excel data would be here');
     } catch (error) {

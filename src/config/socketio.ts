@@ -15,8 +15,8 @@ export class SocketService {
       cors: {
         origin: process.env.CLIENT_URL || 'http://localhost:4000',
         methods: ['GET', 'POST'],
-        credentials: true
-      }
+        credentials: true,
+      },
     });
 
     this.initializeSocketAuth();
@@ -26,7 +26,7 @@ export class SocketService {
     this.io.use(async (socket, next) => {
       try {
         const token = socket.handshake.auth.token;
-        
+
         if (!token) {
           return next(new Error('Authentication error'));
         }
@@ -46,25 +46,25 @@ export class SocketService {
         if (userRoles.includes('ROLE_ADMIN')) {
           socket.join('admins');
         }
-        
+
         if (userRoles.includes('ROLE_MANAGER')) {
           socket.join('managers');
         }
-        
+
         // Join user's personal room
         socket.join(`user:${userId}`);
-        
+
         // Load user's employee info if it exists
         const employeeRepository = getRepository(Employee);
-        const employee = await employeeRepository.findOne({ 
-          where: { authUserId: userId },
-          relations: ['department']
+        const employee = await employeeRepository.findOne({
+          where: { user: { id: userId } },
+          relations: ['department', 'user'],
         });
 
         if (employee) {
           socket.data.employeeId = employee.id;
           socket.data.departmentId = employee.departmentId;
-          
+
           // Join department room
           if (employee.departmentId) {
             socket.join(`department:${employee.departmentId}`);
@@ -78,7 +78,9 @@ export class SocketService {
     });
 
     this.io.on('connection', (socket) => {
-      console.log(`User connected: ${socket.data.userId}, roles: ${socket.data.roles?.join(', ')}`);
+      console.log(
+        `User connected: ${socket.data.userId}, role: ${socket.data.role?.name || 'Unknown'}`,
+      );
 
       socket.on('disconnect', () => {
         console.log(`User disconnected: ${socket.data.userId}`);
@@ -110,12 +112,15 @@ export class SocketService {
   }
 
   // Send notification about leave request to relevant parties based on roles
-  public async notifyAboutLeaveRequest(leaveRequestId: string, type: 'created' | 'approved' | 'rejected' | 'canceled') {
+  public async notifyAboutLeaveRequest(
+    leaveRequestId: string,
+    type: 'created' | 'approved' | 'rejected' | 'canceled',
+  ) {
     try {
       const leaveRequestRepository = getRepository(LeaveRequest);
       const leaveRequest = await leaveRequestRepository.findOne({
         where: { id: leaveRequestId },
-        relations: ['employee', 'employee.department', 'leaveType']
+        relations: ['employee', 'employee.department', 'leaveType'],
       });
 
       if (!leaveRequest) return;
@@ -126,18 +131,18 @@ export class SocketService {
         type,
         employee: {
           id: employee.id,
-          name: `${employee.firstName} ${employee.lastName}`,
-          profilePicture: employee.profilePicture
+          name: `${employee.user.firstName} ${employee.user.lastName}`,
+          profilePicture: employee.user.profilePicture,
         },
         leaveType: {
           name: leaveType.name,
-          color: leaveType.color
+          color: leaveType.color,
         },
         startDate: leaveRequest.startDate,
         endDate: leaveRequest.endDate,
         days: leaveRequest.days,
         status: leaveRequest.status,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
       switch (type) {
@@ -146,12 +151,12 @@ export class SocketService {
           // Notify all managers and admins
           this.sendToManagersAndAdmins(`leave_request_${type}`, eventData);
           break;
-          
+
         case 'approved':
         case 'rejected':
           // Notify the employee who requested the leave
-          if (employee.authUserId) {
-            this.sendToUser(employee.authUserId, `leave_request_${type}`, eventData);
+          if (employee.user?.id) {
+            this.sendToUser(employee.user.id, `leave_request_${type}`, eventData);
           }
           break;
       }

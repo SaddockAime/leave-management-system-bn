@@ -1,65 +1,107 @@
-import { Router, Request, Response } from 'express';
-import { AuthService } from '../services/authService';
-import { validateRequest } from '../middleware/validateRequest';
-import { body } from 'express-validator';
+// src/routes/authRoutes.ts
 
-const router = Router();
-const authService = new AuthService();
+import express from 'express';
+import passport from 'passport';
+import { AuthController } from '../controllers/authController';
+import { authenticateToken, authorize } from '../middleware/authMiddleware';
+import { validateRequest } from '../middleware/joiValidation';
+import {
+  registerValidation,
+  loginValidation,
+  googleAuthValidation,
+  refreshTokenValidation,
+  updateUserRoleValidation,
+  updateUserStatusValidation,
+  forgotPasswordValidation,
+  resetPasswordValidation,
+  verifyEmailValidation,
+  resendVerificationValidation,
+  userIdValidation,
+} from '../validations/authValidations';
 
-// Register new user
+const router = express.Router();
+const authController = new AuthController();
+
+// Public routes (no authentication required)
 router.post(
-    '/register',
-    [
-        body('email').isEmail().normalizeEmail(),
-        body('password').isLength({ min: 6 }),
-        body('firstName').notEmpty(),
-        body('lastName').notEmpty()
-    ],
-    validateRequest,
-    async (req: Request, res: Response) => {
-        try {
-            const result = await authService.register(req.body);
-            res.status(201).json(result);
-        } catch (error: any) {
-            res.status(400).json({ error: error.message });
-        }
-    }
+  '/register',
+  validateRequest(registerValidation),
+  authController.register.bind(authController),
+);
+router.post(
+  '/login', 
+  validateRequest(loginValidation), 
+  authController.login.bind(authController)
+);
+router.post(
+  '/refresh',
+  validateRequest(refreshTokenValidation),
+  authController.refreshToken.bind(authController),
 );
 
-// Login user
+// Password reset and email verification
 router.post(
-    '/login',
-    [
-        body('email').isEmail().normalizeEmail(),
-        body('password').notEmpty()
-    ],
-    validateRequest,
-    async (req: Request, res: Response) => {
-        try {
-            const result = await authService.login(req.body);
-            res.json(result);
-        } catch (error: any) {
-            res.status(401).json({ error: error.message });
-        }
-    }
+  '/forgot-password',
+  validateRequest(forgotPasswordValidation),
+  authController.forgotPassword.bind(authController),
+);
+router.post(
+  '/reset-password',
+  validateRequest(resetPasswordValidation),
+  authController.resetPassword.bind(authController),
+);
+router.get(
+  '/verify-email/:token',
+  validateRequest(verifyEmailValidation),
+  authController.verifyEmail.bind(authController),
+);
+router.post(
+  '/resend-verification',
+  validateRequest(resendVerificationValidation),
+  authController.resendVerification.bind(authController),
 );
 
-// Validate token
-router.post('/validate-token', async (req: Request, res: Response) => {
-    try {
-        const token = req.headers.authorization?.split(' ')[1];
-        if (!token) {
-            throw new Error('No token provided');
-        }
-        const result = await authService.validateToken(token);
-        if (result.valid) {
-            res.json(result);
-        } else {
-            res.status(401).json({ error: 'Invalid token' });
-        }
-    } catch (error: any) {
-        res.status(401).json({ error: error.message });
-    }
-});
+// Google OAuth routes (handled by Passport)
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get(
+  '/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  authController.googleCallback.bind(authController),
+);
+
+// Protected routes (authentication required)
+router.post('/logout', authenticateToken, authController.logout.bind(authController));
+router.get('/me', authenticateToken, authController.getUserInfo.bind(authController));
+
+// User management routes (Admin/HR Manager only)
+router.get(
+  '/users',
+  authenticateToken,
+  authorize(['ADMIN', 'HR_MANAGER']),
+  authController.getAllUsers.bind(authController),
+);
+router.put(
+  '/users/:userId/roles',
+  authenticateToken,
+  authorize(['ADMIN']),
+  validateRequest(userIdValidation),
+  validateRequest(updateUserRoleValidation),
+  authController.updateUserRole.bind(authController),
+);
+router.put(
+  '/users/:userId/status',
+  authenticateToken,
+  authorize(['ADMIN']),
+  validateRequest(userIdValidation),
+  validateRequest(updateUserStatusValidation),
+  authController.updateUserStatus.bind(authController),
+);
+router.delete(
+  '/users/:userId',
+  authenticateToken,
+  authorize(['ADMIN']),
+  validateRequest(userIdValidation),
+  authController.deleteUser.bind(authController),
+);
 
 export default router;

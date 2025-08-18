@@ -1,45 +1,71 @@
 import { Router } from 'express';
-import { authenticateToken, authorize } from '../middleware/authMiddleware';
 import { ReportController } from '../controllers/reportController';
+import { authenticateToken, authorize } from '../middleware/authMiddleware';
+import { validateRequest } from '../middleware/joiValidation';
+import {
+  getLeaveByDepartmentValidation,
+  getLeaveByEmployeeValidation,
+  getLeaveByTypeValidation,
+  getLeaveCalendarValidation,
+  exportToCsvValidation,
+  exportToExcelValidation,
+} from '../validations/reportValidations';
 
 const router = Router();
 const reportController = new ReportController();
 
-// Only managers and admins can access reports
-router.get('/leave-by-department', 
-  authenticateToken, 
-  authorize(['ROLE_MANAGER', 'ROLE_ADMIN']), 
-  reportController.getLeaveByDepartment
+// Get leave by department (HR/Admin/Manager only)
+router.get(
+  '/leave-by-department',
+  authenticateToken,
+  authorize(['HR_MANAGER', 'ADMIN', 'MANAGER']),
+  validateRequest(getLeaveByDepartmentValidation),
+  reportController.getLeaveByDepartment,
 );
 
-router.get('/leave-by-employee/:employeeId', 
-  authenticateToken, 
-  authorize(['ROLE_MANAGER', 'ROLE_ADMIN']), 
-  reportController.getLeaveByEmployee
+// Get leave by employee (HR/Admin/Manager only)
+router.get(
+  '/leave-by-employee/:employeeId',
+  authenticateToken,
+  authorize(['HR_MANAGER', 'ADMIN', 'MANAGER']),
+  validateRequest(getLeaveByEmployeeValidation),
+  reportController.getLeaveByEmployee,
 );
 
-router.get('/leave-by-type', 
-  authenticateToken, 
-  authorize(['ROLE_MANAGER', 'ROLE_ADMIN']),
-  reportController.getLeaveByType
+// Get leave by type (HR/Admin/Manager only)
+router.get(
+  '/leave-by-type',
+  authenticateToken,
+  authorize(['HR_MANAGER', 'ADMIN', 'MANAGER']),
+  validateRequest(getLeaveByTypeValidation),
+  reportController.getLeaveByType,
 );
 
-router.get('/leave-calendar', 
-  authenticateToken, 
-  reportController.getLeaveCalendar  // Everyone can see the leave calendar
+// Get leave calendar (HR/Admin/Manager only)
+router.get(
+  '/leave-calendar',
+  authenticateToken,
+  authorize(['HR_MANAGER', 'ADMIN', 'MANAGER']),
+  validateRequest(getLeaveCalendarValidation),
+  reportController.getLeaveCalendar,
 );
 
-// Only admins can export data
-router.get('/export/csv', 
-  authenticateToken, 
-  authorize(['ROLE_ADMIN']), 
-  reportController.exportToCsv
+// Export to CSV (HR/Admin only)
+router.get(
+  '/export/csv',
+  authenticateToken,
+  authorize(['HR_MANAGER', 'ADMIN']),
+  validateRequest(exportToCsvValidation),
+  reportController.exportToCsv,
 );
 
-router.get('/export/excel', 
-  authenticateToken, 
-  authorize(['ROLE_ADMIN']), 
-  reportController.exportToExcel
+// Export to Excel (HR/Admin only)
+router.get(
+  '/export/excel',
+  authenticateToken,
+  authorize(['HR_MANAGER', 'ADMIN']),
+  validateRequest(exportToExcelValidation),
+  reportController.exportToExcel,
 );
 
 export default router;
