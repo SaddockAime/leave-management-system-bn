@@ -4,7 +4,9 @@ paths:
       tags:
         - Leave Management
       summary: Get my leave requests
-      description: Retrieve authenticated user's leave requests with pagination and filtering
+      description: |
+        Retrieve authenticated user's leave requests with pagination and filtering.
+        **Access**: EMPLOYEE, MANAGER, HR_MANAGER, ADMIN only. GUEST users cannot access.
       security:
         - bearerAuth: []
       parameters:
@@ -198,7 +200,9 @@ paths:
       tags:
         - Leave Management
       summary: Create leave request
-      description: Create a new leave request
+      description: |
+        Create a new leave request.
+        **Access**: EMPLOYEE, MANAGER, HR_MANAGER, ADMIN only. GUEST users cannot create leave requests.
       security:
         - bearerAuth: []
       requestBody:

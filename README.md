@@ -59,11 +59,21 @@ CLOUDINARY_CLOUD_NAME=your-cloud-name
 CLOUDINARY_API_KEY=your-api-key
 CLOUDINARY_API_SECRET=your-api-secret
 
-# Email (Optional)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
+# Email (Required for notifications)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASSWORD=your-app-password
+
+# Google OAuth (Optional)
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_CALLBACK_URL=
+
+# Email Templates & Branding (Required)
+COMPANY_NAME=Your Company Name
+SUPPORT_EMAIL=support@company.com
+HR_EMAIL=hr@company.com
 
 # Server
 PORT=3000
@@ -219,21 +229,24 @@ src/
 The system provides **17 comprehensive API modules** with hundreds of endpoints:
 
 ### 🔐 Authentication & User Management (`/api/auth`)
-- User registration, login, logout with JWT tokens
-- Password reset and email verification workflows
-- Google OAuth integration
-- User role and status management (Admin only)
-- Token refresh and blacklisting for security
+- **Professional Registration Flow**: New users assigned GUEST role, receive welcome email with verification
+- **Role-Based Progression**: GUEST → EMPLOYEE when HR creates profile, with assignment notification
+- **Secure Authentication**: JWT tokens, password reset, email verification workflows
+- **Google OAuth Integration**: Alternative authentication method
+- **User role and status management** (Admin only)
+- **Token refresh and blacklisting** for enhanced security
 
 ### 👤 Profile Management (`/api/profile`)
 - User profile viewing and updating
 - Profile picture upload with Cloudinary integration
 
 ### 👥 Employee Management (`/api/employees`)
-- HR-controlled employee profile creation and management
-- Employee search and filtering with pagination
-- Department-based employee viewing for managers
-- Employee analytics and insights
+- **Smart Role Progression**: Creating employee profile automatically upgrades GUEST to EMPLOYEE
+- **Professional Notifications**: Welcome emails sent with department and manager information
+- **HR-controlled employee profile** creation and management
+- **Employee search and filtering** with pagination
+- **Department-based employee viewing** for managers
+- **Employee analytics and insights**
 
 ### 👨‍💼 Manager Tools (`/api/manager`)
 - Team management and hierarchy viewing
@@ -282,10 +295,12 @@ The system provides **17 comprehensive API modules** with hundreds of endpoints:
 - Secure document access control
 
 ### 🔔 Notification System (`/api/notifications`)
-- Real-time notifications via Socket.IO
-- Email notification preferences
-- Notification history and management
-- Custom notification templates
+- **Professional Email Templates**: Handlebars-powered professional email designs
+- **Role-Based Notifications**: Welcome emails for GUEST, assignment emails for EMPLOYEE
+- **Real-time notifications** via Socket.IO
+- **Email notification preferences** and management
+- **Notification history** and tracking
+- **Custom notification templates** for various workflows
 
 ### 🏢 Department Management (`/api/departments`)
 - Organizational structure management
@@ -310,6 +325,113 @@ The system provides **17 comprehensive API modules** with hundreds of endpoints:
 - **Email Services**: SMTP integration for notifications and workflows
 
 For complete API documentation, visit `/api-docs` when the server is running.
+
+## 👤 User Onboarding Workflow
+
+### 🚀 **Professional Registration & Role Progression**
+
+The system implements a sophisticated user onboarding workflow with role-based access control:
+
+#### **Step 1: User Registration (GUEST Role)**
+```
+POST /api/auth/register
+```
+- ✅ User assigned **GUEST** role initially
+- ✅ **Professional welcome email** sent with verification link
+- ✅ **No JWT token** returned (security best practice)
+- ✅ Email verification required before login
+
+#### **Step 2: Email Verification**
+```
+GET /api/auth/verify-email/:token
+```
+- ✅ User verifies email address
+- ✅ Account activated for login
+- ✅ User can now log in with GUEST permissions
+
+#### **Step 3: Employee Profile Creation (GUEST → EMPLOYEE)**
+```
+POST /api/employees (HR/Admin only)
+```
+- ✅ HR/Admin creates employee profile for user
+- ✅ User role **automatically upgraded** from GUEST to EMPLOYEE
+- ✅ **Professional assignment email** sent with:
+  - Department information
+  - Position details
+  - Manager contact information
+  - Employee ID and hire date
+  - Full access rights explanation
+
+#### **Step 4: Full Employee Access**
+- ✅ User now has complete employee functionality
+- ✅ Can submit leave requests, access documents, etc.
+- ✅ Receives role-appropriate notifications
+
+### 📧 **Professional Email Templates**
+
+All emails use **Handlebars templates** with professional design:
+- **Welcome Email**: Clean blue gradient, verification flow explanation
+- **Employee Assignment**: Green celebration theme, detailed role information
+- **Email Verification**: Security-focused design with clear instructions
+
+Templates are mobile-responsive and follow corporate design standards.
+
+### 🛡️ **Role-Based Access Control**
+
+The system enforces strict access control based on user roles:
+
+#### **🔓 Public Access (No Authentication)**
+- User registration and login
+- Password reset and email verification
+- Google OAuth authentication
+
+#### **👥 GUEST Role Access**
+- ✅ **Profile Management**: View/update profile, upload profile picture
+- ✅ **Status Checking**: Check onboarding progress via `/api/auth/status`
+- ✅ **Basic Notifications**: View system notifications
+- ❌ **Leave Management**: Cannot create, view, or manage leave requests
+- ❌ **Document Access**: Cannot upload or access documents
+- ❌ **Employee Features**: Limited access until profile created
+
+#### **👔 EMPLOYEE Role Access**
+- ✅ **All GUEST permissions** +
+- ✅ **Leave Management**: Create, view, update, cancel leave requests
+- ✅ **Document Management**: Upload and access leave documents
+- ✅ **Leave History**: View personal leave history and balances
+- ✅ **Team Features**: Basic team collaboration
+
+#### **👨‍💼 MANAGER+ Role Access**
+- ✅ **All EMPLOYEE permissions** +
+- ✅ **Team Management**: View and manage team leave requests
+- ✅ **Approval Workflows**: Approve/reject leave requests
+- ✅ **Department Oversight**: Department-level reporting
+
+#### **👩‍💼 HR_MANAGER & ADMIN Role Access**
+- ✅ **All MANAGER permissions** +
+- ✅ **Employee Management**: Create employee profiles for GUEST users
+- ✅ **System Administration**: User role management, system settings
+- ✅ **Advanced Analytics**: Comprehensive reporting across all modules
+
+### 📊 **Status Endpoint for Frontend Integration**
+
+```typescript
+GET /api/auth/status
+```
+
+Perfect for frontend applications to determine user capabilities:
+
+```json
+{
+  "success": true,
+  "data": {
+    "role": "GUEST",
+    "emailVerified": true,
+    "hasEmployeeProfile": false,
+    "needsEmployeeProfile": true,
+    "status": "GUEST_AWAITING_PROFILE"
+  }
+}
+```
 
 ## 🚨 Troubleshooting
 

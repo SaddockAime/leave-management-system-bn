@@ -4,7 +4,9 @@ paths:
       tags:
         - Documents
       summary: Upload document to leave request
-      description: Upload a document file to a specific leave request
+      description: |
+        Upload a document file to a specific leave request.
+        **Access**: EMPLOYEE, MANAGER, HR_MANAGER, ADMIN only. GUEST users cannot upload documents.
       security:
         - bearerAuth: []
       parameters:
@@ -47,7 +49,9 @@ paths:
       tags:
         - Documents
       summary: Get documents for a leave request
-      description: Retrieve all documents associated with a specific leave request
+      description: |
+        Retrieve all documents associated with a specific leave request.
+        **Access**: EMPLOYEE, MANAGER, HR_MANAGER, ADMIN only. GUEST users cannot access documents.
       security:
         - bearerAuth: []
       parameters:

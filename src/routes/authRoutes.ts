@@ -73,6 +73,9 @@ router.get(
 router.post('/logout', authenticateToken, authController.logout.bind(authController));
 router.get('/me', authenticateToken, authController.getUserInfo.bind(authController));
 
+// GUEST user status route - for checking if user needs employee profile
+router.get('/status', authenticateToken, authController.getUserStatus.bind(authController));
+
 // User management routes (Admin/HR Manager only)
 router.get(
   '/users',

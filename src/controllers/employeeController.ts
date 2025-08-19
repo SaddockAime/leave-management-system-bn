@@ -2,8 +2,13 @@ import { Request, Response } from 'express';
 import { getRepository } from 'typeorm';
 import { Employee } from '../models/Employee';
 import { User } from '../models/User';
+import { Role } from '../models/Role';
+import { Department } from '../models/Department';
+import { EmailService } from '../services/emailService';
 
 export class EmployeeController {
+  private emailService = new EmailService();
+
   async createEmployeeProfile(req: Request, res: Response): Promise<void> {
     try {
       const {
@@ -16,6 +21,8 @@ export class EmployeeController {
 
       const employeeRepository = getRepository(Employee);
       const userRepository = getRepository(User);
+      const roleRepository = getRepository(Role);
+      const departmentRepository = getRepository(Department);
 
       // Check if profile already exists through User relationship
       const existingEmployee = await employeeRepository.findOne({
@@ -27,10 +34,23 @@ export class EmployeeController {
         return;
       }
 
-      // Get the user first
-      const user = await userRepository.findOne({ where: { id: userId } });
+      // Get the user first with current role
+      const user = await userRepository.findOne({ 
+        where: { id: userId },
+        relations: ['role']
+      });
       if (!user) {
         res.status(404).json({ message: 'User not found' });
+        return;
+      }
+
+      // Get department information for email
+      const department = await departmentRepository.findOne({
+        where: { id: departmentId },
+        relations: ['manager', 'manager.user']
+      });
+      if (!department) {
+        res.status(404).json({ message: 'Department not found' });
         return;
       }
 
@@ -45,7 +65,56 @@ export class EmployeeController {
 
       const savedEmployee = await employeeRepository.save(newEmployee);
 
-      res.status(201).json(savedEmployee);
+      // Update user role from GUEST to EMPLOYEE
+      const employeeRole = await roleRepository.findOne({
+        where: { name: 'EMPLOYEE' },
+      });
+
+      if (employeeRole && user.role?.name === 'GUEST') {
+        user.role = employeeRole;
+        user.roleId = employeeRole.id;
+        await userRepository.save(user);
+
+        // Prepare employee data for email
+        const managerUser = managerId && department.manager?.user ? department.manager.user : null;
+        const employeeData = {
+          departmentName: department.name,
+          position,
+          hireDate: (hireDate || new Date()).toLocaleDateString(),
+          employeeId: savedEmployee.id,
+          managerName: managerUser ? `${managerUser.firstName} ${managerUser.lastName}` : undefined,
+          managerEmail: managerUser?.email || undefined,
+        };
+
+        // Send employee assignment notification email
+        try {
+          await this.emailService.sendEmployeeAssignmentEmail(user, employeeData);
+          console.info(`Employee assignment email sent to: ${user.email}`);
+        } catch (emailError) {
+          console.error('Failed to send employee assignment email:', emailError);
+          // Don't fail the operation if email fails
+        }
+
+        res.status(201).json({
+          success: true,
+          message: 'Employee profile created successfully. User role updated to EMPLOYEE and notification sent.',
+          data: {
+            employee: savedEmployee,
+            roleChanged: true,
+            emailSent: true,
+          }
+        });
+      } else {
+        res.status(201).json({
+          success: true,
+          message: 'Employee profile created successfully.',
+          data: {
+            employee: savedEmployee,
+            roleChanged: false,
+            emailSent: false,
+          }
+        });
+      }
     } catch (error) {
       res.status(500).json({ message: 'Failed to create employee profile', error });
     }

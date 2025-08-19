@@ -17,10 +17,11 @@ import {
 const router = Router();
 const leaveRequestController = new LeaveRequestController();
 
-// Get my leave requests
+// Get my leave requests (EMPLOYEE+ only)
 router.get(
   '/my-leaves', 
   authenticateToken, 
+  authorize(['EMPLOYEE', 'MANAGER', 'HR_MANAGER', 'ADMIN']),
   validateRequest(getMyLeavesValidation),
   (req, res) => leaveRequestController.getMyLeaves(req, res)
 );
@@ -51,26 +52,29 @@ router.get(
   (req, res) => leaveRequestController.getTeamLeaves(req, res),
 );
 
-// Get leave request by ID
+// Get leave request by ID (EMPLOYEE+ only)
 router.get(
   '/:id',
   authenticateToken,
+  authorize(['EMPLOYEE', 'MANAGER', 'HR_MANAGER', 'ADMIN']),
   validateRequest(getLeaveRequestByIdValidation),
   (req, res) => leaveRequestController.getLeaveRequestById(req, res),
 );
 
-// Create leave request
+// Create leave request (EMPLOYEE+ only)
 router.post(
   '/',
   authenticateToken,
+  authorize(['EMPLOYEE', 'MANAGER', 'HR_MANAGER', 'ADMIN']),
   validateRequest(createLeaveRequestValidation),
   (req, res) => leaveRequestController.createLeaveRequest(req, res),
 );
 
-// Update leave request
+// Update leave request (EMPLOYEE+ only)
 router.put(
   '/:id',
   authenticateToken,
+  authorize(['EMPLOYEE', 'MANAGER', 'HR_MANAGER', 'ADMIN']),
   validateRequest(updateLeaveRequestValidation),
   (req, res) => leaveRequestController.updateLeaveRequest(req, res),
 );
@@ -93,10 +97,11 @@ router.post(
   (req, res) => leaveRequestController.rejectLeaveRequest(req, res),
 );
 
-// Cancel leave request
+// Cancel leave request (EMPLOYEE+ only)
 router.post(
   '/:id/cancel',
   authenticateToken,
+  authorize(['EMPLOYEE', 'MANAGER', 'HR_MANAGER', 'ADMIN']),
   validateRequest(cancelLeaveRequestValidation),
   (req, res) => leaveRequestController.cancelLeaveRequest(req, res),
 );

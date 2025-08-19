@@ -9,6 +9,7 @@ import {
 } from '../services/authService';
 import { getRepository } from 'typeorm';
 import { Employee } from '../models/Employee';
+import { User } from '../models/User';
 
 export class AuthController {
   private authService = new AuthService();
@@ -30,7 +31,7 @@ export class AuthController {
 
       res.status(201).json({
         success: true,
-        message: 'User registered successfully',
+        message: 'User registered successfully with GUEST role. Please verify your email before logging in.',
         data: result.data,
       });
     } catch (error) {
@@ -248,6 +249,66 @@ export class AuthController {
       res.status(500).json({
         success: false,
         message: error instanceof Error ? error.message : 'Failed to get user info',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
+
+  async getUserStatus(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = (req as any).user?.id;
+
+      if (!userId) {
+        res.status(401).json({
+          success: false,
+          message: 'User not authenticated',
+        });
+        return;
+      }
+
+      const userInfo = await this.authService.getUserInfo(userId);
+      const employeeRepository = getRepository(Employee);
+      const userRepository = getRepository(User);
+      
+      // Get full user details for email verification status
+      const fullUser = await userRepository.findOne({ 
+        where: { id: userId },
+        relations: ['role'] 
+      });
+      
+      // Check if user has employee profile
+      const hasEmployeeProfile = await employeeRepository.findOne({
+        where: { user: { id: userId } }
+      });
+
+      if (!userInfo || !fullUser) {
+        res.status(404).json({
+          success: false,
+          message: 'User not found',
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        data: {
+          userId: userInfo.id,
+          email: userInfo.email,
+          firstName: userInfo.firstName,
+          lastName: userInfo.lastName,
+          role: userInfo.role,
+          emailVerified: fullUser.emailVerified,
+          hasEmployeeProfile: !!hasEmployeeProfile,
+          needsEmployeeProfile: userInfo.role === 'GUEST' && !hasEmployeeProfile,
+          status: userInfo.role === 'GUEST' 
+            ? (hasEmployeeProfile ? 'PENDING_APPROVAL' : 'GUEST_AWAITING_PROFILE')
+            : 'ACTIVE_EMPLOYEE'
+        },
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to get user status',
         error: error instanceof Error ? error.message : 'Unknown error',
       });
     }

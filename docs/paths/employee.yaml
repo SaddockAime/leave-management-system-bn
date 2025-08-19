@@ -144,7 +144,13 @@ paths:
       tags:
         - Employees
       summary: Create employee profile
-      description: Create an employee profile for an existing user (HR/Admin only)
+      description: |
+        Create an employee profile for an existing user (HR/Admin only).
+        This action:
+        - Creates employee record for existing user
+        - Updates user role from GUEST to EMPLOYEE (if applicable)
+        - Sends professional welcome email notification to employee
+        - Grants full employee access and permissions
       security:
         - bearerAuth: []
       requestBody:
@@ -155,11 +161,31 @@ paths:
               $ref: '#/components/schemas/EmployeeCreate'
       responses:
         '201':
-          description: Employee created successfully
+          description: Employee profile created successfully. Role updated and notification sent.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Employee'
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Employee profile created successfully. User role updated to EMPLOYEE and notification sent."
+                  data:
+                    type: object
+                    properties:
+                      employee:
+                        $ref: '#/components/schemas/Employee'
+                      roleChanged:
+                        type: boolean
+                        description: Whether user role was changed from GUEST to EMPLOYEE
+                        example: true
+                      emailSent:
+                        type: boolean
+                        description: Whether employee assignment email was sent
+                        example: true
         '400':
           description: Invalid input data
         '401':

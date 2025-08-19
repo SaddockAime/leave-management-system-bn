@@ -5138,7 +5138,7 @@
           "Authentication"
         ],
         "summary": "User registration",
-        "description": "Register a new user account",
+        "description": "Register a new user account with GUEST role. \n- User is assigned GUEST role initially\n- Welcome email sent with verification link\n- Email verification required before full access\n- HR/Admin must create employee profile to upgrade to EMPLOYEE role\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -5151,20 +5151,58 @@
         },
         "responses": {
           "201": {
-            "description": "User registered successfully",
+            "description": "User registered successfully with GUEST role. Email verification required before login.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
                     "success": {
-                      "type": "boolean"
+                      "type": "boolean",
+                      "example": true
                     },
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "example": "User registered successfully with GUEST role. Welcome email sent with verification link."
                     },
-                    "user": {
-                      "$ref": "#/components/schemas/User"
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "userId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "User's unique identifier"
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email",
+                          "description": "User's email address"
+                        },
+                        "firstName": {
+                          "type": "string",
+                          "description": "User's first name"
+                        },
+                        "lastName": {
+                          "type": "string",
+                          "description": "User's last name"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "GUEST"
+                          ],
+                          "description": "Initial role assigned (always GUEST)"
+                        },
+                        "emailVerified": {
+                          "type": "boolean",
+                          "example": false,
+                          "description": "Email verification status (always false on registration)"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Registration successful. Please check your email to verify your account before logging in."
+                        }
+                      }
                     }
                   }
                 }
@@ -5193,7 +5231,7 @@
           "Authentication"
         ],
         "summary": "User login",
-        "description": "Authenticate user and return JWT token",
+        "description": "Authenticate user and return JWT token.\n**Note**: Email verification is required before login.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -5216,11 +5254,25 @@
             }
           },
           "401": {
-            "description": "Invalid credentials",
+            "description": "Invalid credentials or email not verified",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthError"
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Please verify your email address before logging in. Check your inbox for the verification link."
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Please verify your email address before logging in. Check your inbox for the verification link."
+                    }
+                  }
                 }
               }
             }
@@ -5961,6 +6013,113 @@
         }
       }
     },
+    "/api/auth/status": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Get user onboarding status",
+        "description": "Get comprehensive user status including role, email verification, and employee profile status.\nUseful for GUEST users to check their onboarding progress and next steps.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User status retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "userId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "User's unique identifier"
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email",
+                          "description": "User's email address"
+                        },
+                        "firstName": {
+                          "type": "string",
+                          "description": "User's first name"
+                        },
+                        "lastName": {
+                          "type": "string",
+                          "description": "User's last name"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": [
+                            "GUEST",
+                            "EMPLOYEE",
+                            "MANAGER",
+                            "HR_MANAGER",
+                            "ADMIN"
+                          ],
+                          "description": "Current user role"
+                        },
+                        "emailVerified": {
+                          "type": "boolean",
+                          "description": "Whether user's email is verified"
+                        },
+                        "hasEmployeeProfile": {
+                          "type": "boolean",
+                          "description": "Whether user has an employee profile"
+                        },
+                        "needsEmployeeProfile": {
+                          "type": "boolean",
+                          "description": "Whether GUEST user needs HR to create employee profile"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "GUEST_AWAITING_PROFILE",
+                            "PENDING_APPROVAL",
+                            "ACTIVE_EMPLOYEE"
+                          ],
+                          "description": "Overall user status in the onboarding process"
+                        }
+                      },
+                      "example": {
+                        "userId": "123e4567-e89b-12d3-a456-426614174000",
+                        "email": "john.doe@company.com",
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "role": "GUEST",
+                        "emailVerified": true,
+                        "hasEmployeeProfile": false,
+                        "needsEmployeeProfile": true,
+                        "status": "GUEST_AWAITING_PROFILE"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
     "/api/employees/my-department": {
       "get": {
         "tags": [
@@ -6196,7 +6355,7 @@
           "Employees"
         ],
         "summary": "Create employee profile",
-        "description": "Create an employee profile for an existing user (HR/Admin only)",
+        "description": "Create an employee profile for an existing user (HR/Admin only).\nThis action:\n- Creates employee record for existing user\n- Updates user role from GUEST to EMPLOYEE (if applicable)\n- Sends professional welcome email notification to employee\n- Grants full employee access and permissions\n",
         "security": [
           {
             "bearerAuth": []
@@ -6214,11 +6373,39 @@
         },
         "responses": {
           "201": {
-            "description": "Employee created successfully",
+            "description": "Employee profile created successfully. Role updated and notification sent.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Employee"
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Employee profile created successfully. User role updated to EMPLOYEE and notification sent."
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "employee": {
+                          "$ref": "#/components/schemas/Employee"
+                        },
+                        "roleChanged": {
+                          "type": "boolean",
+                          "description": "Whether user role was changed from GUEST to EMPLOYEE",
+                          "example": true
+                        },
+                        "emailSent": {
+                          "type": "boolean",
+                          "description": "Whether employee assignment email was sent",
+                          "example": true
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -6766,7 +6953,7 @@
           "Leave Management"
         ],
         "summary": "Get my leave requests",
-        "description": "Retrieve authenticated user's leave requests with pagination and filtering",
+        "description": "Retrieve authenticated user's leave requests with pagination and filtering.\n**Access**: EMPLOYEE, MANAGER, HR_MANAGER, ADMIN only. GUEST users cannot access.\n",
         "security": [
           {
             "bearerAuth": []
@@ -7074,7 +7261,7 @@
           "Leave Management"
         ],
         "summary": "Create leave request",
-        "description": "Create a new leave request",
+        "description": "Create a new leave request.\n**Access**: EMPLOYEE, MANAGER, HR_MANAGER, ADMIN only. GUEST users cannot create leave requests.\n",
         "security": [
           {
             "bearerAuth": []
@@ -11674,7 +11861,7 @@
           "Documents"
         ],
         "summary": "Upload document to leave request",
-        "description": "Upload a document file to a specific leave request",
+        "description": "Upload a document file to a specific leave request.\n**Access**: EMPLOYEE, MANAGER, HR_MANAGER, ADMIN only. GUEST users cannot upload documents.\n",
         "security": [
           {
             "bearerAuth": []
@@ -11741,7 +11928,7 @@
           "Documents"
         ],
         "summary": "Get documents for a leave request",
-        "description": "Retrieve all documents associated with a specific leave request",
+        "description": "Retrieve all documents associated with a specific leave request.\n**Access**: EMPLOYEE, MANAGER, HR_MANAGER, ADMIN only. GUEST users cannot access documents.\n",
         "security": [
           {
             "bearerAuth": []
