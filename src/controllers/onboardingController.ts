@@ -17,7 +17,6 @@ export class OnboardingController {
         message: 'Onboarding process created successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to create onboarding process',
@@ -34,7 +33,11 @@ export class OnboardingController {
       const { id } = req.params;
       const { status, phase } = req.body;
 
-      const updatedOnboarding = await this.onboardingService.updateOnboardingStatus(id, status, phase);
+      const updatedOnboarding = await this.onboardingService.updateOnboardingStatus(
+        id,
+        status,
+        phase,
+      );
 
       res.json({
         success: true,
@@ -42,7 +45,6 @@ export class OnboardingController {
         message: 'Onboarding status updated successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to update onboarding status',
@@ -66,7 +68,6 @@ export class OnboardingController {
         message: 'Onboarding phase advanced successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to advance onboarding phase',
@@ -112,7 +113,6 @@ export class OnboardingController {
         message: 'Onboardings retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to search onboardings',
@@ -135,7 +135,6 @@ export class OnboardingController {
         message: 'Onboarding task created successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to create onboarding task',
@@ -152,7 +151,11 @@ export class OnboardingController {
       const { id } = req.params;
       const { status, completionNotes } = req.body;
 
-      const updatedTask = await this.onboardingService.updateTaskStatus(id, status, completionNotes);
+      const updatedTask = await this.onboardingService.updateTaskStatus(
+        id,
+        status,
+        completionNotes,
+      );
 
       res.json({
         success: true,
@@ -160,7 +163,6 @@ export class OnboardingController {
         message: 'Task status updated successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to update task status',
@@ -208,7 +210,6 @@ export class OnboardingController {
         message: 'Tasks retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to search tasks',
@@ -231,7 +232,6 @@ export class OnboardingController {
         message: 'Onboarding progress retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to get onboarding progress',
@@ -254,7 +254,6 @@ export class OnboardingController {
         message: 'Onboarding template created successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to create onboarding template',
@@ -282,7 +281,6 @@ export class OnboardingController {
         message: 'Onboarding cloned from template successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to clone onboarding from template',
@@ -304,7 +302,6 @@ export class OnboardingController {
         message: 'Onboarding analytics retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to get onboarding analytics',
@@ -330,7 +327,6 @@ export class OnboardingController {
         message: 'Onboarding updated successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to update onboarding',
@@ -362,7 +358,6 @@ export class OnboardingController {
         message: 'Onboarding retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to get onboarding',
@@ -388,7 +383,6 @@ export class OnboardingController {
         message: 'Onboarding task updated successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to update onboarding task',
@@ -420,7 +414,6 @@ export class OnboardingController {
         message: 'Onboarding task retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to get onboarding task',

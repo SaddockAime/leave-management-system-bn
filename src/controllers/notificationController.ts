@@ -32,7 +32,6 @@ export class NotificationController {
         message: 'Notifications retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to retrieve notifications',
@@ -56,7 +55,6 @@ export class NotificationController {
         message: 'Notification marked as read',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to mark notification as read',
@@ -79,7 +77,6 @@ export class NotificationController {
         message: 'All notifications marked as read',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to mark all notifications as read',
@@ -103,7 +100,6 @@ export class NotificationController {
         message: 'Notification deleted successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to delete notification',
@@ -126,7 +122,6 @@ export class NotificationController {
         message: 'Notification preferences retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to retrieve notification preferences',
@@ -154,7 +149,6 @@ export class NotificationController {
         message: 'Notification preferences updated successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to update notification preferences',

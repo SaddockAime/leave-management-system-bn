@@ -2,10 +2,10 @@ import { Router } from 'express';
 import { DocumentController } from '../controllers/documentController';
 import { authenticateToken, authorize } from '../middleware/authMiddleware';
 import { validateRequest } from '../middleware/joiValidation';
-import { 
+import {
   getDocumentByIdValidation,
   uploadDocumentValidation,
-  getDocumentsByLeaveRequestValidation 
+  getDocumentsByLeaveRequestValidation,
 } from '../validations/documentValidations';
 import { documentUpload } from '../config/multer';
 

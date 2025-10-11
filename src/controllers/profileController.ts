@@ -43,11 +43,7 @@ export class ProfileController {
       const profilePictureFile = (req as any).file; // File from multer middleware
 
       // Update profile with both data and optional picture
-      const result = await this.profileService.updateProfile(
-        userId,
-        updates,
-        profilePictureFile,
-      );
+      const result = await this.profileService.updateProfile(userId, updates, profilePictureFile);
 
       if (!result.success) {
         res.status(400).json({

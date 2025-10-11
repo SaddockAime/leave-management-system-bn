@@ -35,9 +35,9 @@ export class EmployeeController {
       }
 
       // Get the user first with current role
-      const user = await userRepository.findOne({ 
+      const user = await userRepository.findOne({
         where: { id: userId },
-        relations: ['role']
+        relations: ['role'],
       });
       if (!user) {
         res.status(404).json({ message: 'User not found' });
@@ -47,7 +47,7 @@ export class EmployeeController {
       // Get department information for email
       const department = await departmentRepository.findOne({
         where: { id: departmentId },
-        relations: ['manager', 'manager.user']
+        relations: ['manager', 'manager.user'],
       });
       if (!department) {
         res.status(404).json({ message: 'Department not found' });
@@ -97,12 +97,13 @@ export class EmployeeController {
 
         res.status(201).json({
           success: true,
-          message: 'Employee profile created successfully. User role updated to EMPLOYEE and notification sent.',
+          message:
+            'Employee profile created successfully. User role updated to EMPLOYEE and notification sent.',
           data: {
             employee: savedEmployee,
             roleChanged: true,
             emailSent: true,
-          }
+          },
         });
       } else {
         res.status(201).json({
@@ -112,7 +113,7 @@ export class EmployeeController {
             employee: savedEmployee,
             roleChanged: false,
             emailSent: false,
-          }
+          },
         });
       }
     } catch (error) {
@@ -185,7 +186,6 @@ export class EmployeeController {
         },
       });
     } catch (error) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to retrieve employees',
@@ -227,10 +227,11 @@ export class EmployeeController {
       // Others can view: themselves or same department
       const userRole = (req as any).user?.role || '';
       const hasFullAccess = userRole === 'HR_MANAGER' || userRole === 'ADMIN';
-      const canView = hasFullAccess || 
-        employee.id === currentEmployee.id || 
+      const canView =
+        hasFullAccess ||
+        employee.id === currentEmployee.id ||
         employee.departmentId === currentEmployee.departmentId;
-      
+
       if (canView) {
         res.status(200).json(employee);
       } else {

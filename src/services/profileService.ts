@@ -38,7 +38,8 @@ export class ProfileService {
       // Handle profile picture upload if provided
       if (profilePictureFile) {
         try {
-          const uploadResult = await this.cloudinaryService.uploadProfilePicture(profilePictureFile);
+          const uploadResult =
+            await this.cloudinaryService.uploadProfilePicture(profilePictureFile);
           user.profilePicture = uploadResult.secure_url;
         } catch (error) {
           return { success: false, error: 'Failed to upload profile picture' };
@@ -62,7 +63,7 @@ export class ProfileService {
           profilePicture: updatedUser.profilePicture,
           role: updatedUser.role?.name,
           hasEmployeeRecord: !!employee,
-        }
+        },
       };
     } catch (error) {
       return { success: false, error: `Failed to update profile: ${error.message}` };

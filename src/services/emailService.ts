@@ -74,14 +74,14 @@ export class EmailService {
     }
 
     const templatePath = path.join(__dirname, '..', 'templates', 'email', `${templateName}.hbs`);
-    
+
     if (!fs.existsSync(templatePath)) {
       throw new Error(`Email template not found: ${templatePath}`);
     }
 
     const templateContent = fs.readFileSync(templatePath, 'utf8');
     const compiledTemplate = Handlebars.compile(templateContent);
-    
+
     this.templatesCache.set(templateName, compiledTemplate);
     return compiledTemplate;
   }
@@ -94,7 +94,9 @@ export class EmailService {
       companyName: process.env.COMPANY_NAME || 'Your Company',
       supportEmail: process.env.SUPPORT_EMAIL || 'support@company.com',
       hrEmail: process.env.HR_EMAIL || 'hr@company.com',
-      loginUrl: process.env.FRONTEND_URL ? `${process.env.FRONTEND_URL}/login` : 'http://localhost:3000/login',
+      loginUrl: process.env.FRONTEND_URL
+        ? `${process.env.FRONTEND_URL}/login`
+        : 'http://localhost:3000/login',
     };
   }
 
@@ -104,9 +106,9 @@ export class EmailService {
   private generateEmailFromTemplate(templateName: string, data: EmailTemplateData): EmailTemplate {
     const template = this.getTemplate(templateName);
     const templateData = { ...this.getDefaultTemplateData(), ...data };
-    
+
     const html = template(templateData);
-    
+
     // Generate plain text version by stripping HTML tags
     const text = html
       .replace(/<[^>]*>/g, '') // Remove HTML tags
@@ -137,7 +139,7 @@ export class EmailService {
    */
   async sendEmailVerification(user: User, verificationToken: string): Promise<void> {
     const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`;
-    
+
     const templateData: EmailTemplateData = {
       firstName: user.firstName,
       lastName: user.lastName,
@@ -158,7 +160,7 @@ export class EmailService {
    */
   async sendWelcomeEmail(user: User, verificationToken: string): Promise<void> {
     const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`;
-    
+
     const templateData: EmailTemplateData = {
       firstName: user.firstName,
       lastName: user.lastName,
@@ -178,7 +180,7 @@ export class EmailService {
    * Send employee assignment notification (GUEST → EMPLOYEE)
    */
   async sendEmployeeAssignmentEmail(
-    user: User, 
+    user: User,
     employeeData: {
       departmentName: string;
       position: string;
@@ -186,7 +188,7 @@ export class EmailService {
       employeeId: string;
       managerName?: string;
       managerEmail?: string;
-    }
+    },
   ): Promise<void> {
     const templateData: EmailTemplateData = {
       firstName: user.firstName,

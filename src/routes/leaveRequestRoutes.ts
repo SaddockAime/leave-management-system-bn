@@ -19,11 +19,11 @@ const leaveRequestController = new LeaveRequestController();
 
 // Get my leave requests (EMPLOYEE+ only)
 router.get(
-  '/my-leaves', 
-  authenticateToken, 
+  '/my-leaves',
+  authenticateToken,
   authorize(['EMPLOYEE', 'MANAGER', 'HR_MANAGER', 'ADMIN']),
   validateRequest(getMyLeavesValidation),
-  (req, res) => leaveRequestController.getMyLeaves(req, res)
+  (req, res) => leaveRequestController.getMyLeaves(req, res),
 );
 
 // Get all leave requests (HR/Admin/Manager only)
@@ -45,11 +45,8 @@ router.get(
 );
 
 // Get team leaves (Manager only)
-router.get(
-  '/team',
-  authenticateToken,
-  authorize(['MANAGER', 'ADMIN']),
-  (req, res) => leaveRequestController.getTeamLeaves(req, res),
+router.get('/team', authenticateToken, authorize(['MANAGER', 'ADMIN']), (req, res) =>
+  leaveRequestController.getTeamLeaves(req, res),
 );
 
 // Get leave request by ID (EMPLOYEE+ only)

@@ -32,7 +32,7 @@ export const documentUpload = multer({
       'image/gif',
       'text/plain',
     ];
-    
+
     if (allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {

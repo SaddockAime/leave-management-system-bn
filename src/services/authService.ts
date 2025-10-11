@@ -88,7 +88,9 @@ export class AuthService {
     // For now, we'll keep it simple
   }
 
-  async register(credentials: RegisterCredentials): Promise<{ success: boolean; data?: RegistrationResponse; error?: string }> {
+  async register(
+    credentials: RegisterCredentials,
+  ): Promise<{ success: boolean; data?: RegistrationResponse; error?: string }> {
     try {
       const userRepository = getRepository(User);
       const roleRepository = getRepository(Role);
@@ -101,52 +103,52 @@ export class AuthService {
         return { success: false, error: 'User with this email already exists' };
       }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(credentials.password, this.SALT_ROUNDS);
+      // Hash password
+      const hashedPassword = await bcrypt.hash(credentials.password, this.SALT_ROUNDS);
 
-    // Create user
-    const user = userRepository.create({
-      email: credentials.email,
-      password: hashedPassword,
-      firstName: credentials.firstName,
-      lastName: credentials.lastName,
-      status: UserStatus.PENDING,
-      authProvider: AuthProvider.LOCAL,
-      emailVerified: false,
-    });
-
-    // Assign default GUEST role for new registrations
-    if (!credentials.roleIds || credentials.roleIds.length === 0) {
-      const guestRole = await roleRepository.findOne({
-        where: { name: 'GUEST' },
+      // Create user
+      const user = userRepository.create({
+        email: credentials.email,
+        password: hashedPassword,
+        firstName: credentials.firstName,
+        lastName: credentials.lastName,
+        status: UserStatus.PENDING,
+        authProvider: AuthProvider.LOCAL,
+        emailVerified: false,
       });
-      if (guestRole) {
-        user.role = guestRole;
-        user.roleId = guestRole.id;
+
+      // Assign default GUEST role for new registrations
+      if (!credentials.roleIds || credentials.roleIds.length === 0) {
+        const guestRole = await roleRepository.findOne({
+          where: { name: 'GUEST' },
+        });
+        if (guestRole) {
+          user.role = guestRole;
+          user.roleId = guestRole.id;
+        }
+      } else {
+        // Assign specified roles (admin functionality)
+        const roles = await roleRepository.findByIds(credentials.roleIds);
+        user.role = roles[0]; // Take the first role since we only support one role per user
+        user.roleId = roles[0].id;
       }
-    } else {
-      // Assign specified roles (admin functionality)
-      const roles = await roleRepository.findByIds(credentials.roleIds);
-      user.role = roles[0]; // Take the first role since we only support one role per user
-      user.roleId = roles[0].id;
-    }
 
-    const savedUser = await userRepository.save(user);
+      const savedUser = await userRepository.save(user);
 
-    // Generate email verification token
-    const verificationToken = require('crypto').randomBytes(32).toString('hex');
-    savedUser.emailVerificationToken = verificationToken;
-    savedUser.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-    await userRepository.save(savedUser);
+      // Generate email verification token
+      const verificationToken = require('crypto').randomBytes(32).toString('hex');
+      savedUser.emailVerificationToken = verificationToken;
+      savedUser.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+      await userRepository.save(savedUser);
 
-    // Send welcome email with verification link (for GUEST users)
-    try {
-      await this.emailService.sendWelcomeEmail(savedUser, verificationToken);
-      console.info(`Welcome email sent to new GUEST user: ${savedUser.email}`);
-    } catch (emailError) {
-      console.error('Failed to send welcome email:', emailError);
-      // Don't fail registration if email fails
-    }
+      // Send welcome email with verification link (for GUEST users)
+      try {
+        await this.emailService.sendWelcomeEmail(savedUser, verificationToken);
+        console.info(`Welcome email sent to new GUEST user: ${savedUser.email}`);
+      } catch (emailError) {
+        console.error('Failed to send welcome email:', emailError);
+        // Don't fail registration if email fails
+      }
 
       // Audit log - only log user creation for security
       await this.auditService.logSecurityEvent({
@@ -166,15 +168,18 @@ export class AuthService {
           lastName: savedUser.lastName,
           role: savedUser.role?.name || 'GUEST',
           emailVerified: false,
-          message: 'Registration successful. Please check your email to verify your account before logging in.'
-        }
+          message:
+            'Registration successful. Please check your email to verify your account before logging in.',
+        },
       };
     } catch (error) {
       return { success: false, error: `Registration failed: ${error.message}` };
     }
   }
 
-  async login(credentials: LoginCredentials): Promise<{ success: boolean; data?: AuthResponse; error?: string }> {
+  async login(
+    credentials: LoginCredentials,
+  ): Promise<{ success: boolean; data?: AuthResponse; error?: string }> {
     try {
       const userRepository = getRepository(User);
 
@@ -194,9 +199,10 @@ export class AuthService {
 
       // Check if email is verified
       if (!user.emailVerified) {
-        return { 
-          success: false, 
-          error: 'Please verify your email address before logging in. Check your inbox for the verification link.' 
+        return {
+          success: false,
+          error:
+            'Please verify your email address before logging in. Check your inbox for the verification link.',
         };
       }
 
@@ -225,7 +231,7 @@ export class AuthService {
           token,
           refreshToken,
           expiresIn: 24 * 60 * 60, // 24 hours in seconds
-        }
+        },
       };
     } catch (error) {
       return { success: false, error: `Login failed: ${error.message}` };

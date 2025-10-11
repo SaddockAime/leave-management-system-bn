@@ -172,7 +172,7 @@ paths:
                     example: true
                   message:
                     type: string
-                    example: "Employee profile created successfully. User role updated to EMPLOYEE and notification sent."
+                    example: 'Employee profile created successfully. User role updated to EMPLOYEE and notification sent.'
                   data:
                     type: object
                     properties:

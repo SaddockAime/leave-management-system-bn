@@ -28,11 +28,7 @@ router.post(
   validateRequest(registerValidation),
   authController.register.bind(authController),
 );
-router.post(
-  '/login', 
-  validateRequest(loginValidation), 
-  authController.login.bind(authController)
-);
+router.post('/login', validateRequest(loginValidation), authController.login.bind(authController));
 router.post(
   '/refresh',
   validateRequest(refreshTokenValidation),

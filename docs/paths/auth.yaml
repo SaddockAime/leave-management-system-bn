@@ -29,7 +29,7 @@ paths:
                     example: true
                   message:
                     type: string
-                    example: "User registered successfully with GUEST role. Welcome email sent with verification link."
+                    example: 'User registered successfully with GUEST role. Welcome email sent with verification link.'
                   data:
                     type: object
                     properties:
@@ -57,7 +57,7 @@ paths:
                         description: Email verification status (always false on registration)
                       message:
                         type: string
-                        example: "Registration successful. Please check your email to verify your account before logging in."
+                        example: 'Registration successful. Please check your email to verify your account before logging in.'
         '400':
           description: Invalid input or user already exists
           content:
@@ -100,10 +100,10 @@ paths:
                     example: false
                   message:
                     type: string
-                    example: "Please verify your email address before logging in. Check your inbox for the verification link."
+                    example: 'Please verify your email address before logging in. Check your inbox for the verification link.'
                   error:
                     type: string
-                    example: "Please verify your email address before logging in. Check your inbox for the verification link."
+                    example: 'Please verify your email address before logging in. Check your inbox for the verification link.'
         '500':
           description: Internal server error
 
@@ -629,15 +629,15 @@ paths:
                         enum: [GUEST_AWAITING_PROFILE, PENDING_APPROVAL, ACTIVE_EMPLOYEE]
                         description: Overall user status in the onboarding process
                     example:
-                      userId: "123e4567-e89b-12d3-a456-426614174000"
-                      email: "john.doe@company.com"
-                      firstName: "John"
-                      lastName: "Doe"
-                      role: "GUEST"
+                      userId: '123e4567-e89b-12d3-a456-426614174000'
+                      email: 'john.doe@company.com'
+                      firstName: 'John'
+                      lastName: 'Doe'
+                      role: 'GUEST'
                       emailVerified: true
                       hasEmployeeProfile: false
                       needsEmployeeProfile: true
-                      status: "GUEST_AWAITING_PROFILE"
+                      status: 'GUEST_AWAITING_PROFILE'
         '401':
           description: Unauthorized
         '404':

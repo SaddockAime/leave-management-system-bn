@@ -8,7 +8,7 @@ export class DepartmentController {
     try {
       const departmentRepository = getRepository(Department);
       const departments = await departmentRepository.find({
-        relations: ['manager'],
+        relations: ['manager', 'manager.user', 'employees', 'employees.user'],
       });
 
       res.status(200).json(departments);

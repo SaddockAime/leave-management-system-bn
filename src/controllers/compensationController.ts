@@ -17,7 +17,6 @@ export class CompensationController {
         message: 'Salary created/updated successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to create/update salary',
@@ -42,7 +41,6 @@ export class CompensationController {
         message: 'Salary updated successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to update salary',
@@ -65,7 +63,6 @@ export class CompensationController {
         message: 'Salary history retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to get salary history',
@@ -82,7 +79,10 @@ export class CompensationController {
       const { employeeId } = req.params;
       const { type } = req.query;
 
-      const currentSalary = await this.compensationService.getCurrentSalary(employeeId, type as any);
+      const currentSalary = await this.compensationService.getCurrentSalary(
+        employeeId,
+        type as any,
+      );
 
       res.json({
         success: true,
@@ -90,7 +90,6 @@ export class CompensationController {
         message: 'Current salary retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to get current salary',
@@ -136,7 +135,6 @@ export class CompensationController {
         message: 'Salaries retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to search salaries',
@@ -159,7 +157,6 @@ export class CompensationController {
         message: 'Bonus created successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to create bonus',
@@ -184,7 +181,6 @@ export class CompensationController {
         message: 'Bonus status updated successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to update bonus status',
@@ -228,7 +224,6 @@ export class CompensationController {
         message: 'Bonuses retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to search bonuses',
@@ -251,7 +246,6 @@ export class CompensationController {
         message: 'Benefit created successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to create benefit',
@@ -276,7 +270,6 @@ export class CompensationController {
         message: 'Benefit updated successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to update benefit',
@@ -311,7 +304,6 @@ export class CompensationController {
         message: 'Benefits retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to search benefits',
@@ -340,7 +332,6 @@ export class CompensationController {
         message: 'Employee enrolled in benefit successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to enroll employee in benefit',
@@ -369,7 +360,6 @@ export class CompensationController {
         message: 'Benefit enrollment status updated successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to update benefit enrollment status',
@@ -392,7 +382,6 @@ export class CompensationController {
         message: 'Employee benefits retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to get employee benefits',
@@ -414,7 +403,6 @@ export class CompensationController {
         message: 'Compensation analytics retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to get compensation analytics',

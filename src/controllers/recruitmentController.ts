@@ -17,7 +17,6 @@ export class RecruitmentController {
         message: 'Job posting created successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to create job posting',
@@ -43,7 +42,6 @@ export class RecruitmentController {
         message: 'Job posting updated successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to update job posting',
@@ -68,7 +66,6 @@ export class RecruitmentController {
         message: 'Job posting published successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to publish job posting',
@@ -92,7 +89,6 @@ export class RecruitmentController {
         message: 'Job posting closed successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to close job posting',
@@ -138,7 +134,6 @@ export class RecruitmentController {
         message: 'Job postings retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to search job postings',
@@ -161,7 +156,6 @@ export class RecruitmentController {
         message: 'Job application submitted successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to submit job application',
@@ -190,7 +184,6 @@ export class RecruitmentController {
         message: 'Application status updated successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to update application status',
@@ -225,7 +218,6 @@ export class RecruitmentController {
         message: 'Applications retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to search applications',
@@ -248,7 +240,6 @@ export class RecruitmentController {
         message: 'Interview scheduled successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to schedule interview',
@@ -265,7 +256,11 @@ export class RecruitmentController {
       const { id } = req.params;
       const { status, result } = req.body;
 
-      const updatedInterview = await this.recruitmentService.updateInterviewStatus(id, status, result);
+      const updatedInterview = await this.recruitmentService.updateInterviewStatus(
+        id,
+        status,
+        result,
+      );
 
       res.json({
         success: true,
@@ -273,7 +268,6 @@ export class RecruitmentController {
         message: 'Interview status updated successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to update interview status',
@@ -319,7 +313,6 @@ export class RecruitmentController {
         message: 'Interviews retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to search interviews',
@@ -341,7 +334,6 @@ export class RecruitmentController {
         message: 'Recruitment analytics retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to get recruitment analytics',
@@ -373,7 +365,6 @@ export class RecruitmentController {
         message: 'Job posting retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to get job posting',
@@ -396,7 +387,6 @@ export class RecruitmentController {
         message: 'Job application created successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to create job application',
@@ -425,7 +415,6 @@ export class RecruitmentController {
         message: 'Job application updated successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to update job application',
@@ -457,7 +446,6 @@ export class RecruitmentController {
         message: 'Job application retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to get job application',
@@ -480,7 +468,6 @@ export class RecruitmentController {
         message: 'Interview created successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to create interview',
@@ -509,7 +496,6 @@ export class RecruitmentController {
         message: 'Interview updated successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to update interview',
@@ -541,7 +527,6 @@ export class RecruitmentController {
         message: 'Interview retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to get interview',

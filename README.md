@@ -5,6 +5,7 @@ A comprehensive REST API for managing employee leave requests, balances, and app
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js (v14+)
 - PostgreSQL (v11+)
 - npm or yarn
@@ -12,23 +13,27 @@ A comprehensive REST API for managing employee leave requests, balances, and app
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/SaddockAime/leave-management-system-bn.git
    cd leave-management-system-bn
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Environment Setup**
+
    ```bash
    cp .env.example .env
    # Edit .env file with your database and other configurations
    ```
 
 4. **Database Setup**
+
    ```bash
    npm run createAllTables
    npm run seed:all
@@ -83,6 +88,7 @@ NODE_ENV=development
 ## 🏗️ Architecture
 
 ### Technology Stack
+
 - **Runtime**: Node.js with TypeScript
 - **Framework**: Express.js
 - **Database**: PostgreSQL with TypeORM
@@ -94,6 +100,7 @@ NODE_ENV=development
 - **Validation**: Joi for request validation
 
 ### Key Features
+
 - **🔐 Authentication & Authorization**: Complete JWT-based auth system with user registration, login, logout, password reset, email verification, and Google OAuth
 - **👥 HR Management**: Comprehensive HR module with employee analytics, department performance, bulk operations, and workforce insights
 - **🎯 Recruitment System**: Full recruitment lifecycle with job postings, application tracking, interview scheduling, and recruitment analytics
@@ -110,10 +117,12 @@ NODE_ENV=development
 ## 📚 API Documentation
 
 ### Access
+
 - **Swagger UI**: `http://localhost:3000/api-docs`
 - **OpenAPI Spec**: `http://localhost:3000/api-docs.json`
 
 ### Authentication
+
 The API uses internal JWT-based authentication. Users can register, login, and manage their sessions:
 
 ```bash
@@ -137,6 +146,7 @@ curl -X POST http://localhost:3000/api/auth/logout \
 ```
 
 ### User Roles & Permissions
+
 - **ADMIN**: Full system access, user management, system configuration
 - **HR_MANAGER**: Employee management, department oversight, leave policies
 - **MANAGER**: Team management, leave approvals for direct reports
@@ -145,6 +155,7 @@ curl -X POST http://localhost:3000/api/auth/logout \
 ## 🛠️ Development
 
 ### Scripts
+
 ```bash
 npm run dev              # Start development server
 npm run build            # Build TypeScript to JavaScript
@@ -157,6 +168,7 @@ npm run format           # Format code with Prettier
 ```
 
 ### Project Structure
+
 ```
 src/
 ├── controllers/     # Request handlers
@@ -171,6 +183,7 @@ src/
 ```
 
 ### Code Standards
+
 - TypeScript for type safety
 - Joi for request validation
 - Winston for structured logging
@@ -188,17 +201,20 @@ src/
 ## 🗄️ Database
 
 ### Core Models
+
 - **User**: Authentication and basic user data
 - **Employee**: Extended employee profiles (linked to Users)
 - **Department**: Organizational structure
 - **Role**: User roles and permissions
 
 ### Leave Management Models
+
 - **LeaveRequest**: Leave applications and status
 - **LeaveType**: Different types of leave (Annual, Sick, etc.)
 - **LeaveBalance**: Available leave balances by type
 
 ### HR & Management Models
+
 - **JobPosting**: Recruitment job listings
 - **JobApplication**: Candidate applications
 - **Interview**: Interview scheduling and tracking
@@ -206,18 +222,21 @@ src/
 - **OnboardingTask**: Individual onboarding tasks
 
 ### Compensation Models
+
 - **Salary**: Employee salary information
 - **Bonus**: Bonus allocations and tracking
 - **Benefit**: Company benefits catalog
 - **EmployeeBenefit**: Employee benefit enrollments
 
 ### System Models
+
 - **Document**: File attachments with Cloudinary integration
 - **Notification**: System notifications and preferences
 - **AuditLog**: Comprehensive activity tracking
 - **NotificationTemplate**: Email and notification templates
 
 ### Relationships
+
 - Users have one Employee profile (created by HR/Admin)
 - Employees belong to Departments
 - Employees can have Managers (hierarchical structure)
@@ -229,6 +248,7 @@ src/
 The system provides **17 comprehensive API modules** with hundreds of endpoints:
 
 ### 🔐 Authentication & User Management (`/api/auth`)
+
 - **Professional Registration Flow**: New users assigned GUEST role, receive welcome email with verification
 - **Role-Based Progression**: GUEST → EMPLOYEE when HR creates profile, with assignment notification
 - **Secure Authentication**: JWT tokens, password reset, email verification workflows
@@ -237,10 +257,12 @@ The system provides **17 comprehensive API modules** with hundreds of endpoints:
 - **Token refresh and blacklisting** for enhanced security
 
 ### 👤 Profile Management (`/api/profile`)
+
 - User profile viewing and updating
 - Profile picture upload with Cloudinary integration
 
 ### 👥 Employee Management (`/api/employees`)
+
 - **Smart Role Progression**: Creating employee profile automatically upgrades GUEST to EMPLOYEE
 - **Professional Notifications**: Welcome emails sent with department and manager information
 - **HR-controlled employee profile** creation and management
@@ -249,12 +271,14 @@ The system provides **17 comprehensive API modules** with hundreds of endpoints:
 - **Employee analytics and insights**
 
 ### 👨‍💼 Manager Tools (`/api/manager`)
+
 - Team management and hierarchy viewing
 - Team leave approval and oversight
 - Performance tracking and analytics
 - Direct report management
 
 ### 🏢 HR Management (`/api/hr`)
+
 - Comprehensive HR dashboard and analytics
 - Employee overview and workforce insights
 - Department performance metrics
@@ -262,6 +286,7 @@ The system provides **17 comprehensive API modules** with hundreds of endpoints:
 - HR reporting with multiple report types
 
 ### 🎯 Recruitment System (`/api/recruitment`)
+
 - Job posting creation and management
 - Application tracking and processing
 - Interview scheduling and management
@@ -269,6 +294,7 @@ The system provides **17 comprehensive API modules** with hundreds of endpoints:
 - Recruitment analytics and metrics
 
 ### 💰 Compensation Management (`/api/compensation`)
+
 - Salary administration and tracking
 - Bonus allocation and management
 - Benefits enrollment and administration
@@ -276,12 +302,14 @@ The system provides **17 comprehensive API modules** with hundreds of endpoints:
 - Payroll integration capabilities
 
 ### 📚 Onboarding System (`/api/onboarding`)
+
 - Structured onboarding process creation
 - Task templates and checklist management
 - Progress tracking and completion monitoring
 - Onboarding analytics and optimization
 
 ### 📋 Leave Management (`/api/leave-requests`, `/api/leave-types`, `/api/leave-balances`)
+
 - Advanced leave request workflows
 - Multiple leave types and balance tracking
 - Manager approval processes
@@ -289,12 +317,14 @@ The system provides **17 comprehensive API modules** with hundreds of endpoints:
 - Department and team leave oversight
 
 ### 📁 Document Management (`/api/documents`)
+
 - Cloudinary-integrated file storage
 - Document upload for leave requests
 - File categorization and management
 - Secure document access control
 
 ### 🔔 Notification System (`/api/notifications`)
+
 - **Professional Email Templates**: Handlebars-powered professional email designs
 - **Role-Based Notifications**: Welcome emails for GUEST, assignment emails for EMPLOYEE
 - **Real-time notifications** via Socket.IO
@@ -303,23 +333,27 @@ The system provides **17 comprehensive API modules** with hundreds of endpoints:
 - **Custom notification templates** for various workflows
 
 ### 🏢 Department Management (`/api/departments`)
+
 - Organizational structure management
 - Department creation and administration
 - Manager assignment and hierarchies
 
 ### 📊 Reporting & Analytics (`/api/reports`)
+
 - Cross-module reporting capabilities
 - Advanced analytics and insights
 - Data export in multiple formats
 - Custom report generation
 
 ### 🕵️ Audit & Compliance (`/api/audit`)
+
 - Comprehensive activity logging
 - Security event tracking
 - Compliance reporting
 - Audit trail management
 
 ### 🛡️ Additional Modules
+
 - **Protected Routes**: Role-based access control across all endpoints
 - **Real-time Features**: Socket.IO integration for live updates
 - **Email Services**: SMTP integration for notifications and workflows
@@ -333,26 +367,32 @@ For complete API documentation, visit `/api-docs` when the server is running.
 The system implements a sophisticated user onboarding workflow with role-based access control:
 
 #### **Step 1: User Registration (GUEST Role)**
+
 ```
 POST /api/auth/register
 ```
+
 - ✅ User assigned **GUEST** role initially
 - ✅ **Professional welcome email** sent with verification link
 - ✅ **No JWT token** returned (security best practice)
 - ✅ Email verification required before login
 
 #### **Step 2: Email Verification**
+
 ```
 GET /api/auth/verify-email/:token
 ```
+
 - ✅ User verifies email address
 - ✅ Account activated for login
 - ✅ User can now log in with GUEST permissions
 
 #### **Step 3: Employee Profile Creation (GUEST → EMPLOYEE)**
+
 ```
 POST /api/employees (HR/Admin only)
 ```
+
 - ✅ HR/Admin creates employee profile for user
 - ✅ User role **automatically upgraded** from GUEST to EMPLOYEE
 - ✅ **Professional assignment email** sent with:
@@ -363,6 +403,7 @@ POST /api/employees (HR/Admin only)
   - Full access rights explanation
 
 #### **Step 4: Full Employee Access**
+
 - ✅ User now has complete employee functionality
 - ✅ Can submit leave requests, access documents, etc.
 - ✅ Receives role-appropriate notifications
@@ -370,6 +411,7 @@ POST /api/employees (HR/Admin only)
 ### 📧 **Professional Email Templates**
 
 All emails use **Handlebars templates** with professional design:
+
 - **Welcome Email**: Clean blue gradient, verification flow explanation
 - **Employee Assignment**: Green celebration theme, detailed role information
 - **Email Verification**: Security-focused design with clear instructions
@@ -381,11 +423,13 @@ Templates are mobile-responsive and follow corporate design standards.
 The system enforces strict access control based on user roles:
 
 #### **🔓 Public Access (No Authentication)**
+
 - User registration and login
 - Password reset and email verification
 - Google OAuth authentication
 
 #### **👥 GUEST Role Access**
+
 - ✅ **Profile Management**: View/update profile, upload profile picture
 - ✅ **Status Checking**: Check onboarding progress via `/api/auth/status`
 - ✅ **Basic Notifications**: View system notifications
@@ -394,6 +438,7 @@ The system enforces strict access control based on user roles:
 - ❌ **Employee Features**: Limited access until profile created
 
 #### **👔 EMPLOYEE Role Access**
+
 - ✅ **All GUEST permissions** +
 - ✅ **Leave Management**: Create, view, update, cancel leave requests
 - ✅ **Document Management**: Upload and access leave documents
@@ -401,12 +446,14 @@ The system enforces strict access control based on user roles:
 - ✅ **Team Features**: Basic team collaboration
 
 #### **👨‍💼 MANAGER+ Role Access**
+
 - ✅ **All EMPLOYEE permissions** +
 - ✅ **Team Management**: View and manage team leave requests
 - ✅ **Approval Workflows**: Approve/reject leave requests
 - ✅ **Department Oversight**: Department-level reporting
 
 #### **👩‍💼 HR_MANAGER & ADMIN Role Access**
+
 - ✅ **All MANAGER permissions** +
 - ✅ **Employee Management**: Create employee profiles for GUEST users
 - ✅ **System Administration**: User role management, system settings
@@ -415,7 +462,7 @@ The system enforces strict access control based on user roles:
 ### 📊 **Status Endpoint for Frontend Integration**
 
 ```typescript
-GET /api/auth/status
+GET / api / auth / status;
 ```
 
 Perfect for frontend applications to determine user capabilities:
@@ -455,6 +502,7 @@ Perfect for frontend applications to determine user capabilities:
    - Ensure all dependencies are installed
 
 ### Debug Mode
+
 ```bash
 NODE_ENV=development npm run dev
 ```

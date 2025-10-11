@@ -18,7 +18,6 @@ export class HRController {
         message: 'HR dashboard data retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to retrieve HR dashboard data',
@@ -40,7 +39,6 @@ export class HRController {
         message: 'Employee overview retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to retrieve employee overview',
@@ -86,7 +84,6 @@ export class HRController {
         message: 'Employee search completed successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to search employees',
@@ -108,7 +105,6 @@ export class HRController {
         message: 'Employee analytics retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to retrieve employee analytics',
@@ -139,7 +135,6 @@ export class HRController {
         message: 'Employee details retrieved successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to retrieve employee details',
@@ -184,7 +179,6 @@ export class HRController {
         message: 'Employee updated successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to update employee',
@@ -227,7 +221,6 @@ export class HRController {
         message: 'HR report generated successfully',
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to generate HR report',
@@ -258,7 +251,9 @@ export class HRController {
           // Update employee status in bulk
           for (const employeeId of employeeIds) {
             try {
-              const updated = await this.hrService.updateEmployee(employeeId, { status: data.status });
+              const updated = await this.hrService.updateEmployee(employeeId, {
+                status: data.status,
+              });
               results.push({ employeeId, success: true, data: updated });
             } catch (error: any) {
               results.push({ employeeId, success: false, error: error.message });
@@ -294,7 +289,6 @@ export class HRController {
         message: `Bulk operation '${operation}' completed successfully`,
       });
     } catch (error: any) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to perform bulk employee operations',

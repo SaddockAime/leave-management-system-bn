@@ -70,7 +70,9 @@ export class DocumentService {
   /**
    * Get all documents for a leave request
    */
-  async getDocumentsByLeaveRequest(leaveRequestId: string): Promise<{ success: boolean; data?: Document[]; error?: string }> {
+  async getDocumentsByLeaveRequest(
+    leaveRequestId: string,
+  ): Promise<{ success: boolean; data?: Document[]; error?: string }> {
     try {
       const documentRepository = getRepository(Document);
       const documents = await documentRepository.find({

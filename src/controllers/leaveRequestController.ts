@@ -19,14 +19,14 @@ export class LeaveRequestController {
   async getMyLeaves(req: Request, res: Response): Promise<void> {
     try {
       const userId = (req as any).user.id;
-      
+
       // Get query parameters for filtering and pagination
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 20;
       const status = req.query.status as string;
       const leaveTypeId = req.query.leaveTypeId as string;
       const year = req.query.year ? parseInt(req.query.year as string) : null;
-      
+
       const employeeRepository = getRepository(Employee);
       const employee = await employeeRepository.findOne({
         where: { user: { id: userId } },
@@ -59,8 +59,9 @@ export class LeaveRequestController {
       if (year) {
         const startOfYear = new Date(year, 0, 1);
         const endOfYear = new Date(year, 11, 31);
-        query = query.andWhere('lr.startDate >= :startOfYear', { startOfYear })
-                    .andWhere('lr.startDate <= :endOfYear', { endOfYear });
+        query = query
+          .andWhere('lr.startDate >= :startOfYear', { startOfYear })
+          .andWhere('lr.startDate <= :endOfYear', { endOfYear });
       }
 
       // Get total count for pagination
@@ -162,7 +163,6 @@ export class LeaveRequestController {
         },
       });
     } catch (error) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to retrieve leave requests',
@@ -274,7 +274,7 @@ export class LeaveRequestController {
       const leaveRequestRepository = getRepository(LeaveRequest);
       const leaveRequest = await leaveRequestRepository.findOne({
         where: { id },
-        relations: ['leaveType', 'employee', 'documents'],
+        relations: ['leaveType', 'employee', 'employee.user', 'employee.department', 'documents'],
       });
 
       if (!leaveRequest) {
@@ -306,7 +306,10 @@ export class LeaveRequestController {
         return;
       }
 
-      res.status(200).json(leaveRequest);
+      res.status(200).json({
+        success: true,
+        data: leaveRequest,
+      });
     } catch (error) {
       res.status(500).json({ message: 'Failed to retrieve leave request', error });
     }
@@ -417,7 +420,6 @@ export class LeaveRequestController {
 
       res.status(201).json(savedRequest);
     } catch (error: any) {
-
       res.status(500).json({ message: 'Failed to create leave request', error: error.message });
     }
   }
@@ -507,7 +509,6 @@ export class LeaveRequestController {
 
       res.status(200).json({ message: 'Leave request approved successfully' });
     } catch (error) {
-
       res.status(500).json({ message: 'Failed to approve leave request', error });
     }
   }
@@ -592,7 +593,6 @@ export class LeaveRequestController {
 
       res.status(200).json({ message: 'Leave request rejected successfully' });
     } catch (error) {
-
       res.status(500).json({ message: 'Failed to reject leave request', error });
     }
   }
@@ -658,7 +658,6 @@ export class LeaveRequestController {
 
       res.status(200).json({ message: 'Leave request cancelled successfully' });
     } catch (error) {
-
       res.status(500).json({ message: 'Failed to cancel leave request', error });
     }
   }
@@ -669,11 +668,192 @@ export class LeaveRequestController {
   async updateLeaveRequest(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
-      const updateData = req.body;
-      // TODO: Implement update leave request functionality
-      res.status(200).json({ message: 'Leave request updated successfully' });
+      const { startDate, endDate, reason } = req.body;
+      const userId = (req as any).user.id;
+
+      const leaveRequestRepository = getRepository(LeaveRequest);
+      const leaveRequest = await leaveRequestRepository.findOne({
+        where: { id },
+        relations: ['employee', 'leaveType'],
+      });
+
+      if (!leaveRequest) {
+        res.status(404).json({
+          success: false,
+          message: 'Leave request not found',
+        });
+        return;
+      }
+
+      // Get current employee
+      const employeeRepository = getRepository(Employee);
+      const currentEmployee = await employeeRepository.findOne({
+        where: { user: { id: userId } },
+        relations: ['user'],
+      });
+
+      if (!currentEmployee) {
+        res.status(404).json({
+          success: false,
+          message: 'Employee not found',
+        });
+        return;
+      }
+
+      // Business Rule: Only PENDING requests can be updated
+      if (leaveRequest.status !== 'PENDING') {
+        res.status(400).json({
+          success: false,
+          message: `Cannot update ${leaveRequest.status} leave request. Only PENDING requests can be modified.`,
+        });
+        return;
+      }
+
+      // Check if user has permission to update this request
+      const canUpdate =
+        leaveRequest.employeeId === currentEmployee.id ||
+        currentEmployee.position === 'ADMIN' ||
+        currentEmployee.position === 'HR_MANAGER' ||
+        (await this.managerService.canManage(currentEmployee.id, leaveRequest.employeeId));
+
+      if (!canUpdate) {
+        res.status(403).json({
+          success: false,
+          message: 'Access denied: insufficient permissions to update this request',
+        });
+        return;
+      }
+
+      // Store old values for balance recalculation
+      const oldDays = leaveRequest.days;
+
+      // Update fields if provided
+      if (startDate) {
+        leaveRequest.startDate = new Date(startDate);
+      }
+      if (endDate) {
+        leaveRequest.endDate = new Date(endDate);
+      }
+      if (reason) {
+        leaveRequest.reason = reason;
+      }
+
+      // Recalculate days if dates changed
+      if (startDate || endDate) {
+        // Validate dates
+        if (leaveRequest.endDate < leaveRequest.startDate) {
+          res.status(400).json({
+            success: false,
+            message: 'End date cannot be before start date',
+          });
+          return;
+        }
+
+        // Check for overlapping leaves (exclude current request)
+        const hasOverlap = await this.leaveService.checkLeaveOverlap(
+          leaveRequest.employeeId,
+          leaveRequest.startDate,
+          leaveRequest.endDate,
+          id, // Exclude current request from overlap check
+        );
+
+        if (hasOverlap) {
+          res.status(400).json({
+            success: false,
+            message: 'Leave request overlaps with existing approved or pending requests',
+          });
+          return;
+        }
+
+        // Recalculate business days
+        const holidayRepository = getRepository(Holiday);
+        const holidays = await holidayRepository.find();
+        const holidayDates = holidays.map((h) => h.date);
+
+        const newDays = this.leaveCalculator.calculateBusinessDays(
+          leaveRequest.startDate,
+          leaveRequest.endDate,
+          holidayDates,
+        );
+
+        if (newDays <= 0) {
+          res.status(400).json({
+            success: false,
+            message: 'Leave request must include at least one business day',
+          });
+          return;
+        }
+
+        // Update leave balance if days changed
+        if (newDays !== oldDays) {
+          const leaveBalanceRepository = getRepository(LeaveBalance);
+          const currentYear = new Date().getFullYear();
+          const balance = await leaveBalanceRepository.findOne({
+            where: {
+              employeeId: leaveRequest.employeeId,
+              leaveTypeId: leaveRequest.leaveTypeId,
+              year: currentYear,
+            },
+          });
+
+          if (balance) {
+            // Adjust pending balance: remove old days, add new days
+            const daysDifference = newDays - oldDays;
+            const newPending = Number(balance.pending) + daysDifference;
+
+            // Check if enough balance available for the change
+            const availableBalance =
+              Number(balance.allocated) +
+              Number(balance.carryOver) +
+              Number(balance.adjustment || 0) -
+              Number(balance.used) -
+              Number(balance.pending);
+
+            if (availableBalance + oldDays < newDays) {
+              res.status(400).json({
+                success: false,
+                message: 'Insufficient leave balance for the updated dates',
+                available: availableBalance + oldDays,
+                requested: newDays,
+              });
+              return;
+            }
+
+            balance.pending = newPending;
+            await leaveBalanceRepository.save(balance);
+          }
+
+          leaveRequest.days = newDays;
+        }
+      }
+
+      // Save updated leave request
+      const updatedRequest = await leaveRequestRepository.save(leaveRequest);
+
+      // Send notification about the update (reuse existing notification)
+      await this.notificationService.sendLeaveRequestCreatedNotification(updatedRequest.id);
+
+      // Log audit event for leave update
+      await this.auditService.logSecurityEvent({
+        userId: currentEmployee.id,
+        action: 'CRITICAL_UPDATE',
+        entityType: 'LeaveRequest',
+        entityId: updatedRequest.id,
+        description: `Leave request updated. Old days: ${oldDays}, New days: ${updatedRequest.days}`,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Leave request updated successfully',
+        data: updatedRequest,
+      });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error('Error updating leave request:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to update leave request',
+        error: error.message,
+      });
     }
   }
 }

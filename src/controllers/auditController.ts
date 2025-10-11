@@ -17,7 +17,6 @@ export class AuditController {
         count: events.length,
       });
     } catch (error) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to retrieve security events',
@@ -39,7 +38,6 @@ export class AuditController {
         deletedCount,
       });
     } catch (error) {
-
       res.status(500).json({
         success: false,
         message: 'Failed to clean up old logs',

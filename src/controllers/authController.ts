@@ -31,7 +31,8 @@ export class AuthController {
 
       res.status(201).json({
         success: true,
-        message: 'User registered successfully with GUEST role. Please verify your email before logging in.',
+        message:
+          'User registered successfully with GUEST role. Please verify your email before logging in.',
         data: result.data,
       });
     } catch (error) {
@@ -269,16 +270,16 @@ export class AuthController {
       const userInfo = await this.authService.getUserInfo(userId);
       const employeeRepository = getRepository(Employee);
       const userRepository = getRepository(User);
-      
+
       // Get full user details for email verification status
-      const fullUser = await userRepository.findOne({ 
+      const fullUser = await userRepository.findOne({
         where: { id: userId },
-        relations: ['role'] 
+        relations: ['role'],
       });
-      
+
       // Check if user has employee profile
       const hasEmployeeProfile = await employeeRepository.findOne({
-        where: { user: { id: userId } }
+        where: { user: { id: userId } },
       });
 
       if (!userInfo || !fullUser) {
@@ -300,9 +301,12 @@ export class AuthController {
           emailVerified: fullUser.emailVerified,
           hasEmployeeProfile: !!hasEmployeeProfile,
           needsEmployeeProfile: userInfo.role === 'GUEST' && !hasEmployeeProfile,
-          status: userInfo.role === 'GUEST' 
-            ? (hasEmployeeProfile ? 'PENDING_APPROVAL' : 'GUEST_AWAITING_PROFILE')
-            : 'ACTIVE_EMPLOYEE'
+          status:
+            userInfo.role === 'GUEST'
+              ? hasEmployeeProfile
+                ? 'PENDING_APPROVAL'
+                : 'GUEST_AWAITING_PROFILE'
+              : 'ACTIVE_EMPLOYEE',
         },
       });
     } catch (error) {
