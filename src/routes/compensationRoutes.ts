@@ -28,7 +28,7 @@ router.post(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(createSalaryValidation),
-  compensationController.createSalary,
+  compensationController.createSalary.bind(compensationController),
 );
 
 router.put(
@@ -36,7 +36,7 @@ router.put(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(updateSalaryValidation),
-  compensationController.updateSalary,
+  compensationController.updateSalary.bind(compensationController),
 );
 
 router.get(
@@ -44,7 +44,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(getSalaryByIdValidation),
-  compensationController.getSalaryById,
+  compensationController.getSalaryById.bind(compensationController),
 );
 
 router.get(
@@ -52,7 +52,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(searchSalariesValidation),
-  compensationController.searchSalaries,
+  compensationController.searchSalaries.bind(compensationController),
 );
 
 // Benefit Routes
@@ -61,7 +61,7 @@ router.post(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(createBenefitValidation),
-  compensationController.createBenefit,
+  compensationController.createBenefit.bind(compensationController),
 );
 
 router.put(
@@ -69,7 +69,7 @@ router.put(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(updateBenefitValidation),
-  compensationController.updateBenefit,
+  compensationController.updateBenefit.bind(compensationController),
 );
 
 router.get(
@@ -77,7 +77,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(getBenefitByIdValidation),
-  compensationController.getBenefitById,
+  compensationController.getBenefitById.bind(compensationController),
 );
 
 router.get(
@@ -85,7 +85,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(searchBenefitsValidation),
-  compensationController.searchBenefits,
+  compensationController.searchBenefits.bind(compensationController),
 );
 
 // Employee Benefit Routes
@@ -94,7 +94,7 @@ router.post(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(assignBenefitToEmployeeValidation),
-  compensationController.assignBenefitToEmployee,
+  compensationController.assignBenefitToEmployee.bind(compensationController),
 );
 
 router.put(
@@ -102,7 +102,7 @@ router.put(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(updateEmployeeBenefitValidation),
-  compensationController.updateEmployeeBenefit,
+  compensationController.updateEmployeeBenefit.bind(compensationController),
 );
 
 // Bonus Routes
@@ -111,7 +111,7 @@ router.post(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(createBonusValidation),
-  compensationController.createBonus,
+  compensationController.createBonus.bind(compensationController),
 );
 
 router.put(
@@ -119,7 +119,7 @@ router.put(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(updateBonusValidation),
-  compensationController.updateBonus,
+  compensationController.updateBonus.bind(compensationController),
 );
 
 router.get(
@@ -127,7 +127,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(getBonusByIdValidation),
-  compensationController.getBonusById,
+  compensationController.getBonusById.bind(compensationController),
 );
 
 router.get(
@@ -135,7 +135,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(searchBonusesValidation),
-  compensationController.searchBonuses,
+  compensationController.searchBonuses.bind(compensationController),
 );
 
 export default router;

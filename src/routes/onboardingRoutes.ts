@@ -21,7 +21,7 @@ router.post(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(createOnboardingValidation),
-  onboardingController.createOnboarding,
+  onboardingController.createOnboarding.bind(onboardingController),
 );
 
 router.put(
@@ -29,7 +29,7 @@ router.put(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(updateOnboardingValidation),
-  onboardingController.updateOnboarding,
+  onboardingController.updateOnboarding.bind(onboardingController),
 );
 
 router.get(
@@ -37,7 +37,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(getOnboardingByIdValidation),
-  onboardingController.getOnboardingById,
+  onboardingController.getOnboardingById.bind(onboardingController),
 );
 
 router.get(
@@ -45,7 +45,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(searchOnboardingsValidation),
-  onboardingController.searchOnboardings,
+  onboardingController.searchOnboardings.bind(onboardingController),
 );
 
 // Onboarding Task Routes
@@ -54,7 +54,7 @@ router.post(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(createOnboardingTaskValidation),
-  onboardingController.createOnboardingTask,
+  onboardingController.createOnboardingTask.bind(onboardingController),
 );
 
 router.put(
@@ -62,7 +62,7 @@ router.put(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(updateOnboardingTaskValidation),
-  onboardingController.updateOnboardingTask,
+  onboardingController.updateOnboardingTask.bind(onboardingController),
 );
 
 router.get(
@@ -70,7 +70,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(getOnboardingTaskByIdValidation),
-  onboardingController.getOnboardingTaskById,
+  onboardingController.getOnboardingTaskById.bind(onboardingController),
 );
 
 export default router;

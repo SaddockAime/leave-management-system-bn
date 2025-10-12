@@ -27,7 +27,7 @@ router.post(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(createJobPostingValidation),
-  recruitmentController.createJobPosting,
+  recruitmentController.createJobPosting.bind(recruitmentController),
 );
 
 router.put(
@@ -35,7 +35,7 @@ router.put(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(updateJobPostingValidation),
-  recruitmentController.updateJobPosting,
+  recruitmentController.updateJobPosting.bind(recruitmentController),
 );
 
 router.post(
@@ -43,21 +43,21 @@ router.post(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(publishJobPostingValidation),
-  recruitmentController.publishJobPosting,
+  recruitmentController.publishJobPosting.bind(recruitmentController),
 );
 
 router.get(
   '/job-postings/:id',
   authenticateToken,
   validateRequest(getJobPostingByIdValidation),
-  recruitmentController.getJobPostingById,
+  recruitmentController.getJobPostingById.bind(recruitmentController),
 );
 
 router.get(
   '/job-postings',
   authenticateToken,
   validateRequest(searchJobPostingsValidation),
-  recruitmentController.searchJobPostings,
+  recruitmentController.searchJobPostings.bind(recruitmentController),
 );
 
 // Job Application Routes
@@ -65,7 +65,7 @@ router.post(
   '/applications',
   authenticateToken,
   validateRequest(createJobApplicationValidation),
-  recruitmentController.createJobApplication,
+  recruitmentController.createJobApplication.bind(recruitmentController),
 );
 
 router.put(
@@ -73,7 +73,7 @@ router.put(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(updateJobApplicationValidation),
-  recruitmentController.updateJobApplication,
+  recruitmentController.updateJobApplication.bind(recruitmentController),
 );
 
 router.get(
@@ -81,7 +81,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(getJobApplicationByIdValidation),
-  recruitmentController.getJobApplicationById,
+  recruitmentController.getJobApplicationById.bind(recruitmentController),
 );
 
 router.get(
@@ -89,7 +89,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(searchJobApplicationsValidation),
-  recruitmentController.searchApplications,
+  recruitmentController.searchApplications.bind(recruitmentController),
 );
 
 // Interview Routes
@@ -98,7 +98,7 @@ router.post(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(createInterviewValidation),
-  recruitmentController.createInterview,
+  recruitmentController.createInterview.bind(recruitmentController),
 );
 
 router.put(
@@ -106,7 +106,7 @@ router.put(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(updateInterviewValidation),
-  recruitmentController.updateInterview,
+  recruitmentController.updateInterview.bind(recruitmentController),
 );
 
 router.get(
@@ -114,7 +114,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(getInterviewByIdValidation),
-  recruitmentController.getInterviewById,
+  recruitmentController.getInterviewById.bind(recruitmentController),
 );
 
 router.get(
@@ -122,7 +122,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(searchInterviewsValidation),
-  recruitmentController.searchInterviews,
+  recruitmentController.searchInterviews.bind(recruitmentController),
 );
 
 export default router;

@@ -44,7 +44,7 @@ A comprehensive REST API for managing employee leave requests, balances, and app
    npm run dev
    ```
 
-The API will be available at `http://localhost:3000` with documentation at `http://localhost:3000/api-docs`
+The API will be available at `http://localhost:4000` with documentation at `http://localhost:4000/api-docs`
 
 ## 🔧 Environment Variables
 
@@ -81,7 +81,7 @@ SUPPORT_EMAIL=support@company.com
 HR_EMAIL=hr@company.com
 
 # Server
-PORT=3000
+PORT=4000
 NODE_ENV=development
 ```
 
@@ -118,8 +118,8 @@ NODE_ENV=development
 
 ### Access
 
-- **Swagger UI**: `http://localhost:3000/api-docs`
-- **OpenAPI Spec**: `http://localhost:3000/api-docs.json`
+- **Swagger UI**: `http://localhost:4000/api-docs`
+- **OpenAPI Spec**: `http://localhost:4000/api-docs.json`
 
 ### Authentication
 
@@ -127,21 +127,21 @@ The API uses internal JWT-based authentication. Users can register, login, and m
 
 ```bash
 # Register a new user
-curl -X POST http://localhost:3000/api/auth/register \
+curl -X POST http://localhost:4000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"firstName": "John", "lastName": "Doe", "email": "john@company.com", "password": "password123"}'
 
 # Login to get JWT token
-curl -X POST http://localhost:3000/api/auth/login \
+curl -X POST http://localhost:4000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email": "john@company.com", "password": "password123"}'
 
 # Use token in protected requests
-curl -X GET http://localhost:3000/api/leave-requests/my-leaves \
+curl -X GET http://localhost:4000/api/leave-requests/my-leaves \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 
 # Logout (invalidates token)
-curl -X POST http://localhost:3000/api/auth/logout \
+curl -X POST http://localhost:4000/api/auth/logout \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
