@@ -9,7 +9,7 @@ const router = Router();
 const profileController = new ProfileController();
 
 // Get current user's profile
-router.get('/', authenticateToken, (req, res) => profileController.getUserProfile(req, res));
+router.get('/', authenticateToken, profileController.getUserProfile.bind(profileController));
 
 // Update current user's profile (unified - handles both data and picture)
 router.put(
@@ -17,12 +17,14 @@ router.put(
   authenticateToken,
   profilePictureUpload.single('profilePicture'),
   validateRequest(updateProfileValidation),
-  (req, res) => profileController.updateProfile(req, res),
+  profileController.updateProfile.bind(profileController),
 );
 
 // Delete profile picture only
-router.delete('/picture', authenticateToken, (req, res) =>
-  profileController.deleteProfilePicture(req, res),
+router.delete(
+  '/picture',
+  authenticateToken,
+  profileController.deleteProfilePicture.bind(profileController),
 );
 
 export default router;

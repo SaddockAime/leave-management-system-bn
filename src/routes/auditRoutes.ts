@@ -10,10 +10,15 @@ router.get(
   '/security-events',
   authenticateToken,
   authorize(['ADMIN', 'HR_MANAGER']),
-  auditController.getRecentSecurityEvents,
+  auditController.getRecentSecurityEvents.bind(auditController),
 );
 
 // Clean up old audit logs (Admin only)
-router.post('/cleanup', authenticateToken, authorize(['ADMIN']), auditController.cleanupOldLogs);
+router.post(
+  '/cleanup',
+  authenticateToken,
+  authorize(['ADMIN']),
+  auditController.cleanupOldLogs.bind(auditController),
+);
 
 export default router;

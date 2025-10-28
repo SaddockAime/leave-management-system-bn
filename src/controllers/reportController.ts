@@ -37,12 +37,10 @@ export class ReportController {
       res.status(200).json(result);
     } catch (error) {
       console.error('Error in getLeaveByDepartment:', error);
-      res
-        .status(500)
-        .json({
-          message: 'Failed to generate report',
-          error: error instanceof Error ? error.message : 'Unknown error',
-        });
+      res.status(500).json({
+        message: 'Failed to generate report',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
 
@@ -77,12 +75,10 @@ export class ReportController {
       });
     } catch (error) {
       console.error('Error in getLeaveByEmployee:', error);
-      res
-        .status(500)
-        .json({
-          message: 'Failed to generate report',
-          error: error instanceof Error ? error.message : 'Unknown error',
-        });
+      res.status(500).json({
+        message: 'Failed to generate report',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
 
@@ -105,12 +101,10 @@ export class ReportController {
       res.status(200).json(result);
     } catch (error) {
       console.error('Error in getLeaveByType:', error);
-      res
-        .status(500)
-        .json({
-          message: 'Failed to generate report',
-          error: error instanceof Error ? error.message : 'Unknown error',
-        });
+      res.status(500).json({
+        message: 'Failed to generate report',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
 
@@ -152,12 +146,10 @@ export class ReportController {
       res.status(200).json(result);
     } catch (error) {
       console.error('Error in getLeaveCalendar:', error);
-      res
-        .status(500)
-        .json({
-          message: 'Failed to generate calendar data',
-          error: error instanceof Error ? error.message : 'Unknown error',
-        });
+      res.status(500).json({
+        message: 'Failed to generate calendar data',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
 
