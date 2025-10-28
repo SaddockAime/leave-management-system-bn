@@ -6,8 +6,14 @@ const authService = new AuthService();
 // Role-based authentication middleware
 export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    // Try to get token from Authorization header first
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    let token = authHeader && authHeader.split(' ')[1];
+
+    // If no token in header, check query parameters (for export/download links)
+    if (!token && req.query.token) {
+      token = req.query.token as string;
+    }
 
     if (!token) {
       res.status(401).json({ message: 'No token provided' });

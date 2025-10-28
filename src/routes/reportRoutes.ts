@@ -20,7 +20,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN', 'MANAGER']),
   validateRequest(getLeaveByDepartmentValidation),
-  reportController.getLeaveByDepartment,
+  reportController.getLeaveByDepartment.bind(reportController),
 );
 
 // Get leave by employee (HR/Admin/Manager only)
@@ -29,7 +29,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN', 'MANAGER']),
   validateRequest(getLeaveByEmployeeValidation),
-  reportController.getLeaveByEmployee,
+  reportController.getLeaveByEmployee.bind(reportController),
 );
 
 // Get leave by type (HR/Admin/Manager only)
@@ -38,7 +38,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN', 'MANAGER']),
   validateRequest(getLeaveByTypeValidation),
-  reportController.getLeaveByType,
+  reportController.getLeaveByType.bind(reportController),
 );
 
 // Get leave calendar (HR/Admin/Manager only)
@@ -47,7 +47,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN', 'MANAGER']),
   validateRequest(getLeaveCalendarValidation),
-  reportController.getLeaveCalendar,
+  reportController.getLeaveCalendar.bind(reportController),
 );
 
 // Export to CSV (HR/Admin only)
@@ -56,7 +56,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(exportToCsvValidation),
-  reportController.exportToCsv,
+  reportController.exportToCsv.bind(reportController),
 );
 
 // Export to Excel (HR/Admin only)
@@ -65,7 +65,7 @@ router.get(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(exportToExcelValidation),
-  reportController.exportToExcel,
+  reportController.exportToExcel.bind(reportController),
 );
 
 export default router;

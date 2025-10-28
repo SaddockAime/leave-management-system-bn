@@ -36,7 +36,13 @@ export class ReportController {
 
       res.status(200).json(result);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to generate report', error });
+      console.error('Error in getLeaveByDepartment:', error);
+      res
+        .status(500)
+        .json({
+          message: 'Failed to generate report',
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
     }
   }
 
@@ -59,8 +65,9 @@ export class ReportController {
 
       const employeeData = await getRepository(Employee)
         .createQueryBuilder('e')
-        .select('e.firstName', 'firstName')
-        .addSelect('e.lastName', 'lastName')
+        .innerJoin('e.user', 'u')
+        .select('u.firstName', 'firstName')
+        .addSelect('u.lastName', 'lastName')
         .where('e.id = :employeeId', { employeeId })
         .getRawOne();
 
@@ -69,7 +76,13 @@ export class ReportController {
         leaveData: result,
       });
     } catch (error) {
-      res.status(500).json({ message: 'Failed to generate report', error });
+      console.error('Error in getLeaveByEmployee:', error);
+      res
+        .status(500)
+        .json({
+          message: 'Failed to generate report',
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
     }
   }
 
@@ -91,7 +104,13 @@ export class ReportController {
 
       res.status(200).json(result);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to generate report', error });
+      console.error('Error in getLeaveByType:', error);
+      res
+        .status(500)
+        .json({
+          message: 'Failed to generate report',
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
     }
   }
 
@@ -106,17 +125,18 @@ export class ReportController {
 
       let query = getRepository(LeaveRequest)
         .createQueryBuilder('lr')
-        .select('e.firstName', 'firstName')
-        .addSelect('e.lastName', 'lastName')
-        .addSelect('e.profilePicture', 'profilePicture')
+        .innerJoin('lr.employee', 'e')
+        .innerJoin('e.user', 'u')
+        .innerJoin('lr.leaveType', 'lt')
+        .innerJoin('e.department', 'd')
+        .select('u.firstName', 'firstName')
+        .addSelect('u.lastName', 'lastName')
+        .addSelect('u.profilePicture', 'profilePicture')
         .addSelect('lr.startDate', 'startDate')
         .addSelect('lr.endDate', 'endDate')
         .addSelect('lt.name', 'leaveType')
         .addSelect('lt.color', 'color')
         .addSelect('d.name', 'department')
-        .innerJoin('lr.employee', 'e')
-        .innerJoin('lr.leaveType', 'lt')
-        .innerJoin('e.department', 'd')
         .where('lr.status = :status', { status: 'APPROVED' })
         .andWhere('(lr.startDate <= :endDate AND lr.endDate >= :startDate)', {
           startDate,
@@ -131,7 +151,13 @@ export class ReportController {
 
       res.status(200).json(result);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to generate calendar data', error });
+      console.error('Error in getLeaveCalendar:', error);
+      res
+        .status(500)
+        .json({
+          message: 'Failed to generate calendar data',
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
     }
   }
 
