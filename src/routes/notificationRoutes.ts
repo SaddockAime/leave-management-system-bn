@@ -15,33 +15,43 @@ const notificationController = new NotificationController();
 router.use(authenticateToken);
 
 // Get user notifications
-router.get('/my-notifications', validateRequest(getUserNotificationsValidation), (req, res) =>
-  notificationController.getUserNotifications(req, res),
+router.get(
+  '/my-notifications',
+  validateRequest(getUserNotificationsValidation),
+  notificationController.getUserNotifications.bind(notificationController),
 );
 
 // Mark notification as read
-router.put('/:id/read', validateRequest(notificationIdValidation), (req, res) =>
-  notificationController.markNotificationAsRead(req, res),
+router.put(
+  '/:id/read',
+  validateRequest(notificationIdValidation),
+  notificationController.markNotificationAsRead.bind(notificationController),
 );
 
 // Mark all notifications as read
-router.put('/mark-all-read', (req, res) =>
-  notificationController.markAllNotificationsAsRead(req, res),
+router.put(
+  '/mark-all-read',
+  notificationController.markAllNotificationsAsRead.bind(notificationController),
 );
 
 // Delete notification
-router.delete('/:id', validateRequest(notificationIdValidation), (req, res) =>
-  notificationController.deleteNotification(req, res),
+router.delete(
+  '/:id',
+  validateRequest(notificationIdValidation),
+  notificationController.deleteNotification.bind(notificationController),
 );
 
 // Get notification preferences
-router.get('/preferences', (req, res) =>
-  notificationController.getNotificationPreferences(req, res),
+router.get(
+  '/preferences',
+  notificationController.getNotificationPreferences.bind(notificationController),
 );
 
 // Update notification preferences
-router.put('/preferences', validateRequest(updateNotificationPreferencesValidation), (req, res) =>
-  notificationController.updateNotificationPreferences(req, res),
+router.put(
+  '/preferences',
+  validateRequest(updateNotificationPreferencesValidation),
+  notificationController.updateNotificationPreferences.bind(notificationController),
 );
 
 export default router;

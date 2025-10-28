@@ -13,7 +13,7 @@ export class SocketService {
   constructor(server: http.Server) {
     this.io = new Server(server, {
       cors: {
-        origin: process.env.CLIENT_URL || 'http://localhost:4000',
+        origin: process.env.CLIENT_URL || 'http://localhost:3000',
         methods: ['GET', 'POST'],
         credentials: true,
       },
@@ -33,21 +33,20 @@ export class SocketService {
 
         // Decode the JWT token from the authorization system
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
-        const userId = decoded.id;
-        // Since we're working with an external auth system, we need to extract roles from the JWT
-        const userRoles = decoded.roles || [];
+        const userId = decoded.userId; // JWT contains 'userId' field
+        const userRole = decoded.role; // Single role from JWT
 
         // Store user connection information
         socket.data.userId = userId;
-        socket.data.roles = userRoles;
+        socket.data.role = userRole;
         this.userSockets.set(userId, socket.id);
 
-        // Join role-based rooms based on the roles from JWT
-        if (userRoles.includes('ROLE_ADMIN')) {
+        // Join role-based rooms based on the role from JWT
+        if (userRole === 'ADMIN') {
           socket.join('admins');
         }
 
-        if (userRoles.includes('ROLE_MANAGER')) {
+        if (userRole === 'MANAGER' || userRole === 'HR_MANAGER') {
           socket.join('managers');
         }
 
@@ -78,9 +77,7 @@ export class SocketService {
     });
 
     this.io.on('connection', (socket) => {
-      console.log(
-        `User connected: ${socket.data.userId}, role: ${socket.data.role?.name || 'Unknown'}`,
-      );
+      console.log(`User connected: ${socket.data.userId}, role: ${socket.data.role || 'Unknown'}`);
 
       socket.on('disconnect', () => {
         console.log(`User disconnected: ${socket.data.userId}`);
