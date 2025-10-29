@@ -13,14 +13,18 @@ const router = Router();
 const departmentController = new DepartmentController();
 
 // Get all departments
-router.get('/', authenticateToken, departmentController.getAllDepartments);
+router.get(
+  '/',
+  authenticateToken,
+  departmentController.getAllDepartments.bind(departmentController),
+);
 
 // Get department by ID
 router.get(
   '/:id',
   authenticateToken,
   validateRequest(getDepartmentByIdValidation),
-  departmentController.getDepartmentById,
+  departmentController.getDepartmentById.bind(departmentController),
 );
 
 // Create department (HR/Admin only)
@@ -29,7 +33,7 @@ router.post(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(createDepartmentValidation),
-  departmentController.createDepartment,
+  departmentController.createDepartment.bind(departmentController),
 );
 
 // Update department (HR/Admin only)
@@ -38,7 +42,7 @@ router.put(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(updateDepartmentValidation),
-  departmentController.updateDepartment,
+  departmentController.updateDepartment.bind(departmentController),
 );
 
 // Delete department (HR/Admin only)
@@ -47,7 +51,7 @@ router.delete(
   authenticateToken,
   authorize(['HR_MANAGER', 'ADMIN']),
   validateRequest(deleteDepartmentValidation),
-  departmentController.deleteDepartment,
+  departmentController.deleteDepartment.bind(departmentController),
 );
 
 export default router;
