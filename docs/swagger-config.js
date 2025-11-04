@@ -21,7 +21,7 @@ const baseConfig = {
       description: 'Development server',
     },
     {
-      url: 'https://api.company.com',
+      url: 'https://lms-hr-api.genesiscodeworks.com',
       description: 'Production server',
     },
   ],
