@@ -17,7 +17,7 @@ router.get(
   authenticateToken,
   authorize(['MANAGER', 'HR_MANAGER', 'ADMIN']),
   validateRequest(getTeamMembersValidation),
-  managerController.getTeamMembers,
+  managerController.getTeamMembers.bind(managerController),
 );
 
 // Get team leaves
@@ -26,7 +26,7 @@ router.get(
   authenticateToken,
   authorize(['MANAGER', 'HR_MANAGER', 'ADMIN']),
   validateRequest(getTeamLeavesValidation),
-  managerController.getTeamLeaves,
+  managerController.getTeamLeaves.bind(managerController),
 );
 
 // Get team performance
@@ -35,7 +35,7 @@ router.get(
   authenticateToken,
   authorize(['MANAGER', 'HR_MANAGER', 'ADMIN']),
   validateRequest(getTeamPerformanceValidation),
-  managerController.getTeamPerformance,
+  managerController.getTeamPerformance.bind(managerController),
 );
 
 // Approve leave request
@@ -43,7 +43,7 @@ router.post(
   '/leave-requests/:id/approve',
   authenticateToken,
   authorize(['MANAGER', 'HR_MANAGER', 'ADMIN']),
-  managerController.approveLeaveRequest,
+  managerController.approveLeaveRequest.bind(managerController),
 );
 
 // Reject leave request
@@ -51,7 +51,7 @@ router.post(
   '/leave-requests/:id/reject',
   authenticateToken,
   authorize(['MANAGER', 'HR_MANAGER', 'ADMIN']),
-  managerController.rejectLeaveRequest,
+  managerController.rejectLeaveRequest.bind(managerController),
 );
 
 // Get team calendar
@@ -59,7 +59,7 @@ router.get(
   '/team-calendar',
   authenticateToken,
   authorize(['MANAGER', 'HR_MANAGER', 'ADMIN']),
-  managerController.getTeamCalendar,
+  managerController.getTeamCalendar.bind(managerController),
 );
 
 export default router;
