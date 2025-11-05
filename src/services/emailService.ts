@@ -57,11 +57,14 @@ export class EmailService {
     };
 
     // Only create transporter if credentials are provided
-    if (this.config.auth.user && this.config.auth.pass) {
+    if (this.config.auth.user && this.config.auth.pass && this.config.host) {
       this.transporter = nodemailer.createTransport(this.config);
+      console.info('📧 Email transporter created successfully');
+      console.info(`📧 SMTP Host: ${this.config.host}, Port: ${this.config.port}, Secure: ${this.config.secure}`);
     } else {
       console.warn('⚠️  Email credentials not configured. Email functionality will be disabled.');
-      console.warn('⚠️  Set EMAIL_USER and EMAIL_PASSWORD environment variables to enable emails.');
+      console.warn('⚠️  Set EMAIL_HOST, EMAIL_PORT, EMAIL_USER and EMAIL_PASSWORD environment variables to enable emails.');
+      console.warn(`⚠️  Current values - Host: ${this.config.host || 'MISSING'}, User: ${this.config.auth.user || 'MISSING'}, Pass: ${this.config.auth.pass ? 'SET' : 'MISSING'}`);
     }
   }
 
@@ -138,7 +141,7 @@ export class EmailService {
    * Send email verification using Handlebars template
    */
   async sendEmailVerification(user: User, verificationToken: string): Promise<void> {
-    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`;
+    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email/${verificationToken}`;
 
     const templateData: EmailTemplateData = {
       firstName: user.firstName,
@@ -159,7 +162,7 @@ export class EmailService {
    * Send welcome email to new user (GUEST role)
    */
   async sendWelcomeEmail(user: User, verificationToken: string): Promise<void> {
-    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`;
+    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email/${verificationToken}`;
 
     const templateData: EmailTemplateData = {
       firstName: user.firstName,
@@ -214,7 +217,7 @@ export class EmailService {
    * Send password reset email
    */
   async sendPasswordReset(user: User, resetToken: string): Promise<void> {
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password/${resetToken}`;
 
     const template: EmailTemplate = {
       subject: 'Reset Your Password',
@@ -296,7 +299,7 @@ export class EmailService {
   private async sendEmail(to: string, template: EmailTemplate): Promise<void> {
     if (!this.transporter) {
       console.warn(`📧 Email not sent to ${to}: SMTP not configured`);
-      return;
+      throw new Error('Email transporter not configured. Please check your EMAIL_* environment variables.');
     }
 
     const mailOptions = {
@@ -308,6 +311,7 @@ export class EmailService {
     };
 
     try {
+      console.info(`📧 Attempting to send email to ${to}...`);
       await this.transporter.sendMail(mailOptions);
       console.info(`📧 Email sent successfully to ${to}: ${template.subject}`);
     } catch (error) {

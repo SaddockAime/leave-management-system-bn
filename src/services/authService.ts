@@ -35,6 +35,7 @@ export interface UserInfo {
   profilePicture?: string;
   isActive: boolean;
   lastLogin?: Date;
+  emailVerified: boolean;
   employeeId?: string;
   department?: string;
 }
@@ -363,6 +364,7 @@ export class AuthService {
       profilePicture: user.profilePicture,
       isActive: user.status === UserStatus.ACTIVE,
       lastLogin: user.lastLogin,
+      emailVerified: user.emailVerified || false,
       employeeId: employee?.id || null,
       department: employee?.department?.name || null,
     };
@@ -515,6 +517,7 @@ export class AuthService {
       profilePicture: user.profilePicture,
       isActive: user.status === UserStatus.ACTIVE,
       lastLogin: user.lastLogin,
+      emailVerified: user.emailVerified || false,
       employeeId: undefined, // Will be populated separately when needed
     };
   }
@@ -538,8 +541,14 @@ export class AuthService {
     await userRepository.save(user);
 
     // Send password reset email
-    // Note: EmailService integration would go here
-    console.info(`Password reset token for ${email}: ${resetToken}`);
+    try {
+      await this.emailService.sendPasswordReset(user, resetToken);
+      console.info(`Password reset email sent to ${email}`);
+    } catch (emailError) {
+      console.error('Failed to send password reset email:', emailError);
+      // Don't fail the request if email fails - token is still generated
+      console.info(`Password reset token for ${email}: ${resetToken}`);
+    }
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
@@ -594,8 +603,15 @@ export class AuthService {
     const userRepository = getRepository(User);
     const user = await userRepository.findOne({ where: { email } });
 
-    if (!user || user.emailVerified) {
-      return;
+    if (!user) {
+      // Don't reveal if user exists for security, but log it
+      console.warn(`Resend verification requested for non-existent email: ${email}`);
+      return; // Silently return for security
+    }
+
+    if (user.emailVerified) {
+      console.info(`Resend verification requested for already verified email: ${email}`);
+      throw new Error('Email is already verified');
     }
 
     // Generate new verification token
@@ -609,9 +625,9 @@ export class AuthService {
     // Send verification email using EmailService
     try {
       await this.emailService.sendEmailVerification(user, verificationToken);
-      console.info(`Verification email resent to: ${email}`);
+      console.info(`✅ Verification email resent successfully to: ${email}`);
     } catch (emailError) {
-      console.error('Failed to resend verification email:', emailError);
+      console.error('❌ Failed to resend verification email:', emailError);
       throw new Error('Failed to send verification email');
     }
   }
