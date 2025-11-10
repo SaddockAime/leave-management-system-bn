@@ -11,6 +11,7 @@
     "createAllTables": "ts-node src/scripts/create-tables.ts",
     "deleteAllTables": "ts-node src/scripts/drop-tables.ts",
     "seed:all": "ts-node src/scripts/seed-all.ts",
+    "cleanup:attendance": "ts-node src/scripts/cleanup-attendance-enums.ts",
     "swagger:generate": "node docs/swagger-config.js",
     "format": "prettier --write ."
   },
@@ -44,6 +45,7 @@
   "dependencies": {
     "@types/cors": "^2.8.17",
     "@types/multer": "^2.0.0",
+    "@types/usb": "^2.0.4",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.7.0",
     "cors": "^2.8.5",
@@ -67,6 +69,7 @@
     "socket.io": "^4.8.1",
     "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.22",
+    "usb": "^2.16.0",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0"
   }

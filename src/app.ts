@@ -8,7 +8,6 @@ import fs from 'fs';
 import path from 'path';
 import passport from 'passport';
 import session from 'express-session';
-import { initializeDatabase } from './config/database';
 import configurePassport from './config/passport';
 import { logger, requestLogger } from './utils/logger';
 import authRoutes from './routes/authRoutes';
@@ -28,12 +27,7 @@ import recruitmentRoutes from './routes/recruitmentRoutes';
 import compensationRoutes from './routes/compensationRoutes';
 import onboardingRoutes from './routes/onboardingRoutes';
 import profileRoutes from './routes/profileRoutes';
-
-// Initialize database
-initializeDatabase().catch((err) => {
-  logger.error('Database initialization failed', { error: err.message, stack: err.stack });
-  process.exit(1);
-});
+import attendanceRoutes from './routes/attendanceRoutes';
 
 const app = express();
 
@@ -99,6 +93,7 @@ app.use('/api/recruitment', recruitmentRoutes);
 app.use('/api/compensation', compensationRoutes);
 app.use('/api/onboarding', onboardingRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/attendance', attendanceRoutes);
 
 logger.info('🚀 All routes registered successfully');
 

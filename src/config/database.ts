@@ -20,6 +20,7 @@ import {
   Holiday,
   Notification,
   AuditLog,
+  Attendance,
 
   // New HR Models
   JobPosting,
@@ -55,6 +56,7 @@ export const initializeDatabase = async (): Promise<Connection> => {
         Holiday,
         Notification,
         AuditLog,
+        Attendance,
 
         // New HR Models
         JobPosting,

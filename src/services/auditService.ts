@@ -12,9 +12,15 @@ export type AuditAction =
   | 'LEAVE_REJECTED'
   | 'PASSWORD_CHANGE'
   | 'PASSWORD_RESET'
-  | 'CRITICAL_UPDATE';
+  | 'CRITICAL_UPDATE'
+  | 'CREATE_ATTENDANCE'
+  | 'CREATE_ATTENDANCE_FINGERPRINT'
+  | 'UPDATE_ATTENDANCE'
+  | 'ENROLL_FINGERPRINT'
+  | 'UPDATE_FINGERPRINT'
+  | 'REMOVE_FINGERPRINT';
 
-export type EntityType = 'User' | 'LeaveRequest' | 'System';
+export type EntityType = 'User' | 'LeaveRequest' | 'System' | 'Attendance' | 'Employee';
 
 export interface AuditLogEntry {
   userId: string;

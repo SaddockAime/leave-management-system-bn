@@ -19,6 +19,7 @@ import { Bonus } from './Bonus';
 import { EmployeeBenefit } from './EmployeeBenefit';
 import { Onboarding } from './Onboarding';
 import { User } from './User';
+import { Attendance } from './Attendance';
 
 @Entity('employees')
 export class Employee {
@@ -76,6 +77,19 @@ export class Employee {
 
   @OneToMany(() => Onboarding, (onboarding) => onboarding.employee)
   onboardings!: Onboarding[];
+
+  @OneToMany(() => Attendance, (attendance) => attendance.employee)
+  attendances!: Attendance[];
+
+  // Fingerprint biometric data
+  @Column({ name: 'fingerprint_template', nullable: true, type: 'text' })
+  fingerprintTemplate?: string; // Base64 encoded fingerprint template
+
+  @Column({ name: 'fingerprint_enrolled', default: false })
+  fingerprintEnrolled!: boolean; // Whether fingerprint is enrolled
+
+  @Column({ name: 'enrollment_date', nullable: true })
+  enrollmentDate?: Date; // When fingerprint was enrolled
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;

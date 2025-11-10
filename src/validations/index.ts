@@ -12,3 +12,4 @@ export * from './managerValidations';
 export * from './reportValidations';
 export * from './departmentValidations';
 export * from './profileValidations';
+export * from './attendanceValidations';

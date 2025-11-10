@@ -10,6 +10,7 @@ export { Document } from './Document';
 export { Holiday } from './Holiday';
 export { Notification } from './Notification';
 export { AuditLog } from './AuditLog';
+export { Attendance, AttendanceStatus, VerificationMethod } from './Attendance';
 
 // Authentication Models
 export { User, UserStatus, AuthProvider } from './User';
