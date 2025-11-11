@@ -246,11 +246,12 @@ export class AttendanceController {
 
   /**
    * Get fingerprint enrollment status
-   * GET /api/attendance/fingerprint/status
+   * GET /api/attendance/fingerprint/status?employeeId=xxx (optional)
    */
   async getFingerprintStatus(req: Request, res: Response): Promise<void> {
     try {
-      const status = await this.attendanceService.getFingerprintStatus();
+      const employeeId = req.query.employeeId as string | undefined;
+      const status = await this.attendanceService.getFingerprintStatus(employeeId);
 
       res.status(200).json({
         success: true,

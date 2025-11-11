@@ -101,25 +101,43 @@ export class AttendanceService {
       }
 
       // If fingerprint should be captured, capture it first
+      let capturedTemplate: string | undefined;
       if (shouldCaptureFingerprint && !dto.fingerprintTemplate) {
-        const capturedTemplate = await this.fingerprintService.captureTemplate();
+        capturedTemplate = await this.fingerprintService.captureTemplate(dto.employeeId);
         if (!capturedTemplate) {
           throw new Error('Failed to capture fingerprint');
         }
         dto.fingerprintTemplate = capturedTemplate;
       }
 
-      const verification = await this.fingerprintService.verifyFingerprint(
-        employee.fingerprintTemplate,
-      );
-
-      if (!verification.success) {
-        throw new Error(`Fingerprint verification failed. Confidence: ${verification.confidence}%`);
+      // Use the captured template or provided template for verification
+      const templateToVerify = dto.fingerprintTemplate || capturedTemplate;
+      if (!templateToVerify) {
+        throw new Error('No fingerprint template provided for verification');
       }
 
+      // Compare directly with stored template (same approach as kiosk mode)
+      const similarity = this.calculateFingerprintSimilarity(
+        employee.fingerprintTemplate!,
+        templateToVerify,
+      );
+      const confidence = similarity * 100;
+
+      // Use 60% threshold (same as kiosk mode)
+      if (confidence < 60) {
+        throw new Error(
+          `Fingerprint verification failed. Confidence: ${confidence.toFixed(1)}% (minimum 60% required)`,
+        );
+      }
+
+      logger.info('Fingerprint verification successful', {
+        employeeId: dto.employeeId,
+        confidence: confidence.toFixed(2),
+      });
+
       verificationMethod = 'FINGERPRINT';
-      confidenceScore = verification.confidence;
-      fingerprintTemplate = verification.template || dto.fingerprintTemplate;
+      confidenceScore = confidence;
+      fingerprintTemplate = templateToVerify;
     } else {
       verificationMethod = 'MANUAL';
     }
@@ -167,6 +185,7 @@ export class AttendanceService {
     message: string;
     employee?: Employee;
     attendance?: Attendance;
+    confidence?: number;
   }> {
     const employeeRepository = getRepository(Employee);
     const attendanceRepository = getRepository(Attendance);
@@ -350,6 +369,7 @@ export class AttendanceService {
           message: `Check-out recorded for ${matchedEmployee.user.getFullName()}`,
           employee: matchedEmployee,
           attendance: existingAttendance,
+          confidence: existingAttendance.confidenceScore || 0,
         };
       } else {
         throw new Error(
@@ -395,6 +415,7 @@ export class AttendanceService {
       message: `Attendance marked for ${matchedEmployee.user.getFullName()}`,
       employee: matchedEmployee,
       attendance: savedAttendance,
+      confidence: finalConfidence,
     };
   }
 
@@ -808,28 +829,59 @@ export class AttendanceService {
 
   /**
    * Get fingerprint enrollment status
+   * If employeeId is provided, returns status for that employee only
+   * Otherwise returns status for all employees
    */
-  async getFingerprintStatus(): Promise<{
-    totalEmployees: number;
-    enrolledEmployees: number;
-    notEnrolledEmployees: number;
-    enrollmentPercentage: number;
-  }> {
+  async getFingerprintStatus(employeeId?: string): Promise<
+    | {
+        totalEmployees: number;
+        enrolledEmployees: number;
+        notEnrolledEmployees: number;
+        enrollmentPercentage: number;
+      }
+    | Array<{
+        employeeId: string;
+        employeeName: string;
+        enrolled: boolean;
+        enrollmentDate?: Date;
+      }>
+  > {
     const employeeRepository = getRepository(Employee);
 
-    const totalEmployees = await employeeRepository.count();
-    const enrolledEmployees = await employeeRepository.count({
-      where: { fingerprintEnrolled: true },
-    });
-    const notEnrolledEmployees = totalEmployees - enrolledEmployees;
-    const enrollmentPercentage =
-      totalEmployees > 0 ? (enrolledEmployees / totalEmployees) * 100 : 0;
+    // If employeeId is provided, return status for that employee only
+    if (employeeId) {
+      const employee = await employeeRepository.findOne({
+        where: { id: employeeId },
+        relations: ['user'],
+      });
 
-    return {
-      totalEmployees,
-      enrolledEmployees,
-      notEnrolledEmployees,
-      enrollmentPercentage: Number(enrollmentPercentage.toFixed(2)),
-    };
+      if (!employee) {
+        return [];
+      }
+
+      return [
+        {
+          employeeId: employee.id,
+          employeeName: `${employee.user.firstName} ${employee.user.lastName}`,
+          enrolled: employee.fingerprintEnrolled || false,
+          enrollmentDate: employee.enrollmentDate || undefined,
+        },
+      ];
+    }
+
+    // Otherwise, return status for all employees
+    const employees = await employeeRepository.find({
+      relations: ['user'],
+      select: ['id', 'fingerprintEnrolled', 'enrollmentDate', 'user'],
+    });
+
+    const statusList = employees.map((employee) => ({
+      employeeId: employee.id,
+      employeeName: `${employee.user.firstName} ${employee.user.lastName}`,
+      enrolled: employee.fingerprintEnrolled || false,
+      enrollmentDate: employee.enrollmentDate || undefined,
+    }));
+
+    return statusList;
   }
 }

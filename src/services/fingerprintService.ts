@@ -307,7 +307,7 @@ export class FingerprintService {
       // Compare with stored template
       const similarity = this.calculateFingerprintSimilarity(storedTemplate, currentTemplate);
       const confidence = similarity * 100;
-      const success = confidence > 70; // 70% threshold
+      const success = confidence >= 60; // 60% threshold (same as kiosk mode)
 
       const result = {
         success,
