@@ -6,7 +6,7 @@
   "scripts": {
     "start": "ts-node src/server.ts",
     "dev": "nodemon --exec ts-node src/server.ts",
-    "build": "tsc",
+    "build": "tsc && copyfiles -u 1 \"src/templates/**/*\" dist/",
     "test": "echo \"Error: no test specified\" && exit 1",
     "createAllTables": "ts-node src/scripts/create-tables.ts",
     "deleteAllTables": "ts-node src/scripts/drop-tables.ts",
@@ -37,6 +37,7 @@
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/passport-local": "^1.0.38",
     "@types/swagger-ui-express": "^4.1.8",
+    "copyfiles": "^2.4.1",
     "nodemon": "^3.1.10",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
