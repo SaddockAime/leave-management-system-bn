@@ -22,5 +22,8 @@ COPY . .
 RUN npm run build
 RUN npm prune --omit=dev
 
+ENV HOST=::
+ENV PORT=4000
+
 EXPOSE 4000
 CMD ["sh", "-c", "node dist/scripts/create-tables.js && node dist/scripts/seed-all.js && node dist/server.js"]
