@@ -118,7 +118,7 @@ export class HRController {
    */
   async getEmployeeDetails(req: Request, res: Response): Promise<void> {
     try {
-      const { employeeId } = req.params;
+      const employeeId = req.params.employeeId as string;
       const employee = await this.hrService.getEmployeeDetails(employeeId);
 
       if (!employee) {
@@ -148,7 +148,7 @@ export class HRController {
    */
   async updateEmployee(req: Request, res: Response): Promise<void> {
     try {
-      const { employeeId } = req.params;
+      const employeeId = req.params.employeeId as string;
       const updates = req.body;
 
       // Validate updates

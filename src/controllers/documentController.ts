@@ -6,7 +6,7 @@ export class DocumentController {
 
   async uploadDocument(req: Request, res: Response): Promise<void> {
     try {
-      const { leaveRequestId } = req.params;
+      const leaveRequestId = req.params.leaveRequestId as string;
       const userId = (req as any).user.id;
       const file = (req as any).file;
 
@@ -45,7 +45,7 @@ export class DocumentController {
 
   async getDocumentById(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const result = await this.documentService.getDocument(id);
 
       if (!result.success) {
@@ -72,7 +72,7 @@ export class DocumentController {
 
   async deleteDocument(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = (req as any).user.id;
 
       const result = await this.documentService.deleteDocument(id, userId);
@@ -106,7 +106,7 @@ export class DocumentController {
 
   async getDocumentsByLeaveRequest(req: Request, res: Response): Promise<void> {
     try {
-      const { leaveRequestId } = req.params;
+      const leaveRequestId = req.params.leaveRequestId as string;
       const result = await this.documentService.getDocumentsByLeaveRequest(leaveRequestId);
 
       if (!result.success) {

@@ -19,7 +19,7 @@ export class DepartmentController {
 
   async getDepartmentById(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const departmentRepository = getRepository(Department);
 
       const department = await departmentRepository.findOne({
@@ -79,7 +79,7 @@ export class DepartmentController {
 
   async updateDepartment(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { name, description, managerId } = req.body;
 
       const departmentRepository = getRepository(Department);
@@ -126,7 +126,7 @@ export class DepartmentController {
 
   async deleteDepartment(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       const departmentRepository = getRepository(Department);
       const employeeRepository = getRepository(Employee);

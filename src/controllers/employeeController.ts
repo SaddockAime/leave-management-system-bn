@@ -196,7 +196,7 @@ export class EmployeeController {
 
   async getEmployeeById(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = (req as any).user.id;
 
       const employeeRepository = getRepository(Employee);
@@ -244,7 +244,7 @@ export class EmployeeController {
 
   async updateEmployee(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const employeeRepository = getRepository(Employee);
 
       const employee = await employeeRepository.findOne({ where: { id } });

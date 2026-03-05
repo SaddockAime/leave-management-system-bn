@@ -16,7 +16,7 @@ export class LeaveTypeController {
 
   async getLeaveTypeById(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const leaveTypeRepository = getRepository(LeaveType);
       const leaveType = await leaveTypeRepository.findOne({ where: { id } });
 
@@ -44,7 +44,7 @@ export class LeaveTypeController {
 
   async updateLeaveType(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const leaveTypeRepository = getRepository(LeaveType);
 
       const leaveType = await leaveTypeRepository.findOne({ where: { id } });

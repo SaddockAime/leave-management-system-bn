@@ -30,7 +30,7 @@ export class OnboardingController {
    */
   async updateOnboardingStatus(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { status, phase } = req.body;
 
       const updatedOnboarding = await this.onboardingService.updateOnboardingStatus(
@@ -58,7 +58,7 @@ export class OnboardingController {
    */
   async advanceOnboardingPhase(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       const advancedOnboarding = await this.onboardingService.advanceOnboardingPhase(id);
 
@@ -148,7 +148,7 @@ export class OnboardingController {
    */
   async updateTaskStatus(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { status, completionNotes } = req.body;
 
       const updatedTask = await this.onboardingService.updateTaskStatus(
@@ -223,7 +223,7 @@ export class OnboardingController {
    */
   async getOnboardingProgress(req: Request, res: Response): Promise<void> {
     try {
-      const { onboardingId } = req.params;
+      const onboardingId = req.params.onboardingId as string;
       const progress = await this.onboardingService.getOnboardingProgress(onboardingId);
 
       res.json({
@@ -267,7 +267,7 @@ export class OnboardingController {
    */
   async cloneOnboardingFromTemplate(req: Request, res: Response): Promise<void> {
     try {
-      const { templateId } = req.params;
+      const templateId = req.params.templateId as string;
       const { employeeId } = req.body;
 
       const newOnboarding = await this.onboardingService.cloneOnboardingFromTemplate(

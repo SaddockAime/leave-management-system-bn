@@ -30,7 +30,7 @@ export class RecruitmentController {
    */
   async updateJobPosting(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const updates = req.body;
 
       const oldJobPosting = await this.recruitmentService.searchJobPostings({}, 1, 1);
@@ -55,7 +55,7 @@ export class RecruitmentController {
    */
   async publishJobPosting(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { approvedBy } = req.body;
 
       const publishedJobPosting = await this.recruitmentService.publishJobPosting(id, approvedBy);
@@ -79,7 +79,7 @@ export class RecruitmentController {
    */
   async closeJobPosting(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       const closedJobPosting = await this.recruitmentService.closeJobPosting(id);
 
@@ -169,7 +169,7 @@ export class RecruitmentController {
    */
   async updateApplicationStatus(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { status, notes } = req.body;
 
       const updatedApplication = await this.recruitmentService.updateApplicationStatus(
@@ -253,7 +253,7 @@ export class RecruitmentController {
    */
   async updateInterviewStatus(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { status, result } = req.body;
 
       const updatedInterview = await this.recruitmentService.updateInterviewStatus(
@@ -400,7 +400,7 @@ export class RecruitmentController {
    */
   async updateJobApplication(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const updates = req.body;
 
       const updatedApplication = await this.recruitmentService.updateApplicationStatus(
@@ -481,7 +481,7 @@ export class RecruitmentController {
    */
   async updateInterview(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const updates = req.body;
 
       const updatedInterview = await this.recruitmentService.updateInterviewStatus(

@@ -30,7 +30,7 @@ export class CompensationController {
    */
   async updateSalary(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const updates = req.body;
 
       const updatedSalary = await this.compensationService.updateSalary(id, updates);
@@ -54,7 +54,7 @@ export class CompensationController {
    */
   async getEmployeeSalaryHistory(req: Request, res: Response): Promise<void> {
     try {
-      const { employeeId } = req.params;
+      const employeeId = req.params.employeeId as string;
       const salaryHistory = await this.compensationService.getEmployeeSalaryHistory(employeeId);
 
       res.json({
@@ -76,7 +76,7 @@ export class CompensationController {
    */
   async getCurrentSalary(req: Request, res: Response): Promise<void> {
     try {
-      const { employeeId } = req.params;
+      const employeeId = req.params.employeeId as string;
       const { type } = req.query;
 
       const currentSalary = await this.compensationService.getCurrentSalary(
@@ -170,7 +170,7 @@ export class CompensationController {
    */
   async updateBonusStatus(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { status, notes } = req.body;
 
       const updatedBonus = await this.compensationService.updateBonusStatus(id, status, notes);
@@ -259,7 +259,7 @@ export class CompensationController {
    */
   async updateBenefit(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const updates = req.body;
 
       const updatedBenefit = await this.compensationService.updateBenefit(id, updates);
@@ -317,7 +317,8 @@ export class CompensationController {
    */
   async enrollEmployeeInBenefit(req: Request, res: Response): Promise<void> {
     try {
-      const { employeeId, benefitId } = req.params;
+      const employeeId = req.params.employeeId as string;
+      const benefitId = req.params.benefitId as string;
       const enrollmentData = req.body;
 
       const enrollment = await this.compensationService.enrollEmployeeInBenefit(
@@ -345,7 +346,7 @@ export class CompensationController {
    */
   async updateBenefitEnrollmentStatus(req: Request, res: Response): Promise<void> {
     try {
-      const { enrollmentId } = req.params;
+      const enrollmentId = req.params.enrollmentId as string;
       const { status, notes } = req.body;
 
       const updatedEnrollment = await this.compensationService.updateBenefitEnrollmentStatus(
@@ -373,7 +374,7 @@ export class CompensationController {
    */
   async getEmployeeBenefits(req: Request, res: Response): Promise<void> {
     try {
-      const { employeeId } = req.params;
+      const employeeId = req.params.employeeId as string;
       const benefits = await this.compensationService.getEmployeeBenefits(employeeId);
 
       res.json({
@@ -416,7 +417,7 @@ export class CompensationController {
    */
   async getSalaryById(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       // TODO: Implement get salary by ID functionality
       res.status(200).json({ message: 'Get salary by ID not implemented yet' });
     } catch (error: any) {
@@ -429,7 +430,7 @@ export class CompensationController {
    */
   async getBenefitById(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       // TODO: Implement get benefit by ID functionality
       res.status(200).json({ message: 'Get benefit by ID not implemented yet' });
     } catch (error: any) {

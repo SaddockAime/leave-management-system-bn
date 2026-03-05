@@ -90,7 +90,7 @@ export class AttendanceController {
    */
   async updateAttendance(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const currentUserId = (req as any).user.id;
       const attendance = await this.attendanceService.updateAttendance(id, req.body, currentUserId);
 
@@ -149,7 +149,7 @@ export class AttendanceController {
    */
   async getAttendanceSummary(req: Request, res: Response): Promise<void> {
     try {
-      const { employeeId } = req.params;
+      const employeeId = req.params.employeeId as string;
       const startDate = req.query.startDate as string;
       const endDate = req.query.endDate as string;
 
@@ -178,7 +178,7 @@ export class AttendanceController {
    */
   async enrollFingerprint(req: Request, res: Response): Promise<void> {
     try {
-      const { employeeId } = req.params;
+      const employeeId = req.params.employeeId as string;
       const currentUserId = (req as any).user.id;
 
       const result = await this.attendanceService.enrollFingerprint(employeeId, currentUserId);
@@ -202,7 +202,7 @@ export class AttendanceController {
    */
   async updateFingerprint(req: Request, res: Response): Promise<void> {
     try {
-      const { employeeId } = req.params;
+      const employeeId = req.params.employeeId as string;
       const currentUserId = (req as any).user.id;
 
       const result = await this.attendanceService.updateFingerprint(employeeId, currentUserId);
@@ -226,7 +226,7 @@ export class AttendanceController {
    */
   async removeFingerprint(req: Request, res: Response): Promise<void> {
     try {
-      const { employeeId } = req.params;
+      const employeeId = req.params.employeeId as string;
       const currentUserId = (req as any).user.id;
 
       const result = await this.attendanceService.removeFingerprint(employeeId, currentUserId);

@@ -48,7 +48,7 @@ export class LeaveBalanceController {
 
   async getEmployeeLeaveBalances(req: Request, res: Response): Promise<void> {
     try {
-      const { employeeId } = req.params;
+      const employeeId = req.params.employeeId as string;
       const userId = (req as any).user.id;
 
       // Check if requester is HR/Admin or the employee's manager

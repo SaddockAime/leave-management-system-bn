@@ -268,7 +268,7 @@ export class LeaveRequestController {
 
   async getLeaveRequestById(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = (req as any).user.id;
 
       const leaveRequestRepository = getRepository(LeaveRequest);
@@ -426,7 +426,7 @@ export class LeaveRequestController {
 
   async approveLeaveRequest(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { comments } = req.body;
       const userId = (req as any).user.id;
 
@@ -515,7 +515,7 @@ export class LeaveRequestController {
 
   async rejectLeaveRequest(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { comments } = req.body;
       const userId = (req as any).user.id;
 
@@ -599,7 +599,7 @@ export class LeaveRequestController {
 
   async cancelLeaveRequest(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = (req as any).user.id;
 
       const employeeRepository = getRepository(Employee);
@@ -667,7 +667,7 @@ export class LeaveRequestController {
    */
   async updateLeaveRequest(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { startDate, endDate, reason } = req.body;
       const userId = (req as any).user.id;
 

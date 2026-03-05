@@ -320,7 +320,7 @@ export class AuthController {
 
   async updateUserRole(req: Request, res: Response): Promise<void> {
     try {
-      const { userId } = req.params;
+      const userId = req.params.userId as string;
       const { roleIds } = req.body;
 
       if (!roleIds || !Array.isArray(roleIds)) {
@@ -349,7 +349,7 @@ export class AuthController {
 
   async updateUserStatus(req: Request, res: Response): Promise<void> {
     try {
-      const { userId } = req.params;
+      const userId = req.params.userId as string;
       const { status } = req.body;
 
       if (!status) {
@@ -424,7 +424,7 @@ export class AuthController {
 
   async deleteUser(req: Request, res: Response): Promise<void> {
     try {
-      const { userId } = req.params;
+      const userId = req.params.userId as string;
 
       await this.authService.deleteUser(userId);
 
@@ -497,7 +497,7 @@ export class AuthController {
 
   async verifyEmail(req: Request, res: Response): Promise<void> {
     try {
-      const { token } = req.params;
+      const token = req.params.token as string;
 
       if (!token) {
         res.status(400).json({
