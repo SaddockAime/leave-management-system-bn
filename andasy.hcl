@@ -6,11 +6,11 @@ app_name = "hr-employees-management-bn"
 
 app {
 
-  env = {}
+  env = {
+    HOST = "::"
+  }
 
   port = 4000
-
-  primary_region = "kgl"
 
   compute {
     cpu      = 1
