@@ -15,7 +15,7 @@
       "description": "Development server"
     },
     {
-      "url": "https://lms-hr-api.genesiscodeworks.com",
+      "url": "https://hr-employees-management-bn.andasy.dev",
       "description": "Production server"
     }
   ],
@@ -30,7 +30,10 @@
     "schemas": {
       "LoginRequest": {
         "type": "object",
-        "required": ["email", "password"],
+        "required": [
+          "email",
+          "password"
+        ],
         "properties": {
           "email": {
             "type": "string",
@@ -114,12 +117,19 @@
           },
           "status": {
             "type": "string",
-            "enum": ["ACTIVE", "INACTIVE", "SUSPENDED"],
+            "enum": [
+              "ACTIVE",
+              "INACTIVE",
+              "SUSPENDED"
+            ],
             "description": "User account status"
           },
           "authProvider": {
             "type": "string",
-            "enum": ["LOCAL", "GOOGLE"],
+            "enum": [
+              "LOCAL",
+              "GOOGLE"
+            ],
             "description": "Authentication provider"
           },
           "googleId": {
@@ -157,7 +167,13 @@
           },
           "name": {
             "type": "string",
-            "enum": ["ADMIN", "MANAGER", "EMPLOYEE", "HR_MANAGER", "GUEST"],
+            "enum": [
+              "ADMIN",
+              "MANAGER",
+              "EMPLOYEE",
+              "HR_MANAGER",
+              "GUEST"
+            ],
             "description": "Role name"
           },
           "description": {
@@ -178,7 +194,12 @@
       },
       "RegisterRequest": {
         "type": "object",
-        "required": ["email", "password", "firstName", "lastName"],
+        "required": [
+          "email",
+          "password",
+          "firstName",
+          "lastName"
+        ],
         "properties": {
           "email": {
             "type": "string",
@@ -225,7 +246,9 @@
       },
       "RefreshTokenRequest": {
         "type": "object",
-        "required": ["refreshToken"],
+        "required": [
+          "refreshToken"
+        ],
         "properties": {
           "refreshToken": {
             "type": "string",
@@ -238,7 +261,10 @@
       },
       "ChangePasswordRequest": {
         "type": "object",
-        "required": ["currentPassword", "newPassword"],
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ],
         "properties": {
           "currentPassword": {
             "type": "string",
@@ -257,7 +283,9 @@
       },
       "ForgotPasswordRequest": {
         "type": "object",
-        "required": ["email"],
+        "required": [
+          "email"
+        ],
         "properties": {
           "email": {
             "type": "string",
@@ -271,7 +299,10 @@
       },
       "ResetPasswordRequest": {
         "type": "object",
-        "required": ["token", "newPassword"],
+        "required": [
+          "token",
+          "newPassword"
+        ],
         "properties": {
           "token": {
             "type": "string",
@@ -290,7 +321,9 @@
       },
       "UpdateUserRoleRequest": {
         "type": "object",
-        "required": ["roleId"],
+        "required": [
+          "roleId"
+        ],
         "properties": {
           "roleId": {
             "type": "string",
@@ -304,11 +337,17 @@
       },
       "UpdateUserStatusRequest": {
         "type": "object",
-        "required": ["status"],
+        "required": [
+          "status"
+        ],
         "properties": {
           "status": {
             "type": "string",
-            "enum": ["ACTIVE", "INACTIVE", "SUSPENDED"],
+            "enum": [
+              "ACTIVE",
+              "INACTIVE",
+              "SUSPENDED"
+            ],
             "description": "New user status"
           }
         },
@@ -399,7 +438,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["ACTIVE", "INACTIVE", "TERMINATED", "ON_LEAVE"],
+            "enum": [
+              "ACTIVE",
+              "INACTIVE",
+              "TERMINATED",
+              "ON_LEAVE"
+            ],
             "description": "Employee status"
           },
           "salary": {
@@ -452,7 +496,11 @@
       },
       "EmployeeCreate": {
         "type": "object",
-        "required": ["userId", "position", "departmentId"],
+        "required": [
+          "userId",
+          "position",
+          "departmentId"
+        ],
         "properties": {
           "userId": {
             "type": "string",
@@ -461,7 +509,12 @@
           },
           "position": {
             "type": "string",
-            "enum": ["EMPLOYEE", "MANAGER", "HR_MANAGER", "ADMIN"],
+            "enum": [
+              "EMPLOYEE",
+              "MANAGER",
+              "HR_MANAGER",
+              "ADMIN"
+            ],
             "description": "Employee's position/role in the organization"
           },
           "departmentId": {
@@ -517,7 +570,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["ACTIVE", "INACTIVE", "TERMINATED", "ON_LEAVE"],
+            "enum": [
+              "ACTIVE",
+              "INACTIVE",
+              "TERMINATED",
+              "ON_LEAVE"
+            ],
             "description": "Employee status"
           },
           "salary": {
@@ -550,7 +608,11 @@
       },
       "EmployeeSelfProfile": {
         "type": "object",
-        "required": ["position", "departmentId", "hireDate"],
+        "required": [
+          "position",
+          "departmentId",
+          "hireDate"
+        ],
         "properties": {
           "position": {
             "type": "string",
@@ -645,7 +707,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["ACTIVE", "INACTIVE", "TERMINATED", "ON_LEAVE"],
+            "enum": [
+              "ACTIVE",
+              "INACTIVE",
+              "TERMINATED",
+              "ON_LEAVE"
+            ],
             "description": "Employee status"
           },
           "salary": {
@@ -710,7 +777,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["ACTIVE", "INACTIVE", "TERMINATED", "ON_LEAVE"],
+            "enum": [
+              "ACTIVE",
+              "INACTIVE",
+              "TERMINATED",
+              "ON_LEAVE"
+            ],
             "description": "Filter by status"
           },
           "managerId": {
@@ -815,7 +887,9 @@
       },
       "DepartmentCreate": {
         "type": "object",
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "properties": {
           "name": {
             "type": "string",
@@ -904,7 +978,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["PENDING", "APPROVED", "REJECTED", "CANCELLED"],
+            "enum": [
+              "PENDING",
+              "APPROVED",
+              "REJECTED",
+              "CANCELLED"
+            ],
             "description": "Leave request status"
           },
           "managerId": {
@@ -945,7 +1024,12 @@
       },
       "LeaveRequestCreate": {
         "type": "object",
-        "required": ["leaveTypeId", "startDate", "endDate", "reason"],
+        "required": [
+          "leaveTypeId",
+          "startDate",
+          "endDate",
+          "reason"
+        ],
         "properties": {
           "leaveTypeId": {
             "type": "string",
@@ -1003,11 +1087,16 @@
       },
       "LeaveRequestApproval": {
         "type": "object",
-        "required": ["status"],
+        "required": [
+          "status"
+        ],
         "properties": {
           "status": {
             "type": "string",
-            "enum": ["APPROVED", "REJECTED"],
+            "enum": [
+              "APPROVED",
+              "REJECTED"
+            ],
             "description": "Approval decision"
           },
           "rejectionReason": {
@@ -1072,7 +1161,10 @@
       },
       "LeaveTypeCreate": {
         "type": "object",
-        "required": ["name", "defaultDays"],
+        "required": [
+          "name",
+          "defaultDays"
+        ],
         "properties": {
           "name": {
             "type": "string",
@@ -1227,7 +1319,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["PENDING", "APPROVED", "REJECTED", "CANCELLED"],
+            "enum": [
+              "PENDING",
+              "APPROVED",
+              "REJECTED",
+              "CANCELLED"
+            ],
             "description": "Filter by status"
           },
           "startDate": {
@@ -1305,7 +1402,10 @@
       },
       "HolidayCreate": {
         "type": "object",
-        "required": ["name", "date"],
+        "required": [
+          "name",
+          "date"
+        ],
         "properties": {
           "name": {
             "type": "string",
@@ -1363,7 +1463,12 @@
       },
       "LeaveBalanceAdjustment": {
         "type": "object",
-        "required": ["employeeId", "leaveTypeId", "adjustment", "reason"],
+        "required": [
+          "employeeId",
+          "leaveTypeId",
+          "adjustment",
+          "reason"
+        ],
         "properties": {
           "employeeId": {
             "type": "string",
@@ -1411,7 +1516,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["PRESENT", "ABSENT", "HALF_DAY", "LEAVE"],
+            "enum": [
+              "PRESENT",
+              "ABSENT",
+              "HALF_DAY",
+              "LEAVE"
+            ],
             "description": "Attendance status",
             "example": "PRESENT"
           },
@@ -1438,7 +1548,11 @@
           },
           "verificationMethod": {
             "type": "string",
-            "enum": ["MANUAL", "FINGERPRINT", "PIN"],
+            "enum": [
+              "MANUAL",
+              "FINGERPRINT",
+              "PIN"
+            ],
             "description": "Method used to verify attendance",
             "example": "FINGERPRINT"
           },
@@ -1468,7 +1582,10 @@
       },
       "AttendanceCreate": {
         "type": "object",
-        "required": ["employeeId", "date"],
+        "required": [
+          "employeeId",
+          "date"
+        ],
         "properties": {
           "employeeId": {
             "type": "string",
@@ -1484,7 +1601,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["PRESENT", "ABSENT", "HALF_DAY", "LEAVE"],
+            "enum": [
+              "PRESENT",
+              "ABSENT",
+              "HALF_DAY",
+              "LEAVE"
+            ],
             "description": "Attendance status (defaults to PRESENT)"
           },
           "checkInTime": {
@@ -1514,7 +1636,12 @@
         "properties": {
           "status": {
             "type": "string",
-            "enum": ["PRESENT", "ABSENT", "HALF_DAY", "LEAVE"],
+            "enum": [
+              "PRESENT",
+              "ABSENT",
+              "HALF_DAY",
+              "LEAVE"
+            ],
             "description": "Attendance status"
           },
           "checkInTime": {
@@ -1920,7 +2047,11 @@
           },
           "status": {
             "type": "string",
-            "enum": ["GENERATING", "COMPLETED", "FAILED"],
+            "enum": [
+              "GENERATING",
+              "COMPLETED",
+              "FAILED"
+            ],
             "description": "Report generation status"
           }
         }
@@ -1930,7 +2061,12 @@
         "properties": {
           "operation": {
             "type": "string",
-            "enum": ["UPDATE_STATUS", "UPDATE_DEPARTMENT", "UPDATE_SALARY", "SEND_NOTIFICATION"],
+            "enum": [
+              "UPDATE_STATUS",
+              "UPDATE_DEPARTMENT",
+              "UPDATE_SALARY",
+              "SEND_NOTIFICATION"
+            ],
             "description": "Type of bulk operation"
           },
           "employeeIds": {
@@ -1947,7 +2083,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["PENDING", "IN_PROGRESS", "COMPLETED", "FAILED"],
+            "enum": [
+              "PENDING",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "FAILED"
+            ],
             "description": "Operation status"
           },
           "progress": {
@@ -1967,7 +2108,10 @@
                 },
                 "status": {
                   "type": "string",
-                  "enum": ["SUCCESS", "FAILED"]
+                  "enum": [
+                    "SUCCESS",
+                    "FAILED"
+                  ]
                 },
                 "message": {
                   "type": "string"
@@ -2003,7 +2147,13 @@
           },
           "category": {
             "type": "string",
-            "enum": ["LEAVE", "COMPENSATION", "CONDUCT", "SAFETY", "OTHER"],
+            "enum": [
+              "LEAVE",
+              "COMPENSATION",
+              "CONDUCT",
+              "SAFETY",
+              "OTHER"
+            ],
             "description": "Policy category"
           },
           "content": {
@@ -2039,7 +2189,13 @@
       },
       "HRPolicyCreate": {
         "type": "object",
-        "required": ["name", "description", "category", "content", "effectiveDate"],
+        "required": [
+          "name",
+          "description",
+          "category",
+          "content",
+          "effectiveDate"
+        ],
         "properties": {
           "name": {
             "type": "string",
@@ -2051,7 +2207,13 @@
           },
           "category": {
             "type": "string",
-            "enum": ["LEAVE", "COMPENSATION", "CONDUCT", "SAFETY", "OTHER"],
+            "enum": [
+              "LEAVE",
+              "COMPENSATION",
+              "CONDUCT",
+              "SAFETY",
+              "OTHER"
+            ],
             "description": "Policy category"
           },
           "content": {
@@ -2084,7 +2246,13 @@
           },
           "type": {
             "type": "string",
-            "enum": ["LABOR_LAW", "SAFETY", "EQUAL_OPPORTUNITY", "WAGE_HOUR", "OTHER"],
+            "enum": [
+              "LABOR_LAW",
+              "SAFETY",
+              "EQUAL_OPPORTUNITY",
+              "WAGE_HOUR",
+              "OTHER"
+            ],
             "description": "Compliance report type"
           },
           "period": {
@@ -2093,7 +2261,11 @@
           },
           "status": {
             "type": "string",
-            "enum": ["COMPLIANT", "NON_COMPLIANT", "NEEDS_ATTENTION"],
+            "enum": [
+              "COMPLIANT",
+              "NON_COMPLIANT",
+              "NEEDS_ATTENTION"
+            ],
             "description": "Compliance status"
           },
           "findings": {
@@ -2106,7 +2278,12 @@
                 },
                 "severity": {
                   "type": "string",
-                  "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+                  "enum": [
+                    "LOW",
+                    "MEDIUM",
+                    "HIGH",
+                    "CRITICAL"
+                  ]
                 },
                 "recommendation": {
                   "type": "string"
@@ -2147,12 +2324,22 @@
           },
           "type": {
             "type": "string",
-            "enum": ["HIRING", "RESTRUCTURING", "SUCCESSION", "SKILLS_DEVELOPMENT"],
+            "enum": [
+              "HIRING",
+              "RESTRUCTURING",
+              "SUCCESSION",
+              "SKILLS_DEVELOPMENT"
+            ],
             "description": "Planning type"
           },
           "status": {
             "type": "string",
-            "enum": ["DRAFT", "IN_REVIEW", "APPROVED", "IMPLEMENTED"],
+            "enum": [
+              "DRAFT",
+              "IN_REVIEW",
+              "APPROVED",
+              "IMPLEMENTED"
+            ],
             "description": "Planning status"
           },
           "goals": {
@@ -2179,7 +2366,11 @@
                 },
                 "status": {
                   "type": "string",
-                  "enum": ["PENDING", "IN_PROGRESS", "COMPLETED"]
+                  "enum": [
+                    "PENDING",
+                    "IN_PROGRESS",
+                    "COMPLETED"
+                  ]
                 }
               }
             }
@@ -2229,12 +2420,23 @@
           },
           "status": {
             "type": "string",
-            "enum": ["DRAFT", "PUBLISHED", "CLOSED", "ARCHIVED"],
+            "enum": [
+              "DRAFT",
+              "PUBLISHED",
+              "CLOSED",
+              "ARCHIVED"
+            ],
             "description": "Current status of the job posting"
           },
           "employmentType": {
             "type": "string",
-            "enum": ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP", "FREELANCE"],
+            "enum": [
+              "FULL_TIME",
+              "PART_TIME",
+              "CONTRACT",
+              "INTERNSHIP",
+              "FREELANCE"
+            ],
             "description": "Type of employment"
           },
           "minSalary": {
@@ -2345,7 +2547,13 @@
           },
           "employmentType": {
             "type": "string",
-            "enum": ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP", "FREELANCE"],
+            "enum": [
+              "FULL_TIME",
+              "PART_TIME",
+              "CONTRACT",
+              "INTERNSHIP",
+              "FREELANCE"
+            ],
             "description": "Type of employment"
           },
           "minSalary": {
@@ -2418,7 +2626,13 @@
           },
           "employmentType": {
             "type": "string",
-            "enum": ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP", "FREELANCE"],
+            "enum": [
+              "FULL_TIME",
+              "PART_TIME",
+              "CONTRACT",
+              "INTERNSHIP",
+              "FREELANCE"
+            ],
             "description": "Type of employment"
           },
           "minSalary": {
@@ -2574,7 +2788,13 @@
       },
       "JobApplicationCreate": {
         "type": "object",
-        "required": ["jobPostingId", "firstName", "lastName", "email", "resumeUrl"],
+        "required": [
+          "jobPostingId",
+          "firstName",
+          "lastName",
+          "email",
+          "resumeUrl"
+        ],
         "properties": {
           "jobPostingId": {
             "type": "string",
@@ -2712,7 +2932,9 @@
       },
       "ApplicationStatusUpdate": {
         "type": "object",
-        "required": ["status"],
+        "required": [
+          "status"
+        ],
         "properties": {
           "status": {
             "type": "string",
@@ -2755,12 +2977,24 @@
           },
           "type": {
             "type": "string",
-            "enum": ["PHONE_SCREEN", "TECHNICAL", "BEHAVIORAL", "FINAL", "PANEL"],
+            "enum": [
+              "PHONE_SCREEN",
+              "TECHNICAL",
+              "BEHAVIORAL",
+              "FINAL",
+              "PANEL"
+            ],
             "description": "Interview type"
           },
           "status": {
             "type": "string",
-            "enum": ["SCHEDULED", "IN_PROGRESS", "COMPLETED", "CANCELLED", "RESCHEDULED"],
+            "enum": [
+              "SCHEDULED",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "CANCELLED",
+              "RESCHEDULED"
+            ],
             "description": "Interview status"
           },
           "scheduledAt": {
@@ -2794,7 +3028,12 @@
           },
           "result": {
             "type": "string",
-            "enum": ["PASSED", "FAILED", "NEEDS_FOLLOW_UP", "ON_HOLD"],
+            "enum": [
+              "PASSED",
+              "FAILED",
+              "NEEDS_FOLLOW_UP",
+              "ON_HOLD"
+            ],
             "description": "Interview result"
           },
           "rating": {
@@ -2819,7 +3058,13 @@
       },
       "InterviewCreate": {
         "type": "object",
-        "required": ["applicationId", "type", "scheduledAt", "duration", "interviewers"],
+        "required": [
+          "applicationId",
+          "type",
+          "scheduledAt",
+          "duration",
+          "interviewers"
+        ],
         "properties": {
           "applicationId": {
             "type": "string",
@@ -2828,7 +3073,13 @@
           },
           "type": {
             "type": "string",
-            "enum": ["PHONE_SCREEN", "TECHNICAL", "BEHAVIORAL", "FINAL", "PANEL"],
+            "enum": [
+              "PHONE_SCREEN",
+              "TECHNICAL",
+              "BEHAVIORAL",
+              "FINAL",
+              "PANEL"
+            ],
             "description": "Interview type"
           },
           "scheduledAt": {
@@ -2868,7 +3119,13 @@
         "properties": {
           "type": {
             "type": "string",
-            "enum": ["PHONE_SCREEN", "TECHNICAL", "BEHAVIORAL", "FINAL", "PANEL"],
+            "enum": [
+              "PHONE_SCREEN",
+              "TECHNICAL",
+              "BEHAVIORAL",
+              "FINAL",
+              "PANEL"
+            ],
             "description": "Interview type"
           },
           "scheduledAt": {
@@ -2905,11 +3162,18 @@
       },
       "InterviewStatusUpdate": {
         "type": "object",
-        "required": ["status"],
+        "required": [
+          "status"
+        ],
         "properties": {
           "status": {
             "type": "string",
-            "enum": ["IN_PROGRESS", "COMPLETED", "CANCELLED", "RESCHEDULED"],
+            "enum": [
+              "IN_PROGRESS",
+              "COMPLETED",
+              "CANCELLED",
+              "RESCHEDULED"
+            ],
             "description": "New interview status"
           },
           "feedback": {
@@ -2918,7 +3182,12 @@
           },
           "result": {
             "type": "string",
-            "enum": ["PASSED", "FAILED", "NEEDS_FOLLOW_UP", "ON_HOLD"],
+            "enum": [
+              "PASSED",
+              "FAILED",
+              "NEEDS_FOLLOW_UP",
+              "ON_HOLD"
+            ],
             "description": "Interview result"
           },
           "rating": {
@@ -3041,7 +3310,13 @@
           },
           "type": {
             "type": "string",
-            "enum": ["BASE_SALARY", "HOURLY_RATE", "COMMISSION", "BONUS", "ALLOWANCE"],
+            "enum": [
+              "BASE_SALARY",
+              "HOURLY_RATE",
+              "COMMISSION",
+              "BONUS",
+              "ALLOWANCE"
+            ],
             "description": "Salary type"
           },
           "amount": {
@@ -3050,7 +3325,14 @@
           },
           "payFrequency": {
             "type": "string",
-            "enum": ["HOURLY", "DAILY", "WEEKLY", "BI_WEEKLY", "MONTHLY", "ANNUALLY"],
+            "enum": [
+              "HOURLY",
+              "DAILY",
+              "WEEKLY",
+              "BI_WEEKLY",
+              "MONTHLY",
+              "ANNUALLY"
+            ],
             "description": "Pay frequency"
           },
           "effectiveDate": {
@@ -3105,7 +3387,13 @@
       },
       "SalaryCreate": {
         "type": "object",
-        "required": ["employeeId", "type", "amount", "payFrequency", "effectiveDate"],
+        "required": [
+          "employeeId",
+          "type",
+          "amount",
+          "payFrequency",
+          "effectiveDate"
+        ],
         "properties": {
           "employeeId": {
             "type": "string",
@@ -3114,7 +3402,13 @@
           },
           "type": {
             "type": "string",
-            "enum": ["BASE_SALARY", "HOURLY_RATE", "COMMISSION", "BONUS", "ALLOWANCE"],
+            "enum": [
+              "BASE_SALARY",
+              "HOURLY_RATE",
+              "COMMISSION",
+              "BONUS",
+              "ALLOWANCE"
+            ],
             "description": "Salary type"
           },
           "amount": {
@@ -3124,7 +3418,14 @@
           },
           "payFrequency": {
             "type": "string",
-            "enum": ["HOURLY", "DAILY", "WEEKLY", "BI_WEEKLY", "MONTHLY", "ANNUALLY"],
+            "enum": [
+              "HOURLY",
+              "DAILY",
+              "WEEKLY",
+              "BI_WEEKLY",
+              "MONTHLY",
+              "ANNUALLY"
+            ],
             "description": "Pay frequency"
           },
           "effectiveDate": {
@@ -3157,7 +3458,13 @@
         "properties": {
           "type": {
             "type": "string",
-            "enum": ["BASE_SALARY", "HOURLY_RATE", "COMMISSION", "BONUS", "ALLOWANCE"],
+            "enum": [
+              "BASE_SALARY",
+              "HOURLY_RATE",
+              "COMMISSION",
+              "BONUS",
+              "ALLOWANCE"
+            ],
             "description": "Salary type"
           },
           "amount": {
@@ -3167,7 +3474,14 @@
           },
           "payFrequency": {
             "type": "string",
-            "enum": ["HOURLY", "DAILY", "WEEKLY", "BI_WEEKLY", "MONTHLY", "ANNUALLY"],
+            "enum": [
+              "HOURLY",
+              "DAILY",
+              "WEEKLY",
+              "BI_WEEKLY",
+              "MONTHLY",
+              "ANNUALLY"
+            ],
             "description": "Pay frequency"
           },
           "effectiveDate": {
@@ -3250,7 +3564,13 @@
           },
           "status": {
             "type": "string",
-            "enum": ["PENDING", "APPROVED", "PAID", "CANCELLED", "REJECTED"],
+            "enum": [
+              "PENDING",
+              "APPROVED",
+              "PAID",
+              "CANCELLED",
+              "REJECTED"
+            ],
             "description": "Bonus status"
           },
           "criteria": {
@@ -3317,7 +3637,13 @@
       },
       "BonusCreate": {
         "type": "object",
-        "required": ["employeeId", "title", "type", "amount", "effectiveDate"],
+        "required": [
+          "employeeId",
+          "title",
+          "type",
+          "amount",
+          "effectiveDate"
+        ],
         "properties": {
           "employeeId": {
             "type": "string",
@@ -3446,11 +3772,18 @@
       },
       "BonusStatusUpdate": {
         "type": "object",
-        "required": ["status"],
+        "required": [
+          "status"
+        ],
         "properties": {
           "status": {
             "type": "string",
-            "enum": ["APPROVED", "PAID", "CANCELLED", "REJECTED"],
+            "enum": [
+              "APPROVED",
+              "PAID",
+              "CANCELLED",
+              "REJECTED"
+            ],
             "description": "New bonus status"
           },
           "notes": {
@@ -3593,7 +3926,13 @@
       },
       "BenefitCreate": {
         "type": "object",
-        "required": ["name", "description", "type", "category", "cost"],
+        "required": [
+          "name",
+          "description",
+          "type",
+          "category",
+          "cost"
+        ],
         "properties": {
           "name": {
             "type": "string",
@@ -3807,7 +4146,13 @@
           },
           "enrollmentStatus": {
             "type": "string",
-            "enum": ["ENROLLED", "PENDING", "ACTIVE", "SUSPENDED", "TERMINATED"],
+            "enum": [
+              "ENROLLED",
+              "PENDING",
+              "ACTIVE",
+              "SUSPENDED",
+              "TERMINATED"
+            ],
             "description": "Enrollment status"
           },
           "enrollmentDate": {
@@ -3884,7 +4229,12 @@
       },
       "EmployeeBenefitEnrollment": {
         "type": "object",
-        "required": ["employeeId", "benefitId", "enrollmentDate", "effectiveDate"],
+        "required": [
+          "employeeId",
+          "benefitId",
+          "enrollmentDate",
+          "effectiveDate"
+        ],
         "properties": {
           "employeeId": {
             "type": "string",
@@ -4068,12 +4418,24 @@
           },
           "status": {
             "type": "string",
-            "enum": ["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "ON_HOLD", "CANCELLED"],
+            "enum": [
+              "NOT_STARTED",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "ON_HOLD",
+              "CANCELLED"
+            ],
             "description": "Current onboarding status"
           },
           "phase": {
             "type": "string",
-            "enum": ["PRE_BOARDING", "FIRST_DAY", "FIRST_WEEK", "FIRST_MONTH", "COMPLETION"],
+            "enum": [
+              "PRE_BOARDING",
+              "FIRST_DAY",
+              "FIRST_WEEK",
+              "FIRST_MONTH",
+              "COMPLETION"
+            ],
             "description": "Current onboarding phase"
           },
           "assignedHR": {
@@ -4110,7 +4472,10 @@
       },
       "OnboardingCreate": {
         "type": "object",
-        "required": ["employeeId", "startDate"],
+        "required": [
+          "employeeId",
+          "startDate"
+        ],
         "properties": {
           "employeeId": {
             "type": "string",
@@ -4163,17 +4528,35 @@
           },
           "category": {
             "type": "string",
-            "enum": ["PAPERWORK", "TRAINING", "EQUIPMENT", "ORIENTATION", "COMPLIANCE", "OTHER"],
+            "enum": [
+              "PAPERWORK",
+              "TRAINING",
+              "EQUIPMENT",
+              "ORIENTATION",
+              "COMPLIANCE",
+              "OTHER"
+            ],
             "description": "Task category"
           },
           "priority": {
             "type": "string",
-            "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "CRITICAL"
+            ],
             "description": "Task priority"
           },
           "status": {
             "type": "string",
-            "enum": ["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "ON_HOLD", "CANCELLED"],
+            "enum": [
+              "NOT_STARTED",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "ON_HOLD",
+              "CANCELLED"
+            ],
             "description": "Task status"
           },
           "assignedTo": {
@@ -4222,7 +4605,12 @@
       },
       "OnboardingTaskCreate": {
         "type": "object",
-        "required": ["onboardingId", "title", "category", "priority"],
+        "required": [
+          "onboardingId",
+          "title",
+          "category",
+          "priority"
+        ],
         "properties": {
           "onboardingId": {
             "type": "integer",
@@ -4238,12 +4626,24 @@
           },
           "category": {
             "type": "string",
-            "enum": ["PAPERWORK", "TRAINING", "EQUIPMENT", "ORIENTATION", "COMPLIANCE", "OTHER"],
+            "enum": [
+              "PAPERWORK",
+              "TRAINING",
+              "EQUIPMENT",
+              "ORIENTATION",
+              "COMPLIANCE",
+              "OTHER"
+            ],
             "description": "Task category"
           },
           "priority": {
             "type": "string",
-            "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "CRITICAL"
+            ],
             "description": "Task priority"
           },
           "assignedTo": {
@@ -4276,11 +4676,19 @@
       },
       "TaskStatusUpdate": {
         "type": "object",
-        "required": ["status"],
+        "required": [
+          "status"
+        ],
         "properties": {
           "status": {
             "type": "string",
-            "enum": ["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "ON_HOLD", "CANCELLED"],
+            "enum": [
+              "NOT_STARTED",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "ON_HOLD",
+              "CANCELLED"
+            ],
             "description": "New task status"
           },
           "completedDate": {
@@ -4390,7 +4798,10 @@
       },
       "OnboardingTemplateCreate": {
         "type": "object",
-        "required": ["name", "description"],
+        "required": [
+          "name",
+          "description"
+        ],
         "properties": {
           "name": {
             "type": "string",
@@ -4599,7 +5010,12 @@
             "description": "When the document was uploaded"
           }
         },
-        "required": ["leaveRequestId", "cloudinaryPublicId", "cloudinaryUrl", "uploadedById"]
+        "required": [
+          "leaveRequestId",
+          "cloudinaryPublicId",
+          "cloudinaryUrl",
+          "uploadedById"
+        ]
       },
       "DocumentResponse": {
         "type": "object",
@@ -4683,7 +5099,11 @@
           },
           "entityType": {
             "type": "string",
-            "enum": ["User", "LeaveRequest", "System"],
+            "enum": [
+              "User",
+              "LeaveRequest",
+              "System"
+            ],
             "description": "Type of entity affected"
           },
           "entityId": {
@@ -4708,7 +5128,12 @@
             "description": "When the action occurred"
           }
         },
-        "required": ["userId", "action", "entityType", "timestamp"]
+        "required": [
+          "userId",
+          "action",
+          "entityType",
+          "timestamp"
+        ]
       },
       "SecurityEventResponse": {
         "type": "object",
@@ -4788,7 +5213,11 @@
           },
           "status": {
             "type": "string",
-            "enum": ["ACTIVE", "INACTIVE", "SUSPENDED"],
+            "enum": [
+              "ACTIVE",
+              "INACTIVE",
+              "SUSPENDED"
+            ],
             "description": "User account status"
           },
           "profilePicture": {
@@ -5034,7 +5463,9 @@
   "paths": {
     "/api/auth/register": {
       "post": {
-        "tags": ["Authentication"],
+        "tags": [
+          "Authentication"
+        ],
         "summary": "User registration",
         "description": "Register a new user account with GUEST role. \n- User is assigned GUEST role initially\n- Welcome email sent with verification link\n- Email verification required before full access\n- HR/Admin must create employee profile to upgrade to EMPLOYEE role\n",
         "requestBody": {
@@ -5086,7 +5517,9 @@
                         },
                         "role": {
                           "type": "string",
-                          "enum": ["GUEST"],
+                          "enum": [
+                            "GUEST"
+                          ],
                           "description": "Initial role assigned (always GUEST)"
                         },
                         "emailVerified": {
@@ -5123,7 +5556,9 @@
     },
     "/api/auth/login": {
       "post": {
-        "tags": ["Authentication"],
+        "tags": [
+          "Authentication"
+        ],
         "summary": "User login",
         "description": "Authenticate user and return JWT token.\n**Note**: Email verification is required before login.\n",
         "requestBody": {
@@ -5179,7 +5614,9 @@
     },
     "/api/auth/google": {
       "get": {
-        "tags": ["Authentication"],
+        "tags": [
+          "Authentication"
+        ],
         "summary": "Google OAuth login",
         "description": "Initiate Google OAuth authentication flow",
         "responses": {
@@ -5194,7 +5631,9 @@
     },
     "/api/auth/google/callback": {
       "get": {
-        "tags": ["Authentication"],
+        "tags": [
+          "Authentication"
+        ],
         "summary": "Google OAuth callback",
         "description": "Handle Google OAuth callback and authenticate user",
         "parameters": [
@@ -5246,7 +5685,9 @@
     },
     "/api/auth/refresh": {
       "post": {
-        "tags": ["Authentication"],
+        "tags": [
+          "Authentication"
+        ],
         "summary": "Refresh access token",
         "description": "Get new access token using refresh token",
         "requestBody": {
@@ -5288,7 +5729,9 @@
     },
     "/api/auth/change-password": {
       "post": {
-        "tags": ["Authentication"],
+        "tags": [
+          "Authentication"
+        ],
         "summary": "Change user password",
         "description": "Change current user's password",
         "security": [
@@ -5339,7 +5782,9 @@
     },
     "/api/auth/forgot-password": {
       "post": {
-        "tags": ["Authentication"],
+        "tags": [
+          "Authentication"
+        ],
         "summary": "Request password reset",
         "description": "Send password reset email to user",
         "requestBody": {
@@ -5382,7 +5827,9 @@
     },
     "/api/auth/reset-password": {
       "post": {
-        "tags": ["Authentication"],
+        "tags": [
+          "Authentication"
+        ],
         "summary": "Reset password",
         "description": "Reset password using reset token",
         "requestBody": {
@@ -5425,7 +5872,9 @@
     },
     "/api/auth/verify-email/{token}": {
       "get": {
-        "tags": ["Authentication"],
+        "tags": [
+          "Authentication"
+        ],
         "summary": "Verify email address",
         "description": "Verify user's email address using verification token",
         "parameters": [
@@ -5469,7 +5918,9 @@
     },
     "/api/auth/resend-verification": {
       "post": {
-        "tags": ["Authentication"],
+        "tags": [
+          "Authentication"
+        ],
         "summary": "Resend email verification",
         "description": "Resend email verification link to user",
         "security": [
@@ -5527,7 +5978,9 @@
     },
     "/api/auth/logout": {
       "post": {
-        "tags": ["Authentication"],
+        "tags": [
+          "Authentication"
+        ],
         "summary": "User logout",
         "description": "Logout user and invalidate token",
         "security": [
@@ -5565,7 +6018,9 @@
     },
     "/api/auth/me": {
       "get": {
-        "tags": ["Authentication"],
+        "tags": [
+          "Authentication"
+        ],
         "summary": "Get user profile",
         "description": "Get current user's profile information",
         "security": [
@@ -5595,7 +6050,9 @@
     },
     "/api/auth/users": {
       "get": {
-        "tags": ["User Management"],
+        "tags": [
+          "User Management"
+        ],
         "summary": "Get all users",
         "description": "Get list of all users (Admin/HR Manager only)",
         "security": [
@@ -5681,7 +6138,9 @@
     },
     "/api/auth/users/{userId}/roles": {
       "put": {
-        "tags": ["User Management"],
+        "tags": [
+          "User Management"
+        ],
         "summary": "Update user role",
         "description": "Update user's role (Admin only)",
         "security": [
@@ -5753,7 +6212,9 @@
     },
     "/api/auth/users/{userId}/status": {
       "put": {
-        "tags": ["User Management"],
+        "tags": [
+          "User Management"
+        ],
         "summary": "Update user status",
         "description": "Update user's account status (Admin only)",
         "security": [
@@ -5825,7 +6286,9 @@
     },
     "/api/auth/users/{userId}": {
       "delete": {
-        "tags": ["User Management"],
+        "tags": [
+          "User Management"
+        ],
         "summary": "Delete user",
         "description": "Delete user account (Admin only)",
         "security": [
@@ -5881,7 +6344,9 @@
     },
     "/api/auth/status": {
       "get": {
-        "tags": ["Authentication"],
+        "tags": [
+          "Authentication"
+        ],
         "summary": "Get user onboarding status",
         "description": "Get comprehensive user status including role, email verification, and employee profile status.\nUseful for GUEST users to check their onboarding progress and next steps.\n",
         "security": [
@@ -5924,7 +6389,13 @@
                         },
                         "role": {
                           "type": "string",
-                          "enum": ["GUEST", "EMPLOYEE", "MANAGER", "HR_MANAGER", "ADMIN"],
+                          "enum": [
+                            "GUEST",
+                            "EMPLOYEE",
+                            "MANAGER",
+                            "HR_MANAGER",
+                            "ADMIN"
+                          ],
                           "description": "Current user role"
                         },
                         "emailVerified": {
@@ -5941,7 +6412,11 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": ["GUEST_AWAITING_PROFILE", "PENDING_APPROVAL", "ACTIVE_EMPLOYEE"],
+                          "enum": [
+                            "GUEST_AWAITING_PROFILE",
+                            "PENDING_APPROVAL",
+                            "ACTIVE_EMPLOYEE"
+                          ],
                           "description": "Overall user status in the onboarding process"
                         }
                       },
@@ -5976,7 +6451,9 @@
     },
     "/api/employees/my-department": {
       "get": {
-        "tags": ["Employees"],
+        "tags": [
+          "Employees"
+        ],
         "summary": "Get my department employees",
         "description": "Get employees in the manager's department (Manager only)",
         "security": [
@@ -6019,7 +6496,12 @@
             "name": "position",
             "schema": {
               "type": "string",
-              "enum": ["EMPLOYEE", "MANAGER", "HR_MANAGER", "ADMIN"]
+              "enum": [
+                "EMPLOYEE",
+                "MANAGER",
+                "HR_MANAGER",
+                "ADMIN"
+              ]
             },
             "description": "Filter by position"
           },
@@ -6028,7 +6510,12 @@
             "name": "status",
             "schema": {
               "type": "string",
-              "enum": ["ACTIVE", "INACTIVE", "TERMINATED", "ON_LEAVE"]
+              "enum": [
+                "ACTIVE",
+                "INACTIVE",
+                "TERMINATED",
+                "ON_LEAVE"
+              ]
             },
             "description": "Filter by status"
           }
@@ -6089,7 +6576,9 @@
     },
     "/api/employees": {
       "get": {
-        "tags": ["Employees"],
+        "tags": [
+          "Employees"
+        ],
         "summary": "Get all employees",
         "description": "Retrieve a list of all employees with pagination and filtering",
         "security": [
@@ -6133,7 +6622,12 @@
             "name": "status",
             "schema": {
               "type": "string",
-              "enum": ["ACTIVE", "INACTIVE", "TERMINATED", "ON_LEAVE"]
+              "enum": [
+                "ACTIVE",
+                "INACTIVE",
+                "TERMINATED",
+                "ON_LEAVE"
+              ]
             },
             "description": "Filter by status"
           }
@@ -6186,7 +6680,9 @@
         }
       },
       "post": {
-        "tags": ["Employees"],
+        "tags": [
+          "Employees"
+        ],
         "summary": "Create employee profile",
         "description": "Create an employee profile for an existing user (HR/Admin only).\nThis action:\n- Creates employee record for existing user\n- Updates user role from GUEST to EMPLOYEE (if applicable)\n- Sends professional welcome email notification to employee\n- Grants full employee access and permissions\n",
         "security": [
@@ -6257,7 +6753,9 @@
     },
     "/api/employees/search": {
       "get": {
-        "tags": ["Employees"],
+        "tags": [
+          "Employees"
+        ],
         "summary": "Search employees",
         "description": "Search employees with various filters",
         "security": [
@@ -6288,7 +6786,12 @@
             "name": "status",
             "schema": {
               "type": "string",
-              "enum": ["ACTIVE", "INACTIVE", "TERMINATED", "ON_LEAVE"]
+              "enum": [
+                "ACTIVE",
+                "INACTIVE",
+                "TERMINATED",
+                "ON_LEAVE"
+              ]
             },
             "description": "Filter by status"
           },
@@ -6373,7 +6876,9 @@
     },
     "/api/employees/{id}": {
       "get": {
-        "tags": ["Employees"],
+        "tags": [
+          "Employees"
+        ],
         "summary": "Get employee by ID",
         "description": "Retrieve a specific employee by their ID",
         "security": [
@@ -6416,7 +6921,9 @@
         }
       },
       "put": {
-        "tags": ["Employees"],
+        "tags": [
+          "Employees"
+        ],
         "summary": "Update employee",
         "description": "Update an existing employee record",
         "security": [
@@ -6472,7 +6979,9 @@
         }
       },
       "delete": {
-        "tags": ["Employees"],
+        "tags": [
+          "Employees"
+        ],
         "summary": "Delete employee",
         "description": "Delete an employee record",
         "security": [
@@ -6525,7 +7034,9 @@
     },
     "/api/departments": {
       "get": {
-        "tags": ["Departments"],
+        "tags": [
+          "Departments"
+        ],
         "summary": "Get all departments",
         "description": "Retrieve a list of all departments",
         "security": [
@@ -6564,7 +7075,9 @@
         }
       },
       "post": {
-        "tags": ["Departments"],
+        "tags": [
+          "Departments"
+        ],
         "summary": "Create new department",
         "description": "Create a new department",
         "security": [
@@ -6607,7 +7120,9 @@
     },
     "/api/departments/{id}": {
       "get": {
-        "tags": ["Departments"],
+        "tags": [
+          "Departments"
+        ],
         "summary": "Get department by ID",
         "description": "Retrieve a specific department by ID",
         "security": [
@@ -6650,7 +7165,9 @@
         }
       },
       "put": {
-        "tags": ["Departments"],
+        "tags": [
+          "Departments"
+        ],
         "summary": "Update department",
         "description": "Update an existing department",
         "security": [
@@ -6706,7 +7223,9 @@
         }
       },
       "delete": {
-        "tags": ["Departments"],
+        "tags": [
+          "Departments"
+        ],
         "summary": "Delete department",
         "description": "Delete a department",
         "security": [
@@ -6759,7 +7278,9 @@
     },
     "/api/leave-requests/my-leaves": {
       "get": {
-        "tags": ["Leave Management"],
+        "tags": [
+          "Leave Management"
+        ],
         "summary": "Get my leave requests",
         "description": "Retrieve authenticated user's leave requests with pagination and filtering.\n**Access**: EMPLOYEE, MANAGER, HR_MANAGER, ADMIN only. GUEST users cannot access.\n",
         "security": [
@@ -6794,7 +7315,12 @@
             "name": "status",
             "schema": {
               "type": "string",
-              "enum": ["PENDING", "APPROVED", "REJECTED", "CANCELLED"]
+              "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED",
+                "CANCELLED"
+              ]
             },
             "description": "Filter by status"
           },
@@ -6871,7 +7397,9 @@
     },
     "/api/leave-requests/team": {
       "get": {
-        "tags": ["Leave Management"],
+        "tags": [
+          "Leave Management"
+        ],
         "summary": "Get team leave requests",
         "description": "Get approved leave requests for manager's team (Manager/Admin only)",
         "security": [
@@ -6910,7 +7438,9 @@
     },
     "/api/leave-requests/department/{departmentId}": {
       "get": {
-        "tags": ["Leave Management"],
+        "tags": [
+          "Leave Management"
+        ],
         "summary": "Get leave requests by department",
         "description": "Get leave requests for a specific department (HR/Admin/Department Manager only)",
         "security": [
@@ -6961,7 +7491,9 @@
     },
     "/api/leave-requests": {
       "get": {
-        "tags": ["Leave Management"],
+        "tags": [
+          "Leave Management"
+        ],
         "summary": "Get all leave requests",
         "description": "Retrieve a list of all leave requests with pagination and filtering",
         "security": [
@@ -6996,7 +7528,12 @@
             "name": "status",
             "schema": {
               "type": "string",
-              "enum": ["PENDING", "APPROVED", "REJECTED", "CANCELLED"]
+              "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED",
+                "CANCELLED"
+              ]
             },
             "description": "Filter by status"
           }
@@ -7049,7 +7586,9 @@
         }
       },
       "post": {
-        "tags": ["Leave Management"],
+        "tags": [
+          "Leave Management"
+        ],
         "summary": "Create leave request",
         "description": "Create a new leave request.\n**Access**: EMPLOYEE, MANAGER, HR_MANAGER, ADMIN only. GUEST users cannot create leave requests.\n",
         "security": [
@@ -7092,7 +7631,9 @@
     },
     "/api/leave-requests/{id}": {
       "get": {
-        "tags": ["Leave Management"],
+        "tags": [
+          "Leave Management"
+        ],
         "summary": "Get leave request by ID",
         "description": "Retrieve a specific leave request by ID",
         "security": [
@@ -7137,7 +7678,9 @@
     },
     "/api/leave-types": {
       "get": {
-        "tags": ["Leave Management"],
+        "tags": [
+          "Leave Management"
+        ],
         "summary": "Get all leave types",
         "description": "Retrieve a list of all leave types",
         "security": [
@@ -7176,7 +7719,9 @@
         }
       },
       "post": {
-        "tags": ["Leave Management"],
+        "tags": [
+          "Leave Management"
+        ],
         "summary": "Create leave type",
         "description": "Create a new leave type (HR/Admin only)",
         "security": [
@@ -7222,7 +7767,9 @@
     },
     "/api/leave-types/{id}": {
       "get": {
-        "tags": ["Leave Management"],
+        "tags": [
+          "Leave Management"
+        ],
         "summary": "Get leave type by ID",
         "description": "Retrieve a specific leave type by ID",
         "security": [
@@ -7265,7 +7812,9 @@
         }
       },
       "put": {
-        "tags": ["Leave Management"],
+        "tags": [
+          "Leave Management"
+        ],
         "summary": "Update leave type",
         "description": "Update an existing leave type (HR/Admin only)",
         "security": [
@@ -7324,7 +7873,9 @@
         }
       },
       "delete": {
-        "tags": ["Leave Management"],
+        "tags": [
+          "Leave Management"
+        ],
         "summary": "Delete leave type",
         "description": "Delete a leave type (HR/Admin only)",
         "security": [
@@ -7365,7 +7916,9 @@
     },
     "/api/leave-balances": {
       "get": {
-        "tags": ["Leave Management"],
+        "tags": [
+          "Leave Management"
+        ],
         "summary": "Get leave balances",
         "description": "Retrieve leave balances for the current user",
         "security": [
@@ -7406,7 +7959,9 @@
     },
     "/api/leave-balances/my-balances": {
       "get": {
-        "tags": ["Leave Management"],
+        "tags": [
+          "Leave Management"
+        ],
         "summary": "Get my leave balances",
         "description": "Retrieve leave balances for the current authenticated user",
         "security": [
@@ -7447,7 +8002,9 @@
     },
     "/api/leave-balances/employee/{employeeId}": {
       "get": {
-        "tags": ["Leave Management"],
+        "tags": [
+          "Leave Management"
+        ],
         "summary": "Get employee leave balances",
         "description": "Retrieve leave balances for a specific employee (HR/Admin/Manager only)",
         "security": [
@@ -7506,7 +8063,9 @@
     },
     "/api/leave-balances/adjust": {
       "post": {
-        "tags": ["Leave Management"],
+        "tags": [
+          "Leave Management"
+        ],
         "summary": "Adjust leave balance",
         "description": "Adjust leave balance for an employee (Admin only)",
         "security": [
@@ -7555,7 +8114,9 @@
     },
     "/api/attendance": {
       "get": {
-        "tags": ["Attendance Management"],
+        "tags": [
+          "Attendance Management"
+        ],
         "summary": "Get attendance records",
         "description": "Retrieve attendance records with filtering and pagination.\n**Access**: HR_MANAGER, ADMIN, MANAGER only.\n",
         "security": [
@@ -7596,7 +8157,12 @@
             "name": "status",
             "schema": {
               "type": "string",
-              "enum": ["PRESENT", "ABSENT", "HALF_DAY", "LEAVE"]
+              "enum": [
+                "PRESENT",
+                "ABSENT",
+                "HALF_DAY",
+                "LEAVE"
+              ]
             },
             "description": "Filter by attendance status"
           },
@@ -7673,7 +8239,9 @@
         }
       },
       "post": {
-        "tags": ["Attendance Management"],
+        "tags": [
+          "Attendance Management"
+        ],
         "summary": "Create attendance record",
         "description": "Create a new attendance record for an employee.\n**Access**: HR_MANAGER, ADMIN, MANAGER only.\nCan optionally include fingerprint template for verification.\n",
         "security": [
@@ -7730,7 +8298,9 @@
     },
     "/api/attendance/summary/{employeeId}": {
       "get": {
-        "tags": ["Attendance Management"],
+        "tags": [
+          "Attendance Management"
+        ],
         "summary": "Get attendance summary for employee",
         "description": "Get attendance summary statistics for a specific employee.\n**Access**: HR_MANAGER, ADMIN, MANAGER, EMPLOYEE (own data only).\n",
         "security": [
@@ -7810,7 +8380,9 @@
     },
     "/api/attendance/{id}": {
       "put": {
-        "tags": ["Attendance Management"],
+        "tags": [
+          "Attendance Management"
+        ],
         "summary": "Update attendance record",
         "description": "Update an existing attendance record.\n**Access**: HR_MANAGER, ADMIN only.\n",
         "security": [
@@ -7882,7 +8454,9 @@
     },
     "/api/attendance/fingerprint-kiosk": {
       "post": {
-        "tags": ["Attendance Management"],
+        "tags": [
+          "Attendance Management"
+        ],
         "summary": "Mark attendance using fingerprint (Kiosk mode)",
         "description": "Automatically identify employee by fingerprint and mark attendance.\nPerfect for kiosk/self-service attendance systems.\nIf employee has already checked in today, this will record check-out time.\n**Access**: HR_MANAGER, ADMIN, MANAGER only.\n",
         "security": [
@@ -7932,7 +8506,9 @@
     },
     "/api/attendance/fingerprint": {
       "post": {
-        "tags": ["Attendance Management"],
+        "tags": [
+          "Attendance Management"
+        ],
         "summary": "Mark attendance with fingerprint (Manual)",
         "description": "Verify worker identity using fingerprint and mark daily attendance.\nRequires employee ID in request body.\n**Access**: HR_MANAGER, ADMIN, MANAGER only.\n",
         "security": [
@@ -7992,7 +8568,9 @@
     },
     "/api/attendance/fingerprint/enroll/{employeeId}": {
       "post": {
-        "tags": ["Attendance Management"],
+        "tags": [
+          "Attendance Management"
+        ],
         "summary": "Enroll employee fingerprint",
         "description": "Capture and store employee's fingerprint template for attendance tracking.\n**Access**: HR_MANAGER, ADMIN only.\n",
         "security": [
@@ -8057,7 +8635,9 @@
     },
     "/api/attendance/fingerprint/update/{employeeId}": {
       "put": {
-        "tags": ["Attendance Management"],
+        "tags": [
+          "Attendance Management"
+        ],
         "summary": "Update employee fingerprint",
         "description": "Re-enroll or update employee's fingerprint template.\nUse this when fingerprint quality is poor or needs to be refreshed.\n**Access**: HR_MANAGER, ADMIN only.\n",
         "security": [
@@ -8119,7 +8699,9 @@
     },
     "/api/attendance/fingerprint/remove/{employeeId}": {
       "delete": {
-        "tags": ["Attendance Management"],
+        "tags": [
+          "Attendance Management"
+        ],
         "summary": "Remove employee fingerprint",
         "description": "Remove employee's fingerprint enrollment.\nEmployee will need to re-enroll for fingerprint attendance.\n**Access**: HR_MANAGER, ADMIN only.\n",
         "security": [
@@ -8189,7 +8771,9 @@
     },
     "/api/attendance/fingerprint/status": {
       "get": {
-        "tags": ["Attendance Management"],
+        "tags": [
+          "Attendance Management"
+        ],
         "summary": "Get fingerprint enrollment status",
         "description": "Get statistics about fingerprint enrollment for employees.\n**Access**: HR_MANAGER, ADMIN, MANAGER only.\n",
         "security": [
@@ -8233,7 +8817,9 @@
     },
     "/api/attendance/fingerprint/devices": {
       "get": {
-        "tags": ["Attendance Management"],
+        "tags": [
+          "Attendance Management"
+        ],
         "summary": "Get fingerprint device information",
         "description": "List all connected USB devices to help identify fingerprint reader.\nReturns device information including vendor ID, product ID, and device name.\n**Access**: HR_MANAGER, ADMIN only.\n",
         "security": [
@@ -8277,7 +8863,9 @@
     },
     "/api/hr/dashboard": {
       "get": {
-        "tags": ["HR Management"],
+        "tags": [
+          "HR Management"
+        ],
         "summary": "Get HR dashboard summary",
         "description": "Retrieve HR dashboard overview and statistics",
         "security": [
@@ -8307,7 +8895,9 @@
     },
     "/api/hr/overview": {
       "get": {
-        "tags": ["HR Management"],
+        "tags": [
+          "HR Management"
+        ],
         "summary": "Get employee overview",
         "description": "Retrieve employee overview statistics and data",
         "security": [
@@ -8337,7 +8927,9 @@
     },
     "/api/hr/analytics": {
       "get": {
-        "tags": ["HR Management"],
+        "tags": [
+          "HR Management"
+        ],
         "summary": "Get employee analytics",
         "description": "Retrieve detailed employee analytics and insights",
         "security": [
@@ -8367,7 +8959,9 @@
     },
     "/api/hr/reports": {
       "get": {
-        "tags": ["HR Management"],
+        "tags": [
+          "HR Management"
+        ],
         "summary": "Get HR reports",
         "description": "Retrieve available HR reports",
         "security": [
@@ -8408,7 +9002,9 @@
     },
     "/api/recruitment/job-postings": {
       "post": {
-        "tags": ["Recruitment"],
+        "tags": [
+          "Recruitment"
+        ],
         "summary": "Create a new job posting",
         "description": "Create a new job posting for recruitment",
         "security": [
@@ -8454,7 +9050,9 @@
     },
     "/api/recruitment/job-postings/{id}": {
       "put": {
-        "tags": ["Recruitment"],
+        "tags": [
+          "Recruitment"
+        ],
         "summary": "Update a job posting",
         "description": "Update an existing job posting",
         "security": [
@@ -8515,7 +9113,9 @@
     },
     "/api/recruitment/job-postings/{id}/publish": {
       "post": {
-        "tags": ["Recruitment"],
+        "tags": [
+          "Recruitment"
+        ],
         "summary": "Publish a job posting",
         "description": "Publish a draft job posting to make it visible to candidates",
         "security": [
@@ -8566,7 +9166,9 @@
     },
     "/api/recruitment/job-postings/{id}/close": {
       "post": {
-        "tags": ["Recruitment"],
+        "tags": [
+          "Recruitment"
+        ],
         "summary": "Close a job posting",
         "description": "Close an active job posting to stop accepting applications",
         "security": [
@@ -8617,7 +9219,9 @@
     },
     "/api/recruitment/job-postings/search": {
       "get": {
-        "tags": ["Recruitment"],
+        "tags": [
+          "Recruitment"
+        ],
         "summary": "Search job postings",
         "description": "Search and filter job postings",
         "security": [
@@ -8647,7 +9251,12 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["DRAFT", "PUBLISHED", "CLOSED", "ARCHIVED"]
+              "enum": [
+                "DRAFT",
+                "PUBLISHED",
+                "CLOSED",
+                "ARCHIVED"
+              ]
             },
             "description": "Job posting status"
           },
@@ -8656,7 +9265,12 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP"]
+              "enum": [
+                "FULL_TIME",
+                "PART_TIME",
+                "CONTRACT",
+                "INTERNSHIP"
+              ]
             },
             "description": "Employment type"
           },
@@ -8747,7 +9361,9 @@
     },
     "/api/recruitment/applications": {
       "post": {
-        "tags": ["Recruitment"],
+        "tags": [
+          "Recruitment"
+        ],
         "summary": "Submit a job application",
         "description": "Submit a new job application for a job posting",
         "requestBody": {
@@ -8782,7 +9398,9 @@
     },
     "/api/recruitment/applications/{id}/status": {
       "put": {
-        "tags": ["Recruitment"],
+        "tags": [
+          "Recruitment"
+        ],
         "summary": "Update application status",
         "description": "Update the status of a job application",
         "security": [
@@ -8843,7 +9461,9 @@
     },
     "/api/recruitment/applications/search": {
       "get": {
-        "tags": ["Recruitment"],
+        "tags": [
+          "Recruitment"
+        ],
         "summary": "Search job applications",
         "description": "Search and filter job applications",
         "security": [
@@ -8967,7 +9587,9 @@
     },
     "/api/recruitment/interviews": {
       "post": {
-        "tags": ["Recruitment"],
+        "tags": [
+          "Recruitment"
+        ],
         "summary": "Schedule an interview",
         "description": "Schedule a new interview for a job application",
         "security": [
@@ -9013,7 +9635,9 @@
     },
     "/api/recruitment/interviews/{id}/status": {
       "put": {
-        "tags": ["Recruitment"],
+        "tags": [
+          "Recruitment"
+        ],
         "summary": "Update interview status",
         "description": "Update the status of an interview",
         "security": [
@@ -9074,7 +9698,9 @@
     },
     "/api/recruitment/interviews/search": {
       "get": {
-        "tags": ["Recruitment"],
+        "tags": [
+          "Recruitment"
+        ],
         "summary": "Search interviews",
         "description": "Search and filter interviews",
         "security": [
@@ -9097,7 +9723,13 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["SCHEDULED", "IN_PROGRESS", "COMPLETED", "CANCELLED", "RESCHEDULED"]
+              "enum": [
+                "SCHEDULED",
+                "IN_PROGRESS",
+                "COMPLETED",
+                "CANCELLED",
+                "RESCHEDULED"
+              ]
             },
             "description": "Interview status"
           },
@@ -9106,7 +9738,13 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["PHONE_SCREEN", "TECHNICAL", "BEHAVIORAL", "FINAL", "PANEL"]
+              "enum": [
+                "PHONE_SCREEN",
+                "TECHNICAL",
+                "BEHAVIORAL",
+                "FINAL",
+                "PANEL"
+              ]
             },
             "description": "Interview type"
           },
@@ -9190,7 +9828,9 @@
     },
     "/api/recruitment/analytics": {
       "get": {
-        "tags": ["Recruitment"],
+        "tags": [
+          "Recruitment"
+        ],
         "summary": "Get recruitment analytics",
         "description": "Get comprehensive analytics and metrics for recruitment",
         "security": [
@@ -9251,7 +9891,9 @@
     },
     "/api/compensation/salaries": {
       "post": {
-        "tags": ["Compensation"],
+        "tags": [
+          "Compensation"
+        ],
         "summary": "Create a new salary record",
         "description": "Create a new salary record for an employee",
         "security": [
@@ -9297,7 +9939,9 @@
     },
     "/api/compensation/salaries/{id}": {
       "put": {
-        "tags": ["Compensation"],
+        "tags": [
+          "Compensation"
+        ],
         "summary": "Update a salary record",
         "description": "Update an existing salary record",
         "security": [
@@ -9358,7 +10002,9 @@
     },
     "/api/compensation/salaries/employee/{employeeId}/history": {
       "get": {
-        "tags": ["Compensation"],
+        "tags": [
+          "Compensation"
+        ],
         "summary": "Get employee salary history",
         "description": "Get complete salary history for an employee",
         "security": [
@@ -9427,7 +10073,9 @@
     },
     "/api/compensation/salaries/employee/{employeeId}/current": {
       "get": {
-        "tags": ["Compensation"],
+        "tags": [
+          "Compensation"
+        ],
         "summary": "Get employee current salary",
         "description": "Get the current active salary for an employee",
         "security": [
@@ -9475,7 +10123,9 @@
     },
     "/api/compensation/salaries/search": {
       "get": {
-        "tags": ["Compensation"],
+        "tags": [
+          "Compensation"
+        ],
         "summary": "Search salary records",
         "description": "Search and filter salary records",
         "security": [
@@ -9498,7 +10148,13 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["BASE_SALARY", "HOURLY_RATE", "COMMISSION", "BONUS", "ALLOWANCE"]
+              "enum": [
+                "BASE_SALARY",
+                "HOURLY_RATE",
+                "COMMISSION",
+                "BONUS",
+                "ALLOWANCE"
+              ]
             },
             "description": "Salary type filter"
           },
@@ -9507,7 +10163,14 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["HOURLY", "DAILY", "WEEKLY", "BI_WEEKLY", "MONTHLY", "ANNUALLY"]
+              "enum": [
+                "HOURLY",
+                "DAILY",
+                "WEEKLY",
+                "BI_WEEKLY",
+                "MONTHLY",
+                "ANNUALLY"
+              ]
             },
             "description": "Pay frequency filter"
           },
@@ -9607,7 +10270,9 @@
     },
     "/api/compensation/bonuses": {
       "post": {
-        "tags": ["Compensation"],
+        "tags": [
+          "Compensation"
+        ],
         "summary": "Create a new bonus record",
         "description": "Create a new bonus record for an employee",
         "security": [
@@ -9653,7 +10318,9 @@
     },
     "/api/compensation/bonuses/{id}/status": {
       "put": {
-        "tags": ["Compensation"],
+        "tags": [
+          "Compensation"
+        ],
         "summary": "Update bonus status",
         "description": "Update the status of a bonus record",
         "security": [
@@ -9714,7 +10381,9 @@
     },
     "/api/compensation/bonuses/search": {
       "get": {
-        "tags": ["Compensation"],
+        "tags": [
+          "Compensation"
+        ],
         "summary": "Search bonus records",
         "description": "Search and filter bonus records",
         "security": [
@@ -9754,7 +10423,13 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["PENDING", "APPROVED", "REJECTED", "PAID", "CANCELLED"]
+              "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED",
+                "PAID",
+                "CANCELLED"
+              ]
             },
             "description": "Bonus status filter"
           },
@@ -9854,7 +10529,9 @@
     },
     "/api/compensation/benefits": {
       "post": {
-        "tags": ["Compensation"],
+        "tags": [
+          "Compensation"
+        ],
         "summary": "Create a new benefit",
         "description": "Create a new company benefit",
         "security": [
@@ -9900,7 +10577,9 @@
     },
     "/api/compensation/benefits/{id}": {
       "put": {
-        "tags": ["Compensation"],
+        "tags": [
+          "Compensation"
+        ],
         "summary": "Update a benefit",
         "description": "Update an existing company benefit",
         "security": [
@@ -9961,7 +10640,9 @@
     },
     "/api/compensation/benefits/search": {
       "get": {
-        "tags": ["Compensation"],
+        "tags": [
+          "Compensation"
+        ],
         "summary": "Search benefits",
         "description": "Search and filter company benefits",
         "security": [
@@ -10098,7 +10779,9 @@
     },
     "/api/compensation/benefits/{benefitId}/enroll": {
       "post": {
-        "tags": ["Compensation"],
+        "tags": [
+          "Compensation"
+        ],
         "summary": "Enroll employee in benefit",
         "description": "Enroll an employee in a specific benefit",
         "security": [
@@ -10159,7 +10842,9 @@
     },
     "/api/compensation/benefits/enrollment/{enrollmentId}/status": {
       "put": {
-        "tags": ["Compensation"],
+        "tags": [
+          "Compensation"
+        ],
         "summary": "Update benefit enrollment status",
         "description": "Update the status of a benefit enrollment",
         "security": [
@@ -10188,7 +10873,12 @@
                 "properties": {
                   "status": {
                     "type": "string",
-                    "enum": ["ACTIVE", "INACTIVE", "PENDING", "TERMINATED"],
+                    "enum": [
+                      "ACTIVE",
+                      "INACTIVE",
+                      "PENDING",
+                      "TERMINATED"
+                    ],
                     "description": "New enrollment status"
                   },
                   "effectiveDate": {
@@ -10236,7 +10926,9 @@
     },
     "/api/compensation/benefits/employee/{employeeId}": {
       "get": {
-        "tags": ["Compensation"],
+        "tags": [
+          "Compensation"
+        ],
         "summary": "Get employee benefits",
         "description": "Get all benefits for a specific employee",
         "security": [
@@ -10260,7 +10952,12 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["ACTIVE", "INACTIVE", "PENDING", "TERMINATED"]
+              "enum": [
+                "ACTIVE",
+                "INACTIVE",
+                "PENDING",
+                "TERMINATED"
+              ]
             },
             "description": "Enrollment status filter"
           }
@@ -10296,7 +10993,9 @@
     },
     "/api/compensation/analytics": {
       "get": {
-        "tags": ["Compensation"],
+        "tags": [
+          "Compensation"
+        ],
         "summary": "Get compensation analytics",
         "description": "Get comprehensive analytics and metrics for compensation",
         "security": [
@@ -10357,7 +11056,9 @@
     },
     "/api/onboarding": {
       "post": {
-        "tags": ["Onboarding"],
+        "tags": [
+          "Onboarding"
+        ],
         "summary": "Create a new onboarding process",
         "description": "Create a new onboarding process for an employee",
         "security": [
@@ -10403,7 +11104,9 @@
     },
     "/api/onboarding/{id}/status": {
       "put": {
-        "tags": ["Onboarding"],
+        "tags": [
+          "Onboarding"
+        ],
         "summary": "Update onboarding status",
         "description": "Update the status of an onboarding process",
         "security": [
@@ -10432,7 +11135,13 @@
                 "properties": {
                   "status": {
                     "type": "string",
-                    "enum": ["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "ON_HOLD", "CANCELLED"],
+                    "enum": [
+                      "NOT_STARTED",
+                      "IN_PROGRESS",
+                      "COMPLETED",
+                      "ON_HOLD",
+                      "CANCELLED"
+                    ],
                     "description": "New onboarding status"
                   },
                   "notes": {
@@ -10475,7 +11184,9 @@
     },
     "/api/onboarding/{id}/phase": {
       "put": {
-        "tags": ["Onboarding"],
+        "tags": [
+          "Onboarding"
+        ],
         "summary": "Advance onboarding phase",
         "description": "Advance the onboarding process to the next phase",
         "security": [
@@ -10553,7 +11264,9 @@
     },
     "/api/onboarding/search": {
       "get": {
-        "tags": ["Onboarding"],
+        "tags": [
+          "Onboarding"
+        ],
         "summary": "Search onboarding processes",
         "description": "Search and filter onboarding processes",
         "security": [
@@ -10575,7 +11288,13 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "ON_HOLD", "CANCELLED"]
+              "enum": [
+                "NOT_STARTED",
+                "IN_PROGRESS",
+                "COMPLETED",
+                "ON_HOLD",
+                "CANCELLED"
+              ]
             },
             "description": "Onboarding status filter"
           },
@@ -10584,7 +11303,13 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["PRE_BOARDING", "FIRST_DAY", "FIRST_WEEK", "FIRST_MONTH", "COMPLETION"]
+              "enum": [
+                "PRE_BOARDING",
+                "FIRST_DAY",
+                "FIRST_WEEK",
+                "FIRST_MONTH",
+                "COMPLETION"
+              ]
             },
             "description": "Onboarding phase filter"
           },
@@ -10674,7 +11399,9 @@
     },
     "/api/onboarding/{id}/progress": {
       "get": {
-        "tags": ["Onboarding"],
+        "tags": [
+          "Onboarding"
+        ],
         "summary": "Get onboarding progress",
         "description": "Get detailed progress information for an onboarding process",
         "security": [
@@ -10751,7 +11478,9 @@
     },
     "/api/onboarding/tasks": {
       "post": {
-        "tags": ["Onboarding"],
+        "tags": [
+          "Onboarding"
+        ],
         "summary": "Create a new onboarding task",
         "description": "Create a new task for an onboarding process",
         "security": [
@@ -10797,7 +11526,9 @@
     },
     "/api/onboarding/tasks/{id}/status": {
       "put": {
-        "tags": ["Onboarding"],
+        "tags": [
+          "Onboarding"
+        ],
         "summary": "Update task status",
         "description": "Update the status of an onboarding task",
         "security": [
@@ -10858,7 +11589,9 @@
     },
     "/api/onboarding/tasks/search": {
       "get": {
-        "tags": ["Onboarding"],
+        "tags": [
+          "Onboarding"
+        ],
         "summary": "Search onboarding tasks",
         "description": "Search and filter onboarding tasks",
         "security": [
@@ -10880,7 +11613,13 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "ON_HOLD", "CANCELLED"]
+              "enum": [
+                "NOT_STARTED",
+                "IN_PROGRESS",
+                "COMPLETED",
+                "ON_HOLD",
+                "CANCELLED"
+              ]
             },
             "description": "Task status filter"
           },
@@ -10889,7 +11628,12 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+              "enum": [
+                "LOW",
+                "MEDIUM",
+                "HIGH",
+                "CRITICAL"
+              ]
             },
             "description": "Task priority filter"
           },
@@ -10898,7 +11642,14 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["PAPERWORK", "TRAINING", "EQUIPMENT", "ORIENTATION", "COMPLIANCE", "OTHER"]
+              "enum": [
+                "PAPERWORK",
+                "TRAINING",
+                "EQUIPMENT",
+                "ORIENTATION",
+                "COMPLIANCE",
+                "OTHER"
+              ]
             },
             "description": "Task category filter"
           },
@@ -10988,7 +11739,9 @@
     },
     "/api/onboarding/templates": {
       "post": {
-        "tags": ["Onboarding"],
+        "tags": [
+          "Onboarding"
+        ],
         "summary": "Create onboarding template",
         "description": "Create a new onboarding template for reuse",
         "security": [
@@ -11034,7 +11787,9 @@
     },
     "/api/onboarding/templates/{templateId}/clone": {
       "post": {
-        "tags": ["Onboarding"],
+        "tags": [
+          "Onboarding"
+        ],
         "summary": "Clone onboarding from template",
         "description": "Create a new onboarding process from an existing template",
         "security": [
@@ -11113,7 +11868,9 @@
     },
     "/api/onboarding/analytics": {
       "get": {
-        "tags": ["Onboarding"],
+        "tags": [
+          "Onboarding"
+        ],
         "summary": "Get onboarding analytics",
         "description": "Get comprehensive analytics and metrics for onboarding",
         "security": [
@@ -11174,7 +11931,9 @@
     },
     "/api/reports/leave-by-department": {
       "get": {
-        "tags": ["Reports"],
+        "tags": [
+          "Reports"
+        ],
         "summary": "Get leave reports by department",
         "description": "Generate leave reports filtered by department",
         "security": [
@@ -11215,7 +11974,12 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["PENDING", "APPROVED", "REJECTED", "CANCELLED"]
+              "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED",
+                "CANCELLED"
+              ]
             },
             "description": "Leave request status filter"
           }
@@ -11262,7 +12026,9 @@
     },
     "/api/reports/leave-by-employee/{employeeId}": {
       "get": {
-        "tags": ["Reports"],
+        "tags": [
+          "Reports"
+        ],
         "summary": "Get leave reports by employee",
         "description": "Generate leave reports for a specific employee",
         "security": [
@@ -11304,7 +12070,12 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["PENDING", "APPROVED", "REJECTED", "CANCELLED"]
+              "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED",
+                "CANCELLED"
+              ]
             },
             "description": "Leave request status filter"
           }
@@ -11354,7 +12125,9 @@
     },
     "/api/reports/leave-by-type": {
       "get": {
-        "tags": ["Reports"],
+        "tags": [
+          "Reports"
+        ],
         "summary": "Get leave reports by type",
         "description": "Generate leave reports filtered by leave type",
         "security": [
@@ -11395,7 +12168,12 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["PENDING", "APPROVED", "REJECTED", "CANCELLED"]
+              "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED",
+                "CANCELLED"
+              ]
             },
             "description": "Leave request status filter"
           }
@@ -11442,7 +12220,9 @@
     },
     "/api/reports/leave-calendar": {
       "get": {
-        "tags": ["Reports"],
+        "tags": [
+          "Reports"
+        ],
         "summary": "Get leave calendar",
         "description": "Generate leave calendar view",
         "security": [
@@ -11521,7 +12301,9 @@
     },
     "/api/reports/export/csv": {
       "get": {
-        "tags": ["Reports"],
+        "tags": [
+          "Reports"
+        ],
         "summary": "Export reports to CSV",
         "description": "Export leave reports to CSV format",
         "security": [
@@ -11536,7 +12318,12 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["DEPARTMENT", "EMPLOYEE", "LEAVE_TYPE", "CALENDAR"]
+              "enum": [
+                "DEPARTMENT",
+                "EMPLOYEE",
+                "LEAVE_TYPE",
+                "CALENDAR"
+              ]
             },
             "description": "Type of report to export"
           },
@@ -11588,7 +12375,9 @@
     },
     "/api/reports/export/excel": {
       "get": {
-        "tags": ["Reports"],
+        "tags": [
+          "Reports"
+        ],
         "summary": "Export reports to Excel",
         "description": "Export leave reports to Excel format",
         "security": [
@@ -11603,7 +12392,12 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["DEPARTMENT", "EMPLOYEE", "LEAVE_TYPE", "CALENDAR"]
+              "enum": [
+                "DEPARTMENT",
+                "EMPLOYEE",
+                "LEAVE_TYPE",
+                "CALENDAR"
+              ]
             },
             "description": "Type of report to export"
           },
@@ -11655,7 +12449,9 @@
     },
     "/api/notifications/my-notifications": {
       "get": {
-        "tags": ["Notifications"],
+        "tags": [
+          "Notifications"
+        ],
         "summary": "Get user notifications",
         "description": "Retrieve all notifications for the authenticated user",
         "security": [
@@ -11746,7 +12542,9 @@
     },
     "/api/notifications/{id}/read": {
       "put": {
-        "tags": ["Notifications"],
+        "tags": [
+          "Notifications"
+        ],
         "summary": "Mark notification as read",
         "description": "Mark a specific notification as read",
         "security": [
@@ -11804,7 +12602,9 @@
     },
     "/api/notifications/mark-all-read": {
       "put": {
-        "tags": ["Notifications"],
+        "tags": [
+          "Notifications"
+        ],
         "summary": "Mark all notifications as read",
         "description": "Mark all notifications for the authenticated user as read",
         "security": [
@@ -11844,7 +12644,9 @@
     },
     "/api/notifications/{id}": {
       "delete": {
-        "tags": ["Notifications"],
+        "tags": [
+          "Notifications"
+        ],
         "summary": "Delete notification",
         "description": "Delete a specific notification for the authenticated user",
         "security": [
@@ -11902,7 +12704,9 @@
     },
     "/api/notifications/preferences": {
       "get": {
-        "tags": ["Notifications"],
+        "tags": [
+          "Notifications"
+        ],
         "summary": "Get notification preferences",
         "description": "Retrieve notification preferences for the authenticated user",
         "security": [
@@ -11939,7 +12743,9 @@
         }
       },
       "put": {
-        "tags": ["Notifications"],
+        "tags": [
+          "Notifications"
+        ],
         "summary": "Update notification preferences",
         "description": "Update notification preferences for the authenticated user",
         "security": [
@@ -11992,7 +12798,9 @@
     },
     "/api/audit/security-events": {
       "get": {
-        "tags": ["Audit"],
+        "tags": [
+          "Audit"
+        ],
         "summary": "Get recent security events",
         "description": "Retrieve recent security events (Admin/HR only)",
         "security": [
@@ -12056,7 +12864,9 @@
     },
     "/api/audit/cleanup": {
       "post": {
-        "tags": ["Audit"],
+        "tags": [
+          "Audit"
+        ],
         "summary": "Clean up old audit logs",
         "description": "Clean up old security logs (Admin only)",
         "security": [
@@ -12125,7 +12935,9 @@
     },
     "/api/documents/upload/{leaveRequestId}": {
       "post": {
-        "tags": ["Documents"],
+        "tags": [
+          "Documents"
+        ],
         "summary": "Upload document to leave request",
         "description": "Upload a document file to a specific leave request.\n**Access**: EMPLOYEE, MANAGER, HR_MANAGER, ADMIN only. GUEST users cannot upload documents.\n",
         "security": [
@@ -12190,7 +13002,9 @@
     },
     "/api/documents/leave-request/{leaveRequestId}": {
       "get": {
-        "tags": ["Documents"],
+        "tags": [
+          "Documents"
+        ],
         "summary": "Get documents for a leave request",
         "description": "Retrieve all documents associated with a specific leave request.\n**Access**: EMPLOYEE, MANAGER, HR_MANAGER, ADMIN only. GUEST users cannot access documents.\n",
         "security": [
@@ -12238,7 +13052,9 @@
     },
     "/api/documents/{documentId}": {
       "get": {
-        "tags": ["Documents"],
+        "tags": [
+          "Documents"
+        ],
         "summary": "Get specific document",
         "description": "Retrieve details of a specific document",
         "security": [
@@ -12284,7 +13100,9 @@
         }
       },
       "delete": {
-        "tags": ["Documents"],
+        "tags": [
+          "Documents"
+        ],
         "summary": "Delete document",
         "description": "Delete a specific document (Admin/HR Manager only)",
         "security": [
@@ -12341,7 +13159,9 @@
     },
     "/api/manager/hierarchy/{employeeId}": {
       "get": {
-        "tags": ["Manager"],
+        "tags": [
+          "Manager"
+        ],
         "summary": "Get employee hierarchy",
         "description": "Retrieve the management hierarchy for a specific employee",
         "security": [
@@ -12406,7 +13226,9 @@
     },
     "/api/manager/team/{managerId}": {
       "get": {
-        "tags": ["Manager"],
+        "tags": [
+          "Manager"
+        ],
         "summary": "Get team members for a manager",
         "description": "Retrieve all team members managed by a specific manager",
         "security": [
@@ -12474,7 +13296,9 @@
     },
     "/api/manager/can-manage/{managerId}/{employeeId}": {
       "get": {
-        "tags": ["Manager"],
+        "tags": [
+          "Manager"
+        ],
         "summary": "Check if user can manage another employee",
         "description": "Verify if a manager has authority over a specific employee",
         "security": [
@@ -12538,7 +13362,9 @@
     },
     "/api/manager/approval-chain/{employeeId}": {
       "get": {
-        "tags": ["Manager"],
+        "tags": [
+          "Manager"
+        ],
         "summary": "Get approval chain for an employee",
         "description": "Retrieve the complete approval chain for leave requests",
         "security": [
@@ -12608,7 +13434,9 @@
     },
     "/api/manager/assign-manager": {
       "post": {
-        "tags": ["Manager"],
+        "tags": [
+          "Manager"
+        ],
         "summary": "Assign manager to employee",
         "description": "Assign or change the manager for a specific employee (Admin/HR Manager only)",
         "security": [
@@ -12622,7 +13450,10 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["employeeId", "newManagerId"],
+                "required": [
+                  "employeeId",
+                  "newManagerId"
+                ],
                 "properties": {
                   "employeeId": {
                     "type": "string",
@@ -12688,7 +13519,9 @@
     },
     "/api/manager/performance/{managerId}": {
       "get": {
-        "tags": ["Manager"],
+        "tags": [
+          "Manager"
+        ],
         "summary": "Get manager performance metrics",
         "description": "Retrieve performance metrics for a specific manager",
         "security": [
@@ -12712,7 +13545,11 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["month", "quarter", "year"],
+              "enum": [
+                "month",
+                "quarter",
+                "year"
+              ],
               "default": "month"
             },
             "description": "Performance period"
@@ -12771,7 +13608,9 @@
     },
     "/api/manager/delegation": {
       "post": {
-        "tags": ["Manager"],
+        "tags": [
+          "Manager"
+        ],
         "summary": "Delegate management responsibilities",
         "description": "Temporarily delegate management responsibilities to another employee",
         "security": [
@@ -12785,7 +13624,12 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["managerId", "delegateId", "startDate", "endDate"],
+                "required": [
+                  "managerId",
+                  "delegateId",
+                  "startDate",
+                  "endDate"
+                ],
                 "properties": {
                   "managerId": {
                     "type": "string",
@@ -12811,7 +13655,11 @@
                     "type": "array",
                     "items": {
                       "type": "string",
-                      "enum": ["LEAVE_APPROVAL", "PERFORMANCE_REVIEW", "TEAM_MANAGEMENT"]
+                      "enum": [
+                        "LEAVE_APPROVAL",
+                        "PERFORMANCE_REVIEW",
+                        "TEAM_MANAGEMENT"
+                      ]
                     },
                     "description": "Scope of delegated responsibilities"
                   }
@@ -12883,7 +13731,9 @@
     },
     "/api/profile": {
       "get": {
-        "tags": ["Profile Management"],
+        "tags": [
+          "Profile Management"
+        ],
         "summary": "Get current user's profile",
         "description": "Retrieve the profile information of the currently authenticated user",
         "security": [
@@ -12962,7 +13812,9 @@
         }
       },
       "put": {
-        "tags": ["Profile Management"],
+        "tags": [
+          "Profile Management"
+        ],
         "summary": "Update current user's profile",
         "description": "Update the current user's profile information and optionally upload a new profile picture",
         "security": [
@@ -13121,7 +13973,9 @@
     },
     "/api/profile/picture": {
       "delete": {
-        "tags": ["Profile Management"],
+        "tags": [
+          "Profile Management"
+        ],
         "summary": "Delete current user's profile picture",
         "description": "Remove the profile picture of the currently authenticated user",
         "security": [
